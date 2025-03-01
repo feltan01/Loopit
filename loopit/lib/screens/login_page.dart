@@ -1,8 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/forgot_password.dart';
 import 'package:loopit/screens/signup.dart';
+import 'package:loopit/screens/home_page.dart'; // Import the home page
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // Text editing controllers
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  
+  // Form validation state
+  bool _isFormValid = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Add listeners to update form validity when text changes
+    _emailController.addListener(_validateForm);
+    _passwordController.addListener(_validateForm);
+  }
+  
+  @override
+  void dispose() {
+    // Clean up controllers when the widget is disposed
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+  
+  // Validate both fields are filled
+  void _validateForm() {
+    setState(() {
+      _isFormValid = _emailController.text.isNotEmpty && 
+                     _passwordController.text.isNotEmpty;
+    });
+  }
+
+  // Handle login
+  void _handleLogin() {
+    if (_isFormValid) {
+      // Navigate to home page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +132,9 @@ class LoginPage extends StatelessWidget {
                               )
                             ],
                           ),
-                          child: const TextField(
-                            decoration: InputDecoration(
+                          child: TextField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
                               prefixIcon: Icon(Icons.email, color: Colors.grey),
                               hintText: "Email",
                               border: InputBorder.none,
@@ -106,9 +156,10 @@ class LoginPage extends StatelessWidget {
                               )
                             ],
                           ),
-                          child: const TextField(
+                          child: TextField(
+                            controller: _passwordController,
                             obscureText: true,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               prefixIcon: Icon(Icons.lock, color: Colors.grey),
                               hintText: "Password",
                               border: InputBorder.none,
@@ -120,7 +171,12 @@ class LoginPage extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                              );
+                            },
                             child: const Text(
                               "Forgot Password?",
                               style: TextStyle(color: Colors.grey),
@@ -139,13 +195,14 @@ class LoginPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               elevation: 0,
+                              // Change opacity based on form validity
+                              foregroundColor: _isFormValid ? Colors.white : Colors.white.withOpacity(0.5),
                             ),
-                            onPressed: () {},
+                            onPressed: _isFormValid ? _handleLogin : null,
                             child: const Text(
                               "Login",
                               style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -223,7 +280,6 @@ class LoginPage extends StatelessWidget {
                               " now",
                               style: TextStyle(color: Colors.grey),
                             ),
-
                           ],
                         )
                       ],

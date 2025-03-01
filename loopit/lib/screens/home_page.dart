@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'fashion_page.dart';
+import 'electronics_page.dart';
+import 'skincare_page.dart';
+import 'books_page.dart';
+import 'luxury_page.dart';
+import 'toys_page.dart';
+import 'others_page.dart';
+import 'highest_quality.dart';
+import 'profile.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -35,29 +44,39 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
               _buildSearchBar(),
+              const SizedBox(height: 16),
+              _buildCashflowSection(),
+              const SizedBox(height: 16),
+              _buildQualityBadge(context),
+              const SizedBox(height: 16),
+              const Text(
+                "Categories",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A6741),
+                ),
+              ),
               const SizedBox(height: 10),
-              _buildBalanceSection(),
+              _buildCategorySection(context),
+              const SizedBox(height: 24),
+              const Text(
+                "Recommendation",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A6741),
+                ),
+              ),
               const SizedBox(height: 10),
-              _buildFilterButton(),
-              const SizedBox(height: 20),
-              _buildCategorySection(),
-              const SizedBox(height: 20),
               _buildRecommendationSection(),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFFCEDE4),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle, size: 40), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavBar(context),
     );
   }
 
@@ -65,6 +84,7 @@ class HomePage extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         hintText: "Search it, Loop It",
+        hintStyle: const TextStyle(color: Colors.black54),
         prefixIcon: const Icon(Icons.search, color: Colors.black54),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
@@ -76,30 +96,37 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceSection() {
+  Widget _buildCashflowSection() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
         color: const Color(0xFFEAF3DC),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
-          const Icon(Icons.account_balance_wallet, color: Colors.black),
+          const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF4A6741)),
           const SizedBox(width: 8),
-          const Text("Rp 0", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            "Rp 0",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6741),
+            ),
+          ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFFCEDE4),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Row(
-              children: [
-                Icon(Icons.access_time, size: 16, color: Colors.black54),
-                SizedBox(width: 5),
-                Text("No recent cashflow", style: TextStyle(fontSize: 12, color: Colors.black54)),
+            child: Row(
+              children: const [
+                Icon(Icons.history, size: 16, color: Colors.black54),
+                SizedBox(width: 6),
+                Text("No recent cashflow", style: TextStyle(color: Colors.black54)),
               ],
             ),
           ),
@@ -108,37 +135,47 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterButton() {
-    return Align(
-      alignment: Alignment.centerLeft,
+  Widget _buildQualityBadge(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HighestQualityPage()),
+        );
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black),
+          border: Border.all(color: const Color(0xFF4A6741)),
+          borderRadius: BorderRadius.circular(25),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.star_border, color: Colors.black),
-            SizedBox(width: 5),
-            Text("Highest Quality", style: TextStyle(color: Colors.black)),
+          children: const [
+            Icon(Icons.diamond_outlined, color: Color(0xFF4A6741)),
+            SizedBox(width: 8),
+            Text(
+              "Highest Quality",
+              style: TextStyle(
+                color: Color(0xFF4A6741),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategorySection() {
-    List<Map<String, String>> categories = [
-      {"title": "Fashion", "image": "assets/images/fashion.png"},
-      {"title": "Electronics", "image": "assets/images/electronics.png"},
-      {"title": "Skincare & Perfumes", "image": "assets/images/skincare.png"},
-      {"title": "Books & Magazine", "image": "assets/images/books.png"},
-      {"title": "Luxury Items", "image": "assets/images/luxury.png"},
-      {"title": "Toys", "image": "assets/images/toys.png"},
-      {"title": "Others", "image": "assets/images/others.png"},
+  Widget _buildCategorySection(BuildContext context) {
+    List<Map<String, dynamic>> categories = [
+      {"title": "Fashion", "image": "assets/images/fashion.png", "page": const FashionPage()},
+      {"title": "Electronics", "image": "assets/images/electronics.png", "page": const ElectronicsPage()},
+      {"title": "Skincare & Perfumes", "image": "assets/images/skincare.png", "page": const SkincarePage()},
+      {"title": "Books & Magazine", "image": "assets/images/books.png", "page": const BooksPage()},
+      {"title": "Luxury Items", "image": "assets/images/luxury.png", "page": const LuxuryPage()},
+      {"title": "Toys", "image": "assets/images/toys.png", "page": const ToysPage()},
+      {"title": "Others", "image": "assets/images/others.png", "page": const OthersPage()},
     ];
 
     return GridView.builder(
@@ -147,12 +184,20 @@ class HomePage extends StatelessWidget {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.9,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.8,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
-        return _buildCategoryItem(categories[index]["title"]!, categories[index]["image"]!);
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => categories[index]["page"]),
+            );
+          },
+          child: _buildCategoryItem(categories[index]["title"], categories[index]["image"]),
+        );
       },
     );
   }
@@ -164,49 +209,195 @@ class HomePage extends StatelessWidget {
           width: 100,
           height: 100,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFFFFF5EC),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
-            child: Image.asset(imagePath, width: 100),
+            child: Image.asset(imagePath, width: 80),
           ),
         ),
-        const SizedBox(height: 5),
-        Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF4A6741),
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
 
   Widget _buildRecommendationSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Recommendation", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildProductItem("Gitar Elektrik Parker", "Rp 2.882.000", "assets/images/guitar.png"),
-              _buildProductItem("Panci Panda", "Rp 140.000", "assets/images/pan.png"),
-            ],
-          ),
-        ),
-      ],
+    List<Map<String, dynamic>> recommendations = [
+      {
+        "title": "Gitar Elektrik Parker Hornet Pm10",
+        "price": "Rp 2.882.000",
+        "image": "assets/images/mock_guitar.png",
+        "condition": "95% Like New"
+      },
+      {
+        "title": "Panci Panda",
+        "price": "Rp 140.000",
+        "image": "assets/images/mock_panci.png",
+        "condition": "87% Good"
+      },
+      {
+        "title": "Harry Potter and The Prisoner of Azkaban",
+        "price": "",
+        "image": "assets/images/mock_buku.png",
+        "condition": ""
+      },
+      {
+        "title": "Speaker Bluetooth Minis",
+        "price": "",
+        "image": "assets/images/mock_speaker.png",
+        "condition": ""
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
+      ),
+      itemCount: recommendations.length,
+      itemBuilder: (context, index) {
+        return _buildRecommendationItem(
+          recommendations[index]["title"],
+          recommendations[index]["price"],
+          recommendations[index]["image"],
+          recommendations[index]["condition"],
+        );
+      },
     );
   }
 
-  Widget _buildProductItem(String title, String price, String imagePath) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Column(
-        children: [
-          Image.asset(imagePath, width: 100),
-          Text(title),
-          Text(price, style: const TextStyle(fontWeight: FontWeight.bold)),
+  Widget _buildRecommendationItem(String title, String price, String imagePath, String condition) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            child: Image.asset(
+              imagePath,
+              height: 120,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (price.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A6741),
+                    ),
+                  ),
+                ],
+                if (condition.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: condition.contains("Like New") 
+                              ? const Color(0xFFE7F5D9) 
+                              : const Color(0xFFFFF8E0),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          condition,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: condition.contains("Like New") 
+                                ? const Color(0xFF4CAF50) 
+                                : const Color(0xFFFFC107),
+                          ),
+                        ),
+                      ),
+                      const Icon(Icons.more_horiz, color: Colors.black45),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavBar(BuildContext context) {
+    return BottomNavigationBar(
+      backgroundColor: Color(0xFFFFF5EE),
+      selectedItemColor: const Color(0xFF4A6741),
+      unselectedItemColor: Colors.grey,
+      currentIndex: 0,
+      type: BottomNavigationBarType.fixed,
+      onTap: (index) {
+        if (index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage()),
+          );
+        }
+      },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_circle_outline),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          label: '',
+        ),
+      ],
     );
   }
 }

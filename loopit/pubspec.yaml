@@ -69,6 +69,32 @@ flutter:
     - assets/images/luxury.png
     - assets/images/toys.png
     - assets/images/others.png
+    - assets/images/forgot_password.png
+    - assets/images/mock_guitar.png
+    - assets/images/mock_panci.png
+    - assets/images/mock_buku.png
+    - assets/images/mock_speaker.png
+    - assets/images/books1.png
+    - assets/images/magazines.png
+    - assets/images/magazines2.png
+    - assets/images/elec1.png
+    - assets/images/elec2.png
+    - assets/images/elec3.png
+    - assets/images/sk1.png
+    - assets/images/sk2.png
+    - assets/images/sk3.png
+    - assets/images/toy1.png
+    - assets/images/toy2.png
+    - assets/images/toy3.png
+    - assets/images/lux1.png
+    - assets/images/lux2.png
+    - assets/images/lux3.png
+    - assets/images/ot1.png
+    - assets/images/ot2.png
+    - assets/images/ot3.png
+    - assets/images/fs1.png
+    - assets/images/fs2.png
+    - assets/images/fs3.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

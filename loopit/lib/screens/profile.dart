@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
+import 'package:loopit/screens/seller_verification.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -125,34 +126,44 @@ class ProfilePage extends StatelessWidget {
 
   /// Bottom Navigation Bar
   Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Color(0xFFFFF5EE),
-      selectedItemColor: const Color(0xFF4A6741),
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0,
-      type: BottomNavigationBarType.fixed,
-      onTap: (index) {
-        if (index == 0) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: '',
-        ),
-      ],
-    );
-  }
+  return BottomNavigationBar(
+    backgroundColor: const Color(0xFFFFF5EE),
+    selectedItemColor: const Color(0xFF4A6741),
+    unselectedItemColor: Colors.grey,
+    currentIndex: 0, // Pastikan index sesuai dengan halaman yang aktif
+    type: BottomNavigationBarType.fixed,
+    onTap: (index) {
+      if (index == 0) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else if (index == 1) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SellerVerificationPage()),
+        );
+      } else if (index == 2) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProfilePage()),
+        );
+      }
+    },
+    items: const [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home),
+        label: '',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.add_circle_outline), // Navigasi ke SellerVerificationPage
+        label: '',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.person_outline),
+        label: '',
+      ),
+    ],
+  );
+}
 }

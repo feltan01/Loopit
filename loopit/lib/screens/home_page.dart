@@ -8,6 +8,8 @@ import 'toys_page.dart';
 import 'others_page.dart';
 import 'highest_quality.dart';
 import 'profile.dart';
+import 'saldo.dart';
+import 'seller_verification.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -47,7 +49,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 10),
               _buildSearchBar(),
               const SizedBox(height: 16),
-              _buildCashflowSection(),
+              _buildCashflowSection(context),
               const SizedBox(height: 16),
               _buildQualityBadge(context),
               const SizedBox(height: 16),
@@ -96,7 +98,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCashflowSection() {
+  Widget _buildCashflowSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
@@ -105,29 +107,61 @@ class HomePage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF4A6741)),
-          const SizedBox(width: 8),
-          const Text(
-            "Rp 0",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A6741),
+          // Balance section - clickable to navigate to SaldoPage
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SaldoPage()),
+              );
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF4A6741)),
+                SizedBox(width: 8),
+                Text(
+                  "Rp 0",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A6741),
+                  ),
+                ),
+              ],
             ),
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: const [
-                Icon(Icons.history, size: 16, color: Colors.black54),
-                SizedBox(width: 6),
-                Text("No recent cashflow", style: TextStyle(color: Colors.black54)),
-              ],
+          // History section - clickable to navigate to HistoryPage (not yet created)
+          GestureDetector(
+            onTap: () {
+              // This would navigate to HistoryPage once it's created
+              // For now, show a message that the page is not yet available
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("History page is not yet available"),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              
+              // Uncomment this code once you create HistoryPage:
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const HistoryPage()),
+              // );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.history, size: 16, color: Colors.black54),
+                  SizedBox(width: 6),
+                  Text("No recent cashflow", style: TextStyle(color: Colors.black54)),
+                ],
+              ),
             ),
           ),
         ],
@@ -371,14 +405,24 @@ class HomePage extends StatelessWidget {
 
   Widget _buildBottomNavBar(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Color(0xFFFFF5EE),
+      backgroundColor: const Color(0xFFFFF5EE),
       selectedItemColor: const Color(0xFF4A6741),
       unselectedItemColor: Colors.grey,
-      currentIndex: 0,
+      currentIndex: 0, // Pastikan index sesuai dengan halaman yang aktif
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
-        if (index == 2) {
-          Navigator.push(
+        if (index == 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        } else if (index == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SellerVerificationPage()),
+          );
+        } else if (index == 2) {
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => ProfilePage()),
           );
@@ -390,7 +434,7 @@ class HomePage extends StatelessWidget {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
+          icon: Icon(Icons.add_circle_outline), // Navigasi ke SellerVerificationPage
           label: '',
         ),
         BottomNavigationBarItem(
@@ -400,4 +444,5 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
+
 }

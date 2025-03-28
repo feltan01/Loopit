@@ -10,6 +10,7 @@ import 'highest_quality.dart';
 import 'profile.dart';
 import 'saldo.dart';
 import 'seller_verification.dart';
+import 'messages.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -27,7 +28,12 @@ class HomePage extends StatelessWidget {
             const Spacer(),
             IconButton(
               icon: const Icon(Icons.email_outlined, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MessagesPage()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.black),
@@ -117,7 +123,8 @@ class HomePage extends StatelessWidget {
             },
             child: Row(
               children: const [
-                Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF4A6741)),
+                Icon(Icons.account_balance_wallet_outlined,
+                    color: Color(0xFF4A6741)),
                 SizedBox(width: 8),
                 Text(
                   "Rp 0",
@@ -142,7 +149,7 @@ class HomePage extends StatelessWidget {
                   duration: Duration(seconds: 2),
                 ),
               );
-              
+
               // Uncomment this code once you create HistoryPage:
               // Navigator.push(
               //   context,
@@ -159,7 +166,8 @@ class HomePage extends StatelessWidget {
                 children: const [
                   Icon(Icons.history, size: 16, color: Colors.black54),
                   SizedBox(width: 6),
-                  Text("No recent cashflow", style: TextStyle(color: Colors.black54)),
+                  Text("No recent cashflow",
+                      style: TextStyle(color: Colors.black54)),
                 ],
               ),
             ),
@@ -203,13 +211,41 @@ class HomePage extends StatelessWidget {
 
   Widget _buildCategorySection(BuildContext context) {
     List<Map<String, dynamic>> categories = [
-      {"title": "Fashion", "image": "assets/images/fashion.png", "page": const FashionPage()},
-      {"title": "Electronics", "image": "assets/images/electronics.png", "page": const ElectronicsPage()},
-      {"title": "Skincare & Perfumes", "image": "assets/images/skincare.png", "page": const SkincarePage()},
-      {"title": "Books & Magazine", "image": "assets/images/books.png", "page": const BooksPage()},
-      {"title": "Luxury Items", "image": "assets/images/luxury.png", "page": const LuxuryPage()},
-      {"title": "Toys", "image": "assets/images/toys.png", "page": const ToysPage()},
-      {"title": "Others", "image": "assets/images/others.png", "page": const OthersPage()},
+      {
+        "title": "Fashion",
+        "image": "assets/images/fashion.png",
+        "page": const FashionPage()
+      },
+      {
+        "title": "Electronics",
+        "image": "assets/images/electronics.png",
+        "page": const ElectronicsPage()
+      },
+      {
+        "title": "Skincare & Perfumes",
+        "image": "assets/images/skincare.png",
+        "page": const SkincarePage()
+      },
+      {
+        "title": "Books & Magazine",
+        "image": "assets/images/books.png",
+        "page": const BooksPage()
+      },
+      {
+        "title": "Luxury Items",
+        "image": "assets/images/luxury.png",
+        "page": const LuxuryPage()
+      },
+      {
+        "title": "Toys",
+        "image": "assets/images/toys.png",
+        "page": const ToysPage()
+      },
+      {
+        "title": "Others",
+        "image": "assets/images/others.png",
+        "page": const OthersPage()
+      },
     ];
 
     return GridView.builder(
@@ -227,10 +263,12 @@ class HomePage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => categories[index]["page"]),
+              MaterialPageRoute(
+                  builder: (context) => categories[index]["page"]),
             );
           },
-          child: _buildCategoryItem(categories[index]["title"], categories[index]["image"]),
+          child: _buildCategoryItem(
+              categories[index]["title"], categories[index]["image"]),
         );
       },
     );
@@ -313,7 +351,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationItem(String title, String price, String imagePath, String condition) {
+  Widget _buildRecommendationItem(
+      String title, String price, String imagePath, String condition) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -373,10 +412,11 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: condition.contains("Like New") 
-                              ? const Color(0xFFE7F5D9) 
+                          color: condition.contains("Like New")
+                              ? const Color(0xFFE7F5D9)
                               : const Color(0xFFFFF8E0),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -385,8 +425,8 @@ class HomePage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: condition.contains("Like New") 
-                                ? const Color(0xFF4CAF50) 
+                            color: condition.contains("Like New")
+                                ? const Color(0xFF4CAF50)
                                 : const Color(0xFFFFC107),
                           ),
                         ),
@@ -419,7 +459,8 @@ class HomePage extends StatelessWidget {
         } else if (index == 1) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SellerVerificationPage()),
+            MaterialPageRoute(
+                builder: (context) => const SellerVerificationPage()),
           );
         } else if (index == 2) {
           Navigator.pushReplacement(
@@ -434,7 +475,8 @@ class HomePage extends StatelessWidget {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline), // Navigasi ke SellerVerificationPage
+          icon: Icon(
+              Icons.add_circle_outline), // Navigasi ke SellerVerificationPage
           label: '',
         ),
         BottomNavigationBarItem(
@@ -444,5 +486,4 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
-
 }

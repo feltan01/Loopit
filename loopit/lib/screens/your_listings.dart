@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'edit_listing.dart'; // Make sure to import the EditListingPage
 
 class ListingModel {
   final String title;
@@ -27,17 +28,23 @@ class _YourListingPageState extends State<YourListingPage> {
   final TextEditingController _searchController = TextEditingController();
 
   // Sample data - in a real app, this would come from a database or API
-  final List<ListingModel> _listings = [
+  List<ListingModel> _listings = [
     ListingModel(
       title: 'Sepatu Staccato',
       subtitle: 'Original',
       price: 'Rp 645.000',
       condition: '98% Like New',
-      imageUrl:
-          'assets/images/shoes.jpg', // You'll need to add this image to your assets
+      imageUrl: 'assets/images/shoes.jpg',
     ),
     // Add more listings here as needed
   ];
+
+  // Method to delete a listing
+  void _deleteListing(int index) {
+    setState(() {
+      _listings.removeAt(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +200,17 @@ class _YourListingPageState extends State<YourListingPage> {
                                       title: const Text('Edit Listing'),
                                       onTap: () {
                                         Navigator.pop(context);
-                                        // Navigate to edit page
+                                        // Navigate to EditListingPage with initial values
+                                        Navigator.push(
+                                          context, 
+                                          MaterialPageRoute(
+                                            builder: (context) => EditListingPage(
+                                              initialTitle: listing.title,
+                                              initialPrice: listing.price,
+                                              initialCondition: listing.condition,
+                                            ),
+                                          ),
+                                        );
                                       },
                                     ),
                                     ListTile(
@@ -204,6 +221,31 @@ class _YourListingPageState extends State<YourListingPage> {
                                       onTap: () {
                                         Navigator.pop(context);
                                         // Show delete confirmation
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Delete Listing'),
+                                              content: const Text('Are you sure you want to delete this listing?'),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancel'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                                  onPressed: () {
+                                                    // Call the delete method
+                                                    _deleteListing(index);
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                     ),
                                   ],

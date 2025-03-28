@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'chat_detail_screen.dart';
+import 'chat_buyer.dart';
+import 'chat_seller.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -31,7 +32,9 @@ class MessagesPage extends StatelessWidget {
               size: 20,
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pop(); // Add navigation back
+          },
         ),
       ),
       body: Column(
@@ -70,7 +73,7 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
+                        builder: (context) => const ChatBuyerScreen(),
                       ),
                     );
                   },
@@ -80,11 +83,10 @@ class MessagesPage extends StatelessWidget {
                   message: 'Would you mind if i pay it on the spot?',
                   isUnread: true,
                   onTap: () {
-                    // Could navigate to a different chat detail with different data
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
+                        builder: (context) => const ChatSellerScreen(),
                       ),
                     );
                   },
@@ -97,67 +99,7 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Seller 2',
-                  message: 'Thank You!!!',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Seller 3',
-                  message: 'Do you have it on green?',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Buyer 3',
-                  message: 'I like this one.',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Seller 4',
-                  message: 'I prefer if you raise your offer',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Buyer 4',
-                  message: '',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatDetailScreen(),
+                        builder: (context) => const ChatSellerScreen(),
                       ),
                     );
                   },

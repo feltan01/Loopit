@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'messages.dart'; // Add this import
 
 void main() {
   runApp(const ChatSellerScreen());
@@ -15,7 +15,9 @@ class ChatSellerScreen extends StatelessWidget {
       title: 'Chat App',
       theme: ThemeData(
         primarySwatch: Colors.green,
+        primaryColor: const Color(0xFF4A6741),
         scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Roboto',
       ),
       home: const ChatScreen(),
     );
@@ -53,7 +55,17 @@ class _ChatScreenState extends State<ChatScreen> {
       imagePath: 'assets/shoes.jpg',
       showButtons: true,
     ),
+    ChatMessage(
+      text: "I think its too low, i need to think this through. Give me a second",
+      isMe: true,
+      time: DateTime.now(),
+    ),
   ];
+
+  // Color scheme consistent with the image
+  final Color primaryGreen = const Color(0xFF4A6741);
+  final Color lightGreen = const Color(0xFFE6F4E6);
+  final Color mediumGreen = const Color(0xFF6B8364);
 
   @override
   void dispose() {
@@ -74,14 +86,191 @@ class _ChatScreenState extends State<ChatScreen> {
       ));
     });
     
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
     // Scroll to bottom after adding message
     Future.delayed(const Duration(milliseconds: 100), () {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
+  }
+
+  // Send the product card when + button is clicked
+  void _sendProductCard() {
+    setState(() {
+      _messages.add(ChatMessage(
+        text: "Sepatu Staccato Original\nRp 0",
+        isMe: true,
+        time: DateTime.now(),
+        hasImage: true,
+        imagePath: 'assets/shoes.jpg',
+        isProductCard: true,
+      ));
+    });
+    
+    _scrollToBottom();
+  }
+
+  // Show finish deal dialog
+  void _showFinishDealDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color(0xFFE6F4E6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFF4A6741),
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Finish Deal ?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A6741),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 36), // Balance the layout
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8EA987),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          bottomLeft: Radius.circular(12),
+                        ),
+                        child: Image.asset(
+                          'assets/shoes.jpg',
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Sepatu Staccato Original',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              Text(
+                                'Rp 550.000',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Once you click send, all price are final and the buyer are able to proceed to the checkout page.',
+                  style: TextStyle(
+                    color: Color(0xFF4A6741),
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Here you could add code to handle the deal completion
+                      
+                      // Add accepted message to chat
+                      setState(() {
+                        _messages.add(ChatMessage(
+                          text: "Sepatu Staccato Original\nRp 550.000",
+                          isMe: true,
+                          time: DateTime.now(),
+                          hasImage: true,
+                          imagePath: 'assets/shoes.jpg',
+                          isAccepted: true,
+                        ));
+                      });
+                      
+                      _scrollToBottom();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8EA987),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    ),
+                    child: const Text(
+                      'Send',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -90,28 +279,45 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Header with back button style matching image
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+                  bottom: BorderSide(color: Colors.grey.shade200, width: 1),
                 ),
               ),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.green),
-                    onPressed: () {},
-                    iconSize: 24,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                  // Back button with circular light green background
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to MessagesPage
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const MessagesPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE6F4E6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF4A6741),
+                        size: 22,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 40,
+                    height: 40,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
@@ -126,6 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                      color: Color(0xFF4A6741),
                     ),
                   ),
                 ],
@@ -157,47 +364,47 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             
             // Today divider
-            if (_messages.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Today',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Today',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
                 ),
               ),
+            ),
             
-            // Input field
+            // Input field and finish deal button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                  top: BorderSide(color: Colors.grey.shade300),
+                  top: BorderSide(color: Colors.grey.shade100),
                 ),
               ),
               child: Row(
                 children: [
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: _showFinishDealDialog, // <-- Added this
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      side: const BorderSide(color: Colors.green),
+                      side: BorderSide(color: primaryGreen),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Finish Deal',
-                      style: TextStyle(color: Colors.green),
+                      style: TextStyle(color: primaryGreen, fontSize: 14),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.green.shade50,
+                        color: lightGreen,
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Row(
@@ -207,6 +414,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               controller: _messageController,
                               decoration: const InputDecoration(
                                 hintText: 'Type a message',
+                                hintStyle: TextStyle(color: Color(0xFF8EA987)),
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.symmetric(horizontal: 16),
                               ),
@@ -216,12 +424,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           Container(
                             margin: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(
-                              color: Colors.green,
+                              color: Color(0xFF4A6741),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               icon: const Icon(Icons.add, color: Colors.white),
-                              onPressed: () {},
+                              onPressed: _sendProductCard,
                             ),
                           ),
                         ],
@@ -238,101 +446,296 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessage(ChatMessage message, int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Container(
+    if (message.isProductCard && message.isMe) {
+      // Custom product card sent by user (right side)
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            width: 250,
+            margin: const EdgeInsets.only(left: 48, right: 4, top: 4, bottom: 4),
             decoration: BoxDecoration(
-              color: message.isMe ? null : Colors.green.shade50,
+              color: primaryGreen,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (message.hasImage && message.imagePath != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 200,
-                      height: 150,
-                      color: Colors.grey.shade300,
-                      child: Image.asset(
-                        message.imagePath!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.image_not_supported));
-                        },
-                      ),
-                    ),
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
                   ),
-                if (!message.isMe && message.showButtons)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    message.imagePath ?? 'assets/shoes.jpg',
+                    height: 125,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Rp 0",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Set",
+                            style: TextStyle(
+                              color: primaryGreen,
+                              fontWeight: FontWeight.w500,
                             ),
-                            side: const BorderSide(color: Colors.green),
-                            backgroundColor: Colors.white,
-                          ),
-                          child: const Text(
-                            'Accept',
-                            style: TextStyle(color: Colors.green),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    
+    // Accepted product card (seller side)
+    if (message.isMe && message.hasImage && message.isAccepted) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            width: 250,
+            margin: const EdgeInsets.only(left: 48, right: 4, top: 4, bottom: 4),
+            decoration: BoxDecoration(
+              color: lightGreen,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                  child: Image.asset(
+                    message.imagePath ?? 'assets/shoes.jpg',
+                    height: 125,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Sepatu Staccato Original",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Rp 550.000",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          color: const Color(0xFF8EA987),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Accepted",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
                             ),
-                            side: const BorderSide(color: Colors.grey),
-                            backgroundColor: Colors.white,
                           ),
-                          child: const Text(
-                            'Reject', 
-                            style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Regular message or received product card
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Column(
+        crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          if (!message.isMe && message.hasImage && !message.isProductCard)
+            Container(
+              margin: const EdgeInsets.only(right: 48, bottom: 2),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          
+          // Product Card from other user (left side)
+          if (!message.isMe && message.hasImage && message.showButtons)
+            Container(
+              width: 230,
+              margin: const EdgeInsets.only(right: 48, top: 2, bottom: 6),
+              decoration: BoxDecoration(
+                color: lightGreen,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    child: Image.asset(
+                      message.imagePath!,
+                      height: 125,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Sepatu Staccato Original",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Rp 400.000",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87,
                           ),
                         ),
                       ],
                     ),
                   ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.7,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: message.isMe ? Colors.green.shade400 : Colors.green.shade50,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              message.text,
-              style: TextStyle(
-                color: message.isMe ? Colors.white : Colors.black,
+                ],
               ),
             ),
-          ),
-          if (message.isMe)
+
+          // Accept/Reject buttons
+          if (!message.isMe && message.showButtons)
             Padding(
-              padding: const EdgeInsets.only(top: 4.0),
+              padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(width: 4),
-                  const Icon(Icons.done_all, size: 12, color: Colors.green),
+                  OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      side: BorderSide(color: primaryGreen),
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    ),
+                    child: Text(
+                      'Accept',
+                      style: TextStyle(color: primaryGreen),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      side: const BorderSide(color: Colors.grey),
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    ),
+                    child: const Text(
+                      'Reject', 
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Text message bubble
+          if (!message.isProductCard && !message.isAccepted)
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              margin: EdgeInsets.only(
+                left: message.isMe ? 48 : 0,
+                right: message.isMe ? 0 : 48,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: message.isMe ? primaryGreen : lightGreen,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                message.text,
+                style: TextStyle(
+                  color: message.isMe ? Colors.white : Colors.black87,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+
+          // Double check mark for sent messages
+          if (message.isMe)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, right: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.done_all, size: 16, color: mediumGreen),
                 ],
               ),
             ),
@@ -342,6 +745,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
+
 class ChatMessage {
   final String text;
   final bool isMe;
@@ -349,6 +753,8 @@ class ChatMessage {
   final bool hasImage;
   final String? imagePath;
   final bool showButtons;
+  final bool isProductCard;
+  final bool isAccepted;
 
   ChatMessage({
     required this.text,
@@ -357,5 +763,7 @@ class ChatMessage {
     this.hasImage = false,
     this.imagePath,
     this.showButtons = false,
+    this.isProductCard = false,
+    this.isAccepted = false,
   });
 }

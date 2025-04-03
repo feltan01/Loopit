@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'chat_buyer.dart';
-import 'chat_seller.dart'; // Ensure this file exists
+import 'chat_seller.dart'; 
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});

@@ -98,7 +98,7 @@ class TermsConditionPage extends StatelessWidget {
 class _TermsSection extends StatelessWidget {
   final String title;
   final String content;
-  const _TermsSection(this.title, this.content, {Key? key}) : super(key: key);
+  const _TermsSection(this.title, this.content, {super.key});
 
   @override
   Widget build(BuildContext context) {

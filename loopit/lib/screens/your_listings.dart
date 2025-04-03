@@ -18,7 +18,7 @@ class ListingModel {
 }
 
 class YourListingPage extends StatefulWidget {
-  const YourListingPage({Key? key}) : super(key: key);
+  const YourListingPage({super.key});
 
   @override
   _YourListingPageState createState() => _YourListingPageState();
@@ -28,7 +28,7 @@ class _YourListingPageState extends State<YourListingPage> {
   final TextEditingController _searchController = TextEditingController();
 
   // Sample data - in a real app, this would come from a database or API
-  List<ListingModel> _listings = [
+  final List<ListingModel> _listings = [
     ListingModel(
       title: 'Sepatu Staccato',
       subtitle: 'Original',

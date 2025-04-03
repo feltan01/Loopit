@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class YourListingPage extends StatelessWidget {
+  const YourListingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +112,10 @@ class YourListingPage extends StatelessWidget {
                           onPressed: () {
                             // Add edit listing functionality
                           },
-                          child: Text('Edit Listing'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                           ),
+                          child: Text('Edit Listing'),
                         ),
                       ],
                     ),
@@ -128,8 +130,8 @@ class YourListingPage extends StatelessWidget {
         onPressed: () {
           // Add new listing functionality
         },
-        child: Icon(Icons.add),
         backgroundColor: Colors.green,
+        child: Icon(Icons.add),
       ),
     );
   }

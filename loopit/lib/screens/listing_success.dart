@@ -6,9 +6,9 @@ class ListingSuccessPage extends StatefulWidget {
   final Widget destinationPage;
 
   const ListingSuccessPage({
-    Key? key, 
+    super.key, 
     required this.destinationPage,
-  }) : super(key: key);
+  });
 
   @override
   _ListingSuccessPageState createState() => _ListingSuccessPageState();

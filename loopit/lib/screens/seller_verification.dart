@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +291,7 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
 
 // Required Fields Notification Page
 class RequiredFieldsNotificationPage extends StatelessWidget {
-  const RequiredFieldsNotificationPage({Key? key}) : super(key: key);
+  const RequiredFieldsNotificationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +386,7 @@ class RequiredFieldsNotificationPage extends StatelessWidget {
 }
 
 class VerificationSuccessPage extends StatefulWidget {
-  const VerificationSuccessPage({Key? key}) : super(key: key);
+  const VerificationSuccessPage({super.key});
 
   @override
   _VerificationSuccessPageState createState() =>
@@ -496,7 +496,7 @@ class _VerificationSuccessPageState extends State<VerificationSuccessPage>
 }
 
 class IDPhotoInstructionPage extends StatelessWidget {
-  const IDPhotoInstructionPage({Key? key}) : super(key: key);
+  const IDPhotoInstructionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -653,7 +653,7 @@ class IDPhotoInstructionPage extends StatelessWidget {
 
 // Terms and Conditions Page
 class TermsAndConditionsPage extends StatelessWidget {
-  const TermsAndConditionsPage({Key? key}) : super(key: key);
+  const TermsAndConditionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -837,11 +837,11 @@ class TermSection extends StatelessWidget {
   final String content;
 
   const TermSection({
-    Key? key,
+    super.key,
     required this.number,
     required this.title,
     required this.content,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

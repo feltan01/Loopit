@@ -6,10 +6,10 @@ class RedirectingPage extends StatefulWidget {
   final int redirectDuration;
 
   const RedirectingPage({
-    Key? key,
+    super.key,
     required this.destinationPage,
     this.redirectDuration = 2000, // Default 2 seconds
-  }) : super(key: key);
+  });
 
   @override
   _RedirectingPageState createState() => _RedirectingPageState();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'listing_success.dart'; // Make sure to import the ListingSuccessPage
 
 class NewListingPage extends StatefulWidget {
-  const NewListingPage({Key? key}) : super(key: key);
+  const NewListingPage({super.key});
 
   @override
   _NewListingPageState createState() => _NewListingPageState();

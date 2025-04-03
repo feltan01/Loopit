@@ -3,6 +3,8 @@ import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/seller_verification.dart';
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

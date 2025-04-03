@@ -6,11 +6,11 @@ class EditListingPage extends StatefulWidget {
   final String initialCondition;
 
   const EditListingPage({
-    Key? key,
+    super.key,
     required this.initialTitle,
     required this.initialPrice,
     required this.initialCondition,
-  }) : super(key: key);
+  });
 
   @override
   _EditListingPageState createState() => _EditListingPageState();

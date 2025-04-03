@@ -6,7 +6,7 @@ void main() {
 }
 
 class ChatSellerScreen extends StatelessWidget {
-  const ChatSellerScreen({Key? key}) : super(key: key);
+  const ChatSellerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ChatSellerScreen extends StatelessWidget {
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

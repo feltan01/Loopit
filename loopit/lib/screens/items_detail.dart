@@ -5,6 +5,8 @@ class ProductDetailPage extends StatelessWidget {
   final double price = 255000.0;
   final String description = "Jacket size M, bahan cotton semi fleece, jahitan rapi, kondisi 95% baru";
 
+  const ProductDetailPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,22 +85,22 @@ class ProductDetailPage extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Chat Seller'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.green,
                         side: BorderSide(color: Colors.green),
                       ),
+                      child: Text('Chat Seller'),
                     ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Buy'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       ),
+                      child: Text('Buy'),
                     ),
                   ),
                 ],

@@ -1,125 +1,173 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'chat_buyer.dart';
+import 'chat_seller.dart'; // Ensure this file exists
 
 class MessagesPage extends StatelessWidget {
-  final List<MessageItem> messages = [
-    MessageItem(sender: 'User 2', message: 'Good Morning! are you taking any offer for...', type: MessageType.incoming),
-    MessageItem(sender: 'Buyer 1', message: 'Would you mind if i pay it on the spot?', type: MessageType.incoming),
-    MessageItem(sender: 'Buyer 2', message: 'Im sorry, but the shipping process could ta...', type: MessageType.incoming),
-    MessageItem(sender: 'Seller 2', message: 'Thank You!!!', type: MessageType.outgoing),
-    MessageItem(sender: 'Seller 3', message: 'Do you have it on green?', type: MessageType.outgoing),
-    MessageItem(sender: 'Buyer 3', message: 'I like this one.', type: MessageType.incoming),
-    MessageItem(sender: 'Seller 4', message: 'I prefer if you raise your offer', type: MessageType.outgoing),
-    MessageItem(sender: 'Buyer 4', message: '', type: MessageType.incoming),
-  ];
+  const MessagesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          },
-        ),
-        title: Text(
-          'Messages', 
+        title: const Text(
+          'Messages',
           style: TextStyle(
-            color: Colors.black, 
+            color: Color(0xFF4A6741),
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
+        leading: IconButton(
+          icon: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFFE6F4E6),
+              shape: BoxShape.circle,
+            ),
+            padding: const EdgeInsets.all(8),
+            child: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFF4A6741),
+              size: 20,
+            ),
           ),
-        ],
+          onPressed: () {},
+        ),
       ),
       body: Column(
         children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search direct messages',
-                hintStyle: TextStyle(color: Colors.grey),
-                prefixIcon: Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Color(0xFFEAF3DC),
+                fillColor: const Color(0xFFE6F4E6),
+                hintText: 'Search direct messages',
+                hintStyle: const TextStyle(
+                  color: Color(0xFF6B8364),
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Color(0xFF6B8364),
+                ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
               ),
             ),
           ),
-          
-          // Message List
+          const Divider(height: 1),
           Expanded(
-            child: ListView.separated(
-              itemCount: messages.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1, 
-                color: Colors.grey[300],
-                indent: 80,
-              ),
-              itemBuilder: (context, index) {
-                return _buildMessageTile(messages[index]);
-              },
+            child: ListView(
+              children: [
+                MessageItem(
+                  userName: 'User 2',
+                  message: 'Good Morning! are you taking any offer for...',
+                  isUnread: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatBuyerScreen(), // Redirect to chat_buyer.dart
+                      ),
+                    );
+                  },
+                ),
+                MessageItem(
+                  userName: 'Buyer 1',
+                  message: 'Would you mind if i pay it on the spot?',
+                  isUnread: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatSellerScreen(), // Redirect to chat_seller.dart
+                      ),
+                    );
+                  },
+                ),
+                MessageItem(
+                  userName: 'Buyer 2',
+                  message: 'Im sorry, but the shipping process could ta...',
+                  isUnread: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatSellerScreen(), // You can adjust this as needed
+                      ),
+                    );
+                  },
+                ),
+                // ... rest of the message items can be similarly configured
+              ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildMessageTile(MessageItem message) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: CircleAvatar(
-        backgroundColor: Color(0xFFEAF3DC),
-        child: Icon(Icons.person, color: Color(0xFF4A6741)),
-      ),
-      title: Text(
-        message.sender, 
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-      subtitle: Text(
-        message.message,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: Colors.grey),
-      ),
-      trailing: message.sender != 'Buyer 4' 
-        ? Icon(Icons.notifications, color: Color(0xFF4A6741)) 
-        : null,
     );
   }
 }
 
-enum MessageType { incoming, outgoing }
-
-class MessageItem {
-  final String sender;
+class MessageItem extends StatelessWidget {
+  final String userName;
   final String message;
-  final MessageType type;
+  final bool isUnread;
+  final VoidCallback onTap;
 
-  MessageItem({
-    required this.sender, 
-    required this.message, 
-    required this.type
+  const MessageItem({
+    super.key,
+    required this.userName,
+    required this.message,
+    this.isUnread = false,
+    required this.onTap,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: CircleAvatar(
+              backgroundColor: const Color(0xFF4A6741),
+              radius: 20,
+              child: Icon(
+                Icons.person,
+                size: 18,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+            title: Text(
+              userName,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4A6741),
+              ),
+            ),
+            subtitle: Text(
+              message,
+              style: TextStyle(
+                color: Colors.black87.withOpacity(0.7),
+                overflow: TextOverflow.ellipsis,
+              ),
+              maxLines: 1,
+            ),
+            trailing: isUnread
+                ? const Icon(
+                    Icons.notifications,
+                    color: Color(0xFF4A6741),
+                  )
+                : null,
+          ),
+          const Divider(height: 1),
+        ],
+      ),
+    );
+  }
 }

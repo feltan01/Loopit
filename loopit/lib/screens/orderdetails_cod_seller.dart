@@ -1,398 +1,362 @@
 import 'package:flutter/material.dart';
+import 'report.dart'; // Import the report screen
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: const OrderDetailsPage(),
+    );
+  }
+}
 
 class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({super.key});
+  const OrderDetailsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.5,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Color(0xFFEAF3DC),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Color(0xFF4A6741),
-                  size: 24,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-          title: Text(
-            'Order details',
-            style: TextStyle(
-              color: Color(0xFF4A6741),
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Product Details
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade200, width: 1.0),
-                ),
-              ),
+            // Back button and title bar
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product image
                   Container(
-                    width: 100,
-                    height: 100,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFFEEF1EA),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    clipBehavior: Clip.hardEdge,
-                    child: Image.asset(
-                      'assets/images/shoes.jpg', // Replace with your actual image path
-                      fit: BoxFit.cover,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Color(0xFF4A6741)),
+                      onPressed: () {
+                        // Handle back navigation
+                      },
                     ),
                   ),
-                  SizedBox(width: 16),
-                  // Product info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Invoice number: INV-20240223-8745',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 14,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Sepatu Staccato Original',
-                          style: TextStyle(
-                            color: Color(0xFF4A6741),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Rp 550.000',
-                          style: TextStyle(
-                            color: Color(0xFF4A6741),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Order details',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A6741),
                     ),
                   ),
                 ],
               ),
             ),
             
-            // Order info section
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Order info',
-                    style: TextStyle(
-                      color: Color(0xFF4A6741),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  
-                  // Payment method
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'Payment method',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
+            const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+            
+            // Order content
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Product info
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Product image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/shoes.jpg', // Replace with your actual image
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 80,
+                                  height: 80,
+                                  color: Colors.grey[300],
+                                  child: const Center(
+                                    child: Icon(Icons.image_not_supported),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          'Cash on delivery',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  
-                  // Order number
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'Order number',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          '00000001',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  
-                  // Meeting point
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'Decided meeting point',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFEAF3DC),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
+                          const SizedBox(width: 16),
+                          
+                          // Product details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Invoice number: INV-20240223-8745',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Sepatu Staccato Original',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                     color: Color(0xFF4A6741),
-                                    size: 18,
                                   ),
-                                  SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      'Please set your meeting point',
-                                      style: TextStyle(
-                                        color: Color(0xFF4A6741),
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Rp 550.000',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              '*once set, the buyer would be informed and meeting point cannot be changed, please contact the buyer for further decision making.',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            
-            Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
-            
-            // Total Section
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Total',
-                    style: TextStyle(
-                      color: Color(0xFF4A6741),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  
-                  // Items total
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Items total',
+                    
+                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const SizedBox(height: 16),
+                    
+                    // Order info section
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        'Order info',
                         style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 16,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color:  Color(0xFF4A6741),
                         ),
                       ),
-                      Text(
-                        'Rp 550.000',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Payment method
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 120, child: Text('Payment method')),
+                          const Expanded(child: Text('Cash on delivery')),
+                        ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  
-                  // Service fee
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Service fee',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 16,
-                        ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Order number
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 120, child: Text('Order number')),
+                          const Expanded(child: Text('00000001')),
+                        ],
                       ),
-                      Text(
-                        'Rp 2.000',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Meeting point
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: 120, 
+                                child: Text('Decided meeting point'),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEEF1EA),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on, 
+                                        color: Color(0xFF4A6741),
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Text(
+                                        'Please set your meeting point',
+                                        style: TextStyle(
+                                          color: Color(0xFF4A6741),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 120.0, top: 4),
+                            child: const Text(
+                              '*once set, the buyer would be informed and '
+                              'meeting point cannot be changed. please '
+                              'contact the buyer for further decision '
+                              'making.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  
-                  Divider(height: 16, thickness: 1, color: Colors.grey.shade200),
-                  
-                  // Total
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
+                    ),
+                    
+                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const SizedBox(height: 20),
+                    
+                    // Total section
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
                         'Total',
                         style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Rp 552.000',
-                        style: TextStyle(
-                          color: Color(0xFF4A6741),
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          color: Color(0xFF4A6741),
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Items total
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Items total'),
+                          const Text('Rp 550.000'),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 8),
+                    
+                    // Service fee
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Service fee'),
+                          const Text('Rp 2.000'),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const SizedBox(height: 16),
+                    
+                    // Final total
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Rp 552.000', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Report section - UPDATED with navigation
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.warning_amber_rounded, color: Colors.amber),
+                          const SizedBox(width: 8),
+                          const Text('Products/Transaction trouble?'),
+                          TextButton(
+                            onPressed: () {
+                              // Navigate to the ReportProblemScreen when pressed
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ReportProblemScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Report',
+                              style: TextStyle(
+                                color: Color(0xFF4A6741),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
-            
-            // Report section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    color: Colors.amber.shade700,
-                    size: 20,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Products/Transaction trouble?',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    'Report',
-                    style: TextStyle(
-                      color: Color(0xFF4A6741),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            SizedBox(height: 40),
             
             // Confirm button
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add confirm action
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFEAF3DC),
-                  foregroundColor: Color(0xFF4A6741),
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEEF1EA),
+                    foregroundColor: const Color(0xFF4A6741),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Confirm',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  child: const Text(
+                    'Confirm',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-            
-            SizedBox(height: 16),
           ],
         ),
       ),

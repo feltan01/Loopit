@@ -1,27 +1,7 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: ReportProblemScreen(),
-    );
-  }
-}
-
 class ReportProblemScreen extends StatelessWidget {
-  const ReportProblemScreen({super.key});
+  const ReportProblemScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +15,8 @@ class ReportProblemScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Navigate back
+            // Navigate back to the previous screen
+            Navigator.pop(context);
           },
         ),
         elevation: 0,

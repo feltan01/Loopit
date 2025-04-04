@@ -78,7 +78,7 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
           ),
           const SizedBox(width: 8),
           const Text(
-            'Balance Deposit',
+            'Balance Withdrawal',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -207,7 +207,7 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
-            'How much would you like to Deposit',
+            'How much would you like to Withdraw',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -255,7 +255,7 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Choose your preferred Deposit method',
+          'Choose your preferred Withdrawal Location',
           style: TextStyle(
             fontSize: 14,
             color: Colors.black87,
@@ -347,7 +347,7 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
       child: const Text(
-        'Deposit Balance',
+        'Withdraw Balance',
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,

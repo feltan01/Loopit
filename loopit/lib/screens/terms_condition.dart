@@ -8,7 +8,7 @@ class TermsConditionPage extends StatelessWidget {
     // Color scheme from the images
     const Color darkGreen = Color(0xFF4E6645);
     const Color lightGreen = Color(0xFFABC192);
-    const Color backgroundColor = Color(0xFFF9FCF7);
+    const Color backgroundColor = Color.fromARGB(255, 255, 255, 255);
     const Color dividerColor = Color(0xFFABC192);
     
     return Scaffold(
@@ -87,8 +87,8 @@ class TermsConditionPage extends StatelessWidget {
                       ),
                       
                       _buildTermSection(
-                        "4. Prohibited Activities",
-                        ", you agree not to: List prohibited items (illegal goods, weapons, counterfeit products, hazardous materials, etc.). Engage in fraud, harassment, or any illegal activities. Misuse the platform in any way.",
+                        "4. Prohibited Activities, you agree not to: ",
+                        "List prohibited items (illegal goods, weapons, counterfeit products, hazardous materials, etc.). Engage in fraud, harassment, or any illegal activities. Misuse the platform in any way.",
                       ),
                       
                       _buildTermSection(

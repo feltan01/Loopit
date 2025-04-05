@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/orderdetails_cod_seller.dart';
+import 'orderdetails_cod_seller.dart';
+import 'report_listingproblems.dart'; // Import the listing problems page
+import 'report_chatspam.dart'; // Import the chat spam report page
+
 
 class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({Key? key}) : super(key: key);
@@ -7,7 +12,7 @@ class ReportProblemScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Custom light green color from the image
     final Color lightGreen = Color(0xFFADC9A1);
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lightGreen,
@@ -15,8 +20,13 @@ class ReportProblemScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Navigate back to the previous screen
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const OrderdetailsCodSeller(), // Redirect to chat_buyer.dart
+              ),
+            );
           },
         ),
         elevation: 0,
@@ -33,17 +43,35 @@ class ReportProblemScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 1), // Small gap
-          _buildReportOption(
-            icon: Icons.list_alt,
-            text: 'Listing problems',
-            color: lightGreen,
-            isSelected: true,
+          InkWell(
+            onTap: () {
+              // Navigate to the ReportListingproblems page when pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ReportListingproblems()),
+              );
+            },
+            child: _buildReportOption(
+              icon: Icons.list_alt,
+              text: 'Listing problems',
+              color: lightGreen,
+            ),
           ),
           SizedBox(height: 1), // Small gap
-          _buildReportOption(
-            icon: Icons.chat_bubble_outline,
-            text: 'Chat spam/harassment',
-            color: lightGreen,
+          InkWell(
+            onTap: () {
+              // Navigate to the ReportChatSpam page when pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReportChatSpam()),
+              );
+            },
+            child: _buildReportOption(
+              icon: Icons.chat_bubble_outline,
+              text: 'Chat spam/harassment',
+              color: lightGreen,
+            ),
           ),
           SizedBox(height: 1), // Small gap
           _buildReportOption(

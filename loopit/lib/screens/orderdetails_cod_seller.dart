@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'report.dart'; // Import the report screen
 
 void main() {
-  runApp(const MyApp());
+  runApp(const OrderdetailsCodSeller());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class OrderdetailsCodSeller extends StatelessWidget {
+  const OrderdetailsCodSeller({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

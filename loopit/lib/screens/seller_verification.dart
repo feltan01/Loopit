@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'new_listing.dart';
+import 'terms_condition.dart';
 
 void main() {
   runApp(const MyApp());
@@ -167,7 +168,7 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TermsAndConditionsPage(),
+                        builder: (context) => const TermsConditionPage(),
                       ),
                     );
                   },

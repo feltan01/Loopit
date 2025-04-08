@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/home_page.dart';
 import 'chat_buyer.dart';
-import 'chat_seller.dart'; 
+import 'chat_seller.dart';
+import 'home_page.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -32,7 +34,15 @@ class MessagesPage extends StatelessWidget {
               size: 20,
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const HomePage(), // Redirect to chat_buyer.dart
+              ),
+            );
+          },
         ),
       ),
       body: Column(
@@ -71,7 +81,8 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatBuyerScreen(), // Redirect to chat_buyer.dart
+                        builder: (context) =>
+                            const ChatBuyerScreen(), // Redirect to chat_buyer.dart
                       ),
                     );
                   },
@@ -84,7 +95,8 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatSellerScreen(), // Redirect to chat_seller.dart
+                        builder: (context) =>
+                            const ChatSellerScreen(), // Redirect to chat_seller.dart
                       ),
                     );
                   },
@@ -97,7 +109,8 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatSellerScreen(), // You can adjust this as needed
+                        builder: (context) =>
+                            const ChatSellerScreen(), // You can adjust this as needed
                       ),
                     );
                   },
@@ -133,7 +146,8 @@ class MessageItem extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: CircleAvatar(
               backgroundColor: const Color(0xFF4A6741),
               radius: 20,

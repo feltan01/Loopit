@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'listing_success.dart'; // Make sure to import the ListingSuccessPage
 
+
 class NewListingPage extends StatefulWidget {
   const NewListingPage({super.key});
 
@@ -79,7 +80,8 @@ class _NewListingPageState extends State<NewListingPage> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => ListingSuccessPage(
-            destinationPage: const NewListingPage(), // Replace with your actual next page if different
+            destinationPage:
+                const NewListingPage(), // Replace with your actual next page if different
           ),
         ),
       );
@@ -184,15 +186,18 @@ class _NewListingPageState extends State<NewListingPage> {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF4E6645), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFF4E6645), width: 2),
                       borderRadius: BorderRadius.circular(8),
                       color: _hasUploadedID
                           ? const Color(0xFFEAF3DC)
                           : Colors.transparent,
                     ),
                     child: _hasUploadedID
-                        ? const Icon(Icons.check, color: Color(0xFF4E6645), size: 40)
-                        : const Icon(Icons.add, color: Color(0xFF4E6645), size: 40),
+                        ? const Icon(Icons.check,
+                            color: Color(0xFF4E6645), size: 40)
+                        : const Icon(Icons.add,
+                            color: Color(0xFF4E6645), size: 40),
                   ),
                 ),
               ),
@@ -215,7 +220,8 @@ class _NewListingPageState extends State<NewListingPage> {
               _buildTextField(_priceController, "Price"),
               _buildTextField(_categoryController, "Category"),
               _buildTextField(_conditionController, "Condition"),
-              _buildTextField(_descriptionController, "Description", maxLines: 5),
+              _buildTextField(_descriptionController, "Description",
+                  maxLines: 5),
               _buildTextField(_productAgeController, "Product age"),
 
               const SizedBox(height: 24),
@@ -227,7 +233,8 @@ class _NewListingPageState extends State<NewListingPage> {
   }
 
   // Existing _buildTextField method remains the same
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {int maxLines = 1}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -243,7 +250,8 @@ class _NewListingPageState extends State<NewListingPage> {
             color: Colors.grey,
             fontSize: 16,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: InputBorder.none,
         ),
       ),

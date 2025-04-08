@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'edit_listing.dart'; // Make sure to import the EditListingPage
+import 'new_listing.dart';
+import 'profile.dart';
 
 class ListingModel {
   final String title;
@@ -67,13 +69,19 @@ class _YourListingPageState extends State<YourListingPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Color(0xFF4E6E39),
-              size: 20,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Color(0xFF4E6E39),
+                size: 20,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ),
+                );
+              }),
         ),
       ),
       body: Stack(
@@ -202,12 +210,14 @@ class _YourListingPageState extends State<YourListingPage> {
                                         Navigator.pop(context);
                                         // Navigate to EditListingPage with initial values
                                         Navigator.push(
-                                          context, 
+                                          context,
                                           MaterialPageRoute(
-                                            builder: (context) => EditListingPage(
+                                            builder: (context) =>
+                                                EditListingPage(
                                               initialTitle: listing.title,
                                               initialPrice: listing.price,
-                                              initialCondition: listing.condition,
+                                              initialCondition:
+                                                  listing.condition,
                                             ),
                                           ),
                                         );
@@ -225,8 +235,10 @@ class _YourListingPageState extends State<YourListingPage> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text('Delete Listing'),
-                                              content: const Text('Are you sure you want to delete this listing?'),
+                                              title:
+                                                  const Text('Delete Listing'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this listing?'),
                                               actions: [
                                                 TextButton(
                                                   child: const Text('Cancel'),
@@ -235,7 +247,9 @@ class _YourListingPageState extends State<YourListingPage> {
                                                   },
                                                 ),
                                                 TextButton(
-                                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                                  child: const Text('Delete',
+                                                      style: TextStyle(
+                                                          color: Colors.red)),
                                                   onPressed: () {
                                                     // Call the delete method
                                                     _deleteListing(index);
@@ -263,6 +277,7 @@ class _YourListingPageState extends State<YourListingPage> {
           ),
 
           // Add button
+          // Add button
           Positioned(
             right: 16,
             bottom: 16,
@@ -281,6 +296,12 @@ class _YourListingPageState extends State<YourListingPage> {
                 ),
                 onPressed: () {
                   // Navigate to create new listing page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NewListingPage(),
+                    ),
+                  );
                 },
               ),
             ),

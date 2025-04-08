@@ -106,16 +106,42 @@ class MessagesPage extends StatelessWidget {
                   message: 'Im sorry, but the shipping process could ta...',
                   isUnread: true,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const ChatSellerScreen(), // You can adjust this as needed
-                      ),
-                    );
                   },
                 ),
-                // ... rest of the message items can be similarly configured
+                 MessageItem(
+                  userName: 'Seller 2',
+                  message: 'Thank you!!',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Seller 3',
+                  message: 'Do you have it on green?',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Buyer 3',
+                  message: 'I like this one.',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Seller 2',
+                  message: 'Thank you!!',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ), MessageItem(
+                  userName: 'Seller 4',
+                  message: 'I prefer if you raise your offer',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'report.dart'; // Import the report screen
+import 'cod.dart';
 
 void main() {
   runApp(const OrderdetailsAddress());
@@ -41,7 +42,8 @@ class OrderDetailsPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFF4A6741)),
+                      icon: const Icon(Icons.arrow_back,
+                          color: Color(0xFF4A6741)),
                       onPressed: () {
                         // Handle back navigation
                       },
@@ -59,9 +61,9 @@ class OrderDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
-            
+
             // Order content
             Expanded(
               child: SingleChildScrollView(
@@ -95,7 +97,7 @@ class OrderDetailsPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          
+
                           // Product details
                           Expanded(
                             child: Column(
@@ -131,10 +133,11 @@ class OrderDetailsPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
-                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+
+                    const Divider(
+                        height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 16),
-                    
+
                     // Order info section
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -143,39 +146,41 @@ class OrderDetailsPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color:  Color(0xFF4A6741),
+                          color: Color(0xFF4A6741),
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Payment method
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          const SizedBox(width: 120, child: Text('Payment method')),
+                          const SizedBox(
+                              width: 120, child: Text('Payment method')),
                           const Expanded(child: Text('Cash on delivery')),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Order number
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          const SizedBox(width: 120, child: Text('Order number')),
+                          const SizedBox(
+                              width: 120, child: Text('Order number')),
                           const Expanded(child: Text('00000001')),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Meeting point - UPDATED with Fresh Market Emerald Bintaro address
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -186,7 +191,7 @@ class OrderDetailsPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
-                                width: 120, 
+                                width: 120,
                                 child: Text('Decided meeting point'),
                               ),
                               Expanded(
@@ -197,12 +202,13 @@ class OrderDetailsPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           const Icon(
-                                            Icons.location_on, 
+                                            Icons.location_on,
                                             color: Color(0xFF4A6741),
                                             size: 16,
                                           ),
@@ -248,10 +254,11 @@ class OrderDetailsPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
-                    const Divider(height: 32, thickness: 1, color: Color(0xFFEEEEEE)),
+
+                    const Divider(
+                        height: 32, thickness: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 8),
-                    
+
                     // Total section
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -264,9 +271,9 @@ class OrderDetailsPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Items total
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -278,9 +285,9 @@ class OrderDetailsPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Service fee
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -292,31 +299,35 @@ class OrderDetailsPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const Divider(
+                        height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 16),
-                    
+
                     // Final total
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
-                          const Text('Rp 552.000', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Total',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Rp 552.000',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Report section - UPDATED with navigation
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          const Icon(Icons.warning_amber_rounded, color: Colors.amber),
+                          const Icon(Icons.warning_amber_rounded,
+                              color: Colors.amber),
                           const SizedBox(width: 8),
                           const Text('Products/Transaction trouble?'),
                           TextButton(
@@ -325,7 +336,8 @@ class OrderDetailsPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ReportProblemScreen(),
+                                  builder: (context) =>
+                                      const ReportProblemScreen(),
                                 ),
                               );
                             },
@@ -340,20 +352,27 @@ class OrderDetailsPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
-            
+
             // Confirm button
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CashOnDeliveryPage(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEEF1EA),
                     foregroundColor: const Color(0xFF4A6741),

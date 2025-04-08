@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'report.dart'; // Import the report screen
-import 'meetingpoint.dart'; // Import the meeting point page
 
 void main() {
-  runApp(const OrderdetailsCodSeller());
+  runApp(const OrderdetailsAddress());
 }
 
-class OrderdetailsCodSeller extends StatelessWidget {
-  const OrderdetailsCodSeller({Key? key}) : super(key: key);
+class OrderdetailsAddress extends StatelessWidget {
+  const OrderdetailsAddress({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +176,7 @@ class OrderDetailsPage extends StatelessWidget {
                     
                     const SizedBox(height: 16),
                     
-                    // Meeting point - Modified with InkWell to make it clickable
+                    // Meeting point - UPDATED with Fresh Market Emerald Bintaro address
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
@@ -191,39 +190,43 @@ class OrderDetailsPage extends StatelessWidget {
                                 child: Text('Decided meeting point'),
                               ),
                               Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    // Navigate to MeetingPointPage when tapped
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const MeetingPointPage(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFEEF1EA),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.location_on, 
-                                          color: Color(0xFF4A6741),
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        const Text(
-                                          'Please set your meeting point',
-                                          style: TextStyle(
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEEF1EA),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on, 
                                             color: Color(0xFF4A6741),
-                                            fontWeight: FontWeight.w500,
+                                            size: 16,
                                           ),
+                                          const SizedBox(width: 4),
+                                          const Expanded(
+                                            child: Text(
+                                              'Fresh Market Emerald Bintaro',
+                                              style: TextStyle(
+                                                color: Color(0xFF4A6741),
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Text(
+                                        'Pintu Selatan Blok PE / KA-01, RW.1, Parigi, Pondok Aren, South Tangerang City, Banten 15227',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xFF4A6741),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -233,7 +236,7 @@ class OrderDetailsPage extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 120.0, top: 4),
                             child: const Text(
                               '*once set, the buyer would be informed and '
-                              'meeting point cannot be changed. please '
+                              'meeting point cannot be changed, please '
                               'contact the buyer for further decision '
                               'making.',
                               style: TextStyle(
@@ -246,8 +249,8 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                     ),
                     
-                    const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
-                    const SizedBox(height: 20),
+                    const Divider(height: 32, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const SizedBox(height: 8),
                     
                     // Total section
                     const Padding(
@@ -308,7 +311,7 @@ class OrderDetailsPage extends StatelessWidget {
                     
                     const SizedBox(height: 24),
                     
-                    // Report section
+                    // Report section - UPDATED with navigation
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(

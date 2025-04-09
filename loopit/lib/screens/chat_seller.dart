@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/nodeals_accepted.dart';
 import 'messages.dart';
 import 'orderdetails_cod_seller.dart';
+import 'nodeals_accepted.dart';
 
 void main() {
   runApp(const ChatSellerScreen());
@@ -140,7 +142,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // Updated dialog to match the reference image
   void _showFinishDealDialog() {
     showDialog(
       context: context,
@@ -254,27 +255,37 @@ class _ChatScreenState extends State<ChatScreen> {
                 const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
-                   // In the _showFinishDealDialog method, modify the ElevatedButton's onPressed:
-                      onPressed: () {
-                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const OrderDetailsPage(),
-                            ),
-                          );
-                        _scrollToBottom();
-                        
-                        // Navigate to OrderDetailsPage after a short delay
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const OrderDetailsPage(),
-                            ),
-                          );
-                        });
-                      },
-                    
+                    onPressed: () {
+                      // Close dialog first
+                      Navigator.of(context).pop();
+
+                      // Check if any product has been accepted
+                      bool hasAcceptedProduct = false;
+                      for (var message in _messages) {
+                        if (message.isMe && message.isAccepted) {
+                          hasAcceptedProduct = true;
+                          break;
+                        }
+                      }
+
+                      // If no product has been accepted, navigate to NoDealsPage
+                      if (!hasAcceptedProduct) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const nodeals(),
+                          ),
+                        );
+                      } else {
+                        // Otherwise navigate to OrderDetailsPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OrderDetailsPage(),
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8EA987),
                       foregroundColor: Colors.white,
@@ -528,7 +539,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                     Container(
+                      Container(
                         width: double.infinity,
                         height: 36,
                         decoration: BoxDecoration(

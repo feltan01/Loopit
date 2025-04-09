@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/home_page.dart';
 import 'chat_buyer.dart';
-import 'chat_seller.dart'; 
+import 'chat_seller.dart';
+import 'home_page.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -32,7 +34,15 @@ class MessagesPage extends StatelessWidget {
               size: 20,
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const HomePage(), // Redirect to chat_buyer.dart
+              ),
+            );
+          },
         ),
       ),
       body: Column(
@@ -71,7 +81,8 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatBuyerScreen(), // Redirect to chat_buyer.dart
+                        builder: (context) =>
+                            const ChatBuyerScreen(), // Redirect to chat_buyer.dart
                       ),
                     );
                   },
@@ -84,7 +95,8 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatSellerScreen(), // Redirect to chat_seller.dart
+                        builder: (context) =>
+                            const ChatSellerScreen(), // Redirect to chat_seller.dart
                       ),
                     );
                   },
@@ -94,15 +106,42 @@ class MessagesPage extends StatelessWidget {
                   message: 'Im sorry, but the shipping process could ta...',
                   isUnread: true,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatSellerScreen(), // You can adjust this as needed
-                      ),
-                    );
                   },
                 ),
-                // ... rest of the message items can be similarly configured
+                 MessageItem(
+                  userName: 'Seller 2',
+                  message: 'Thank you!!',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Seller 3',
+                  message: 'Do you have it on green?',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Buyer 3',
+                  message: 'I like this one.',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
+                 MessageItem(
+                  userName: 'Seller 2',
+                  message: 'Thank you!!',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ), MessageItem(
+                  userName: 'Seller 4',
+                  message: 'I prefer if you raise your offer',
+                  isUnread: true,
+                  onTap: () {
+                  },
+                ),
               ],
             ),
           ),
@@ -133,7 +172,8 @@ class MessageItem extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: CircleAvatar(
               backgroundColor: const Color(0xFF4A6741),
               radius: 20,

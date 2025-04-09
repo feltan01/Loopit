@@ -348,7 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: AssetImage('assets/user_avatar.jpg'),
+                        image: AssetImage('assets/images/shoes.jpg'),
                         fit: BoxFit.cover,
                       ),
                     ),

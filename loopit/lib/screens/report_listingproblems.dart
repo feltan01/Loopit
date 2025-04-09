@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'report.dart';
+import 'report_alldone.dart'; // Import the confirmation page
 
 void main() {
   runApp(const ReportListingproblems());
@@ -136,7 +137,13 @@ class _ReportOptionsPageState extends State<ReportOptionsPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle form submission
+                  // Navigate to the report_alldone.dart page when button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AlldonePage(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonColor,

@@ -82,7 +82,7 @@ class MessagesPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            const ChatBuyerScreen(), // Redirect to chat_buyer.dart
+                            const ChatDetailScreen(), // Redirect to chat_buyer.dart
                       ),
                     );
                   },

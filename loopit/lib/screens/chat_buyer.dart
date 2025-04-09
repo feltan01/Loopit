@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'checkout_page.dart';
 
-class ChatBuyerScreen extends StatefulWidget {
-  const ChatBuyerScreen({super.key});
+class ChatDetailScreen extends StatefulWidget {
+  const ChatDetailScreen({super.key});
 
   @override
-  State<ChatBuyerScreen> createState() => _ChatDetailScreenState();
+  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
-class _ChatDetailScreenState extends State<ChatBuyerScreen> {
+class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [
     ChatMessage(
@@ -27,6 +28,18 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
     ChatMessage(
       sender: 'Me',
       text: 'I\'d like to offer',
+      isMe: true,
+      time: 'Today',
+      hasOffer: true,
+      offerAmount: 'Rp 140.000',
+      productName: 'Jacket Cream color',
+      brandName: 'Brand ABC',
+      productImage: 'assets/images/cream_jacket.png',
+      offerStatus: 'Pending',
+    ),
+    ChatMessage(
+      sender: 'User 2',
+      text: 'I\'d like to offer',
       isMe: false,
       time: 'Today',
       hasOffer: true,
@@ -34,6 +47,7 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
       productName: 'Jacket Cream color',
       brandName: 'Brand ABC',
       productImage: 'assets/images/cream_jacket.png',
+      offerStatus: 'Accepted',
     ),
   ];
 
@@ -49,46 +63,26 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.grey[300],
-            height: 0.5,
-          ),
-        ),
+        elevation: 0,
         title: Row(
           children: [
             CircleAvatar(
-              radius: 18,
+              radius: 20,
               backgroundImage: const AssetImage('assets/images/user_avatar.png'),
-              backgroundColor: const Color(0xFF4A6741),
             ),
             const SizedBox(width: 12),
             const Text(
               'User 2',
               style: TextStyle(
-                color: Color(0xFF4A6741),
+                color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        centerTitle: true,
         leading: IconButton(
-          icon: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFE6F4E6),
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(8),
-            child: const Icon(
-              Icons.arrow_back,
-              color: Color(0xFF4A6741),
-              size: 20,
-            ),
-          ),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -101,7 +95,7 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
-                return _buildMessageItem(_messages[index], index);
+                return _buildMessageItem(_messages[index]);
               },
             ),
           ),
@@ -111,164 +105,37 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
     );
   }
 
-  Widget _buildMessageItem(ChatMessage message, int index) {
-    if (message.hasProduct && !message.hasOffer) {
-      // First message with product image
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (index == 0 || (index > 0 && _messages[index - 1].time != message.time))
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  message.time,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
+  Widget _buildMessageItem(ChatMessage message) {
+    if (message.hasOffer) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: message.isMe 
+              ? MainAxisAlignment.end 
+              : MainAxisAlignment.start,
+          children: [
+            Container(
+              width: 280,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F5E6),
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.75,
-                ),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8BAF7F),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                      child: Container(
-                        height: 200,
-                        width: double.infinity,
-                        color: const Color(0xFFFFF5EC),
-                        child: message.productImage != null
-                            ? Image.asset(
-                                message.productImage!,
-                                fit: BoxFit.cover,
-                              )
-                            : const Center(
-                                child: Icon(
-                                  Icons.image,
-                                  size: 50,
-                                  color: Color(0xFF4A6741),
-                                ),
-                              ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        message.text,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.grey[400],
-                  size: 16,
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    } else if (message.hasOffer) {
-      // Offer message
-      return Column(
-        crossAxisAlignment: message.isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-        children: [
-          if (index == 0 || (index > 0 && _messages[index - 1].time != message.time))
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  message.time,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          Row(
-            mainAxisAlignment: message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (!message.isMe)
-                const SizedBox(width: 8),
-              Icon(
-                Icons.check_circle_outline,
-                color: Colors.grey[400],
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.75,
-                ),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8BAF7F),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
                       Container(
-                        width: 100,
-                        height: 100,
+                        width: 60,
+                        height: 60,
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF5EC),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: message.productImage != null
-                              ? Image.asset(
-                                  message.productImage!,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Center(
-                                  child: Icon(
-                                    Icons.checkroom,
-                                    size: 30,
-                                    color: Color(0xFF4A6741),
-                                  ),
-                                ),
+                        child: Image.asset(
+                          message.productImage!,
+                          fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -279,41 +146,23 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
                             Text(
                               message.productName,
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                               message.brandName,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              message.offerAmount,
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.grey,
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                'Set',
-                                style: TextStyle(
-                                  color: Color(0xFF8BAF7F),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
+                            Text(
+                              message.offerAmount,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -321,72 +170,79 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
                       ),
                     ],
                   ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    } else {
-      // Regular text message
-      return Container(
-        padding: const EdgeInsets.only(bottom: 16),
-        alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            if (index == 0 || (index > 0 && _messages[index - 1].time != message.time))
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Text(
-                    message.time,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
+                  const SizedBox(height: 12),
+                  if (message.offerStatus == 'Pending')
+                    const Text(
+                      'Please wait for the seller\'s respond',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            Row(
-              mainAxisAlignment: message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (!message.isMe)
-                  const SizedBox(width: 8),
-                Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.grey[400],
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.75,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: message.isMe ? const Color(0xFF8BAF7F) : const Color(0xFFE6F4E6),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    message.text,
-                    style: TextStyle(
-                      color: message.isMe ? Colors.white : const Color(0xFF4A6741),
+                  if (message.offerStatus == 'Accepted')
+                    ElevatedButton(
+                      onPressed: () {Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const Checkout(), // Redirect to chat_buyer.dart
+                      ),
+                    );},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8BAF7F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text(
+                        'Check Out',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
       );
     }
+    
+    // Regular text message
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: message.isMe 
+            ? MainAxisAlignment.end 
+            : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: message.isMe 
+                  ? const Color(0xFFE6F4E6) 
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: message.isMe 
+                  ? null 
+                  : Border.all(color: Colors.grey.shade300),
+            ),
+            child: Text(
+              message.text,
+              style: TextStyle(
+                color: message.isMe 
+                    ? Colors.black 
+                    : Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildInputArea() {
@@ -405,15 +261,13 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
         child: Row(
           children: [
             OutlinedButton(
-              onPressed: () {
-                _showBargainBottomSheet();
-              },
+              onPressed: _showBargainBottomSheet,
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                backgroundColor: Color.fromARGB(255, 226, 220, 175),
-                side: const BorderSide(color: Color(0xFF4A6741)),
+                backgroundColor: const Color(0xFFE6F4E6),
+                side: BorderSide.none,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               child: const Text(
@@ -425,59 +279,46 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6F4E6).withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.grey[200]!,
+              child: TextField(
+                controller: _messageController,
+                decoration: InputDecoration(
+                  hintText: 'Type a message',
+                  filled: true,
+                  fillColor: const Color(0xFFE6F4E6),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
                   ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Type a message',
-                          hintStyle: TextStyle(color: Color(0xFF6B8364)),
-                          border: InputBorder.none,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF4A6741),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  if (_messageController.text.isNotEmpty) {
+                    setState(() {
+                      _messages.add(
+                        ChatMessage(
+                          sender: 'User',
+                          text: _messageController.text,
+                          isMe: true,
+                          time: 'Today',
                         ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (_messageController.text.isNotEmpty) {
-                          setState(() {
-                            _messages.add(
-                              ChatMessage(
-                                sender: 'User',
-                                text: _messageController.text,
-                                isMe: true,
-                                time: 'Today',
-                              ),
-                            );
-                            _messageController.clear();
-                          });
-                        }
-                      },
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF4A6741),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                      );
+                      _messageController.clear();
+                    });
+                  }
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 24,
                 ),
               ),
             ),
@@ -498,166 +339,149 @@ class _ChatDetailScreenState extends State<ChatBuyerScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setBottomSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 20,
-                left: 20,
-                right: 20,
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40.0,
+                  height: 4.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 20),
+              const Text(
+                'Make an Offer',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40.0,
-                      height: 4.0,
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF5EC),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(
+                      'assets/images/cream_jacket.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Make an Offer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A6741),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5EC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            'assets/images/cream_jacket.png',
-                            fit: BoxFit.cover,
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Jacket Cream color',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jacket Cream color',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF4A6741),
-                              ),
-                            ),
-                            Text(
-                              'Brand ABC',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Original Price: Rp 200.000',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Brand ABC',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: offerController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Your offer (in Rp)',
-                      labelStyle: TextStyle(color: Color(0xFF4A6741)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF4A6741)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF4A6741), width: 2),
-                      ),
-                      prefixText: 'Rp ',
+                        SizedBox(height: 4),
+                        Text(
+                          'Original Price: Rp 200.000',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (offerController.text.isNotEmpty) {
-                          try {
-                            // Validate the input is a valid number
-                            double.parse(offerController.text.replaceAll(',', '.'));
-                            
-                            // Add the offer message
-                            setState(() {
-                              _messages.add(
-                                ChatMessage(
-                                  sender: 'User',
-                                  text: 'I\'d like to offer', 
-                                  isMe: true,
-                                  time: 'Today',
-                                  hasOffer: true,
-                                  offerAmount: 'Rp ${offerController.text}',
-                                  productName: 'Jacket Cream color',
-                                  brandName: 'Brand ABC',
-                                  productImage: 'assets/images/cream_jacket.png',
-                                ),
-                              );
-                            });
-                            
-                            // Close the bottom sheet
-                            Navigator.pop(context);
-                          } catch (e) {
-                            // Show an error message for invalid input
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please enter a valid number'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4A6741),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Send Offer',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                 ],
               ),
-            );
-          },
+              const SizedBox(height: 24),
+              TextField(
+                controller: offerController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Your offer (in Rp)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixText: 'Rp ',
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (offerController.text.isNotEmpty) {
+                      try {
+                        double.parse(offerController.text.replaceAll(',', '.'));
+                        
+                        setState(() {
+                          _messages.add(
+                            ChatMessage(
+                              sender: 'User',
+                              text: 'I\'d like to offer', 
+                              isMe: true,
+                              time: 'Today',
+                              hasOffer: true,
+                              offerAmount: 'Rp ${offerController.text}',
+                              productName: 'Jacket Cream color',
+                              brandName: 'Brand ABC',
+                              productImage: 'assets/images/cream_jacket.png',
+                              offerStatus: 'Pending',
+                            ),
+                          );
+                        });
+                        
+                        Navigator.pop(context);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter a valid number'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8BAF7F),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Send Offer',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         );
       },
     ).then((_) {
@@ -677,6 +501,7 @@ class ChatMessage {
   final String productName;
   final String brandName;
   final String? productImage;
+  final String offerStatus;
 
   ChatMessage({
     required this.sender,
@@ -689,5 +514,6 @@ class ChatMessage {
     this.productName = '',
     this.brandName = '',
     this.productImage,
+    this.offerStatus = '',
   });
 }

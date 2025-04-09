@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'address_selection_screen.dart';
 import 'payment_method_screen.dart';
 import 'payment_confirmation_screen.dart';
+import 'chat_buyer.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Checkout());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Checkout extends StatelessWidget {
+  const Checkout({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -352,7 +353,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Color(0xFF4A6741)),
-            onPressed: () {},
+            onPressed: () {Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const ChatDetailScreen(), // Redirect to chat_buyer.dart
+                      ),
+                    );},
           ),
         ),
       ),

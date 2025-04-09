@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/home_page.dart';
+import 'transbuyer.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(const TransactionHub());
@@ -28,7 +31,7 @@ class TransactionHubPage extends StatefulWidget {
 }
 
 class _TransactionHubPageState extends State<TransactionHubPage> {
-  bool isBuyerSelected = true;
+  bool isBuyerSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,15 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.arrow_back, color: darkGreen),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const HomePage(), // Redirect to chat_buyer.dart
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -73,19 +84,23 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                 ],
               ),
             ),
-            
+
             // Divider
             const Divider(height: 1, color: borderColor),
-            
+
             // Buyer/Seller Tabs
             Row(
               children: [
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        isBuyerSelected = true;
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const TransactionHubBuyer(), // Redirect to chat_buyer.dart
+                        ),
+                      );
                     },
                     child: Column(
                       children: [
@@ -102,7 +117,8 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                         ),
                         Container(
                           height: 2,
-                          color: isBuyerSelected ? darkGreen : Colors.transparent,
+                          color:
+                              isBuyerSelected ? darkGreen : Colors.transparent,
                         ),
                       ],
                     ),
@@ -116,9 +132,13 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        isBuyerSelected = false;
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const TransactionHubBuyer(), // Redirect to chat_buyer.dart
+                        ),
+                      );
                     },
                     child: Column(
                       children: [
@@ -135,7 +155,8 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                         ),
                         Container(
                           height: 2,
-                          color: !isBuyerSelected ? darkGreen : Colors.transparent,
+                          color:
+                              !isBuyerSelected ? darkGreen : Colors.transparent,
                         ),
                       ],
                     ),
@@ -143,10 +164,10 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                 ),
               ],
             ),
-            
+
             // Divider
             const Divider(height: 1, color: borderColor),
-            
+
             // Transaction List
             Expanded(
               child: Container(
@@ -220,7 +241,7 @@ class TransactionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Product details
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,9 +264,9 @@ class TransactionCard extends StatelessWidget {
                     },
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
-                
+
                 // Product info
                 Expanded(
                   child: Column(
@@ -279,7 +300,7 @@ class TransactionCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Status icons
                 Row(
                   children: [
@@ -288,7 +309,7 @@ class TransactionCard extends StatelessWidget {
                       color: const Color(0xFF556B2F),
                       size: 24,
                     ),
-                    if (iconData2 != null) 
+                    if (iconData2 != null)
                       Icon(
                         iconData2,
                         color: const Color(0xFF556B2F),

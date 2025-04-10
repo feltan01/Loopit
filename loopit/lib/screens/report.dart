@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/orderdetails_cod_seller.dart';
-import 'orderdetails_cod_seller.dart';
 import 'report_listingproblems.dart'; // Import the listing problems page
 import 'report_chatspam.dart'; // Import the chat spam report page
-
+import 'report_generalfeedback.dart';
+import "report_bug.dart";
 
 class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({Key? key}) : super(key: key);
@@ -68,23 +68,43 @@ class ReportProblemScreen extends StatelessWidget {
               );
             },
             child: _buildReportOption(
-              icon: Icons.chat_bubble_outline,
+              icon: Icons.report_problem_rounded,
               text: 'Chat spam/harassment',
               color: lightGreen,
             ),
           ),
-          SizedBox(height: 1), // Small gap
-          _buildReportOption(
-            icon: Icons.chat,
-            text: 'General feedback',
-            color: lightGreen,
+          SizedBox(height: 1),
+          InkWell(
+            onTap: () {
+              // Navigate to the ReportChatSpam page when pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ReportGeneralfeedback()),
+              );
+            },
+            child: _buildReportOption(
+              icon: Icons.chat_bubble_outline,
+              text: 'General feedback',
+              color: lightGreen,
+            ),
           ),
-          SizedBox(height: 1), // Small gap
-          _buildReportOption(
-            icon: Icons.bug_report_outlined,
-            text: 'Report of a bug',
-            color: lightGreen,
-          ),
+          SizedBox(height: 1),
+          InkWell(
+            onTap: () {
+              // Navigate to the ReportChatSpam page when pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ReportBug()),
+              );
+            },
+            child: _buildReportOption(
+              icon: Icons.bug_report_outlined,
+              text: 'Report of a bug',
+              color: lightGreen,
+            ),
+          ), // Small gap
         ],
       ),
     );

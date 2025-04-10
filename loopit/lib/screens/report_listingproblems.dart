@@ -63,7 +63,7 @@ class _ReportOptionsPageState extends State<ReportOptionsPage> {
         ),
         title: const Text(
           'Report options',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black),
         ),
       ),
       body: Padding(

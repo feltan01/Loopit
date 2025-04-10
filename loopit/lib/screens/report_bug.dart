@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'report.dart';
+import 'report_alldone.dart'; // Import the confirmation page
 
 void main() {
-  runApp(const ReportChatSpam());
+  runApp(const ReportBug());
 }
 
-class ReportChatSpam extends StatelessWidget {
-  const ReportChatSpam({Key? key}) : super(key: key);
+class ReportBug extends StatelessWidget {
+  const ReportBug({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,14 +93,14 @@ class _ReportOptionsPageState extends State<ReportOptionsPage> {
                         shape: BoxShape.circle,
                         color: Colors.grey.withOpacity(0.3),
                       ),
-                      child: const Icon(Icons.report_problem_rounded,
+                      child: const Icon(Icons.error_outline,
                           color: Colors.black54),
                     ),
                     const SizedBox(width: 12),
                     const Text(
-                      'Chat spam/harassment',
+                      'Report of a bug',
                       style:
-                          TextStyle(fontSize: 16),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -124,8 +125,7 @@ class _ReportOptionsPageState extends State<ReportOptionsPage> {
                 maxLines: null,
                 expands: true,
                 decoration: const InputDecoration(
-                  hintText:
-                      "A customer/seller by the username of ______ was saying mean things!! ",
+                  hintText: "THERE WAS A COCKROACH EKK!!!",
                   hintStyle: TextStyle(color: Colors.black45),
                   contentPadding: EdgeInsets.all(16),
                   border: InputBorder.none,
@@ -137,7 +137,13 @@ class _ReportOptionsPageState extends State<ReportOptionsPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle form submission
+                  // Navigate to the report_alldone.dart page when button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AlldonePage(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonColor,

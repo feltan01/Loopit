@@ -1,0 +1,327 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const DeliveryDetailApp());
+}
+
+class DeliveryDetailApp extends StatelessWidget {
+  const DeliveryDetailApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: const DeliveryDetailPage(),
+    );
+  }
+}
+
+class DeliveryDetailPage extends StatelessWidget {
+  const DeliveryDetailPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
+          children: [
+            _buildHeader(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildDeliveryInformation(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildOrderStatus(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildItemDetail(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildOrderTotal(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildReportSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF2E3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Color(0xFF4D6A46)),
+              onPressed: () {
+                
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Text(
+            'Delivery Detail',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeliveryInformation() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Delivery information',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Standard shipping: IZ3X8Y9A0456781234',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF2E3),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: const [
+                Icon(Icons.local_shipping_outlined, color: Color(0xFF4D6A46)),
+                SizedBox(width: 12),
+                Text(
+                  'Send package to the ABC delivery service !',
+                  style: TextStyle(
+                    color: Color(0xFF4D6A46),
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderStatus() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: const [
+          Text(
+            'Order Status:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+          SizedBox(width: 12),
+          Text(
+            'Not Complete',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFEBCB53),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemDetail() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Item Detail',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Invoice number: INV-20240223-8745',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  'https://via.placeholder.com/110',
+                  height: 110,
+                  width: 110,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Jacket Cream color Brand ABC',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Rp 140.000',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4D6A46),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage('https://via.placeholder.com/40'),
+                          radius: 14,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'User 1',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: const [
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star_border, color: Color(0xFFEBCB53), size: 18),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderTotal() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Order Total',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildPriceRow('Items Total', 'Rp 550.000'),
+          const SizedBox(height: 8),
+          _buildPriceRow('Shipping Cost', 'Rp 45.000'),
+          const SizedBox(height: 8),
+          _buildPriceRow('Service Fee', 'Rp 2.000'),
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: Colors.grey),
+          const SizedBox(height: 16),
+          _buildPriceRow('Total Cost', 'Rp 597.000', isTotal: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, String price, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: Colors.black87,
+          ),
+        ),
+        Text(
+          price,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: isTotal ? const Color(0xFF4D6A46) : Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReportSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: const [
+          Icon(Icons.warning_amber_rounded, color: Colors.grey),
+          SizedBox(width: 8),
+          Text(
+            'Products/Transaction trouble?',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          SizedBox(width: 8),
+          Text(
+            'Report',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

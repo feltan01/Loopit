@@ -11,6 +11,7 @@ import 'profile.dart';
 import 'saldo.dart';
 import 'seller_verification.dart';
 import 'messages.dart';
+import 'transaction_hub.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -37,7 +38,12 @@ class HomePage extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TransactionHub()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.favorite_border, color: Colors.black),

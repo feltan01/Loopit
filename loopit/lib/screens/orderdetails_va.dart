@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/delivery_confirmation';
+import 'report.dart';
 
 void main() {
-  runApp(const OrderDetailsApp());
+  runApp(const OrderDetailsVA());
 }
 
-class OrderDetailsApp extends StatelessWidget {
-  const OrderDetailsApp({Key? key}) : super(key: key);
+class OrderDetailsVA extends StatelessWidget {
+  const OrderDetailsVA({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class OrderDetailsScreen extends StatelessWidget {
     const Color lightGreen = Color(0xFFEDF5ED);
     const Color textColor = Color(0xFF3A3A3A);
     const Color secondaryTextColor = Color(0xFF666666);
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -74,7 +76,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Main content in a scrollable view
             Expanded(
               child: SingleChildScrollView(
@@ -84,7 +86,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
-                      
+
                       // Product info card
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +102,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          
+
                           // Product details
                           Expanded(
                             child: Column(
@@ -157,9 +159,9 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Order info section
                       const Text(
                         'Order info',
@@ -170,7 +172,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Payment method
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +199,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Order number
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +226,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Delivery option
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +253,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Delivery address
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,7 +279,8 @@ class OrderDetailsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: const [
                                       Icon(
                                         Icons.location_on,
@@ -314,9 +317,9 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Total section
                       const Text(
                         'Total',
@@ -327,7 +330,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Items total
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -349,7 +352,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Delivery fee
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -371,7 +374,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Service fee
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -393,10 +396,10 @@ class OrderDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Divider
                       const Divider(height: 24, thickness: 1),
-                      
+
                       // Final total
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -419,9 +422,9 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Report issue section
                       Row(
                         children: [
@@ -441,7 +444,13 @@ class OrderDetailsScreen extends StatelessWidget {
                           const SizedBox(width: 4),
                           GestureDetector(
                             onTap: () {
-                              // Handle report action
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReportProblemScreen(),
+                                ),
+                              );
                             },
                             child: const Text(
                               'Report',
@@ -454,14 +463,14 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 24),
                     ],
                   ),
                 ),
               ),
             ),
-            
+
             // Next button at the bottom
             Padding(
               padding: const EdgeInsets.all(16),
@@ -469,7 +478,12 @@ class OrderDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle next button action
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DeliveryConfirmationPage(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: lightGreen,

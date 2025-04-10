@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/nodeals_accepted.dart';
 import 'messages.dart';
-import 'orderdetails_cod_seller.dart';
-import 'nodeals_accepted.dart';
 
 void main() {
   runApp(const ChatSellerScreen());
@@ -281,7 +279,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const OrderDetailsPage(),
+                            builder: (context) => const ChatSellerScreen(),
                           ),
                         );
                       }

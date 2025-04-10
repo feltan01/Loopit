@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
+import 'package:loopit/screens/orderdetails_cod_seller.dart'; 
+import 'package:loopit/screens/orderdetails_va.dart'; // Added import for OrderDetailsVA
 import 'transbuyer.dart';
 import 'home_page.dart';
 
@@ -175,16 +177,38 @@ class _TransactionHubPageState extends State<TransactionHubPage> {
                 child: ListView(
                   padding: const EdgeInsets.all(12),
                   children: [
-                    TransactionCard(
-                      urgentColor: urgentRed,
-                      iconData: Icons.person_outline,
-                      iconData2: Icons.inventory_2_outlined,
+                    // First transaction card - Now clickable
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OrderdetailsCodSeller(),
+                          ),
+                        );
+                      },
+                      child: TransactionCard(
+                        urgentColor: urgentRed,
+                        iconData: Icons.person_outline,
+                        iconData2: Icons.inventory_2_outlined,
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    TransactionCard(
-                      urgentColor: urgentRed,
-                      iconData: Icons.local_shipping_outlined,
-                      iconData2: null,
+                    // Second transaction card - Now wrapped in GestureDetector
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OrderDetailsScreen(),
+                          ),
+                        );
+                      },
+                      child: TransactionCard(
+                        urgentColor: urgentRed,
+                        iconData: Icons.local_shipping_outlined,
+                        iconData2: null,
+                      ),
                     ),
                   ],
                 ),

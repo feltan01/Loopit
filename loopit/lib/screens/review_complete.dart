@@ -115,7 +115,7 @@ class OrderCompletedScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Order Completed',
+              'Thank You for Your Review!',
               style: TextStyle(
                 color: Color(0xFF5F8D4E),
                 fontSize: 24,

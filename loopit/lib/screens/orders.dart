@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'order_complete_buy.dart';
+import 'report.dart';
 
 void main() {
   runApp(const Orders());
@@ -563,7 +564,15 @@ void _showConfirmationDialog(BuildContext context) {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const ReportProblemScreen(), // Redirect to chat_buyer.dart
+                      ),
+                    );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE9F1E7),
                         foregroundColor: const Color(0xFF4D6A56),

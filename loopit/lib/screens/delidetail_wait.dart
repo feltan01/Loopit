@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'delivery_confirmation.dart';
 import 'report.dart'; 
-import 'delinfo_sent.dart'; 
+import 'delinfo_wait.dart';
 
 void main() {
-  runApp(const DeliveryDetailSent());
+  runApp(const DeliveryDetailWait());
 }
 
-class DeliveryDetailSent extends StatelessWidget {
-  const DeliveryDetailSent({Key? key}) : super(key: key);
+class DeliveryDetailWait extends StatelessWidget {
+  const DeliveryDetailWait({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +32,9 @@ class DeliveryDetailPage extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            _buildHeader(context),
+            _buildHeader(context), 
             const Divider(height: 1, color: Colors.grey),
-            _buildDeliveryInformation(
-                context), // Pass context to access Navigator
+            _buildDeliveryInformation(context), // Pass context to access Navigator
             const Divider(height: 1, color: Colors.grey),
             _buildOrderStatus(),
             const Divider(height: 1, color: Colors.grey),
@@ -86,8 +85,7 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryInformation(BuildContext context) {
-    // Add context parameter
+  Widget _buildDeliveryInformation(BuildContext context) { // Add context parameter
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -110,14 +108,13 @@ class DeliveryDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          GestureDetector(
-            // Wrap container with GestureDetector
+          GestureDetector( // Wrap container with GestureDetector
             onTap: () {
               // Navigate to DeliveryInfoPage when tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DeliveryInfoSent(),
+                  builder: (context) => const DeliveryInfoWait(),
                 ),
               );
             },
@@ -132,7 +129,7 @@ class DeliveryDetailPage extends StatelessWidget {
                   Icon(Icons.local_shipping_outlined, color: Color(0xFF4D6A46)),
                   SizedBox(width: 12),
                   Text(
-                    'Package is being sent by ABC service',
+                    'Package have been sent. Waiting on buyer confirmation',
                     style: TextStyle(
                       color: Color(0xFF4D6A46),
                       fontSize: 15,
@@ -234,8 +231,7 @@ class DeliveryDetailPage extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage:
-                              NetworkImage('https://via.placeholder.com/40'),
+                          backgroundImage: NetworkImage('https://via.placeholder.com/40'),
                           radius: 14,
                         ),
                         const SizedBox(width: 8),
@@ -248,16 +244,11 @@ class DeliveryDetailPage extends StatelessWidget {
                         const Spacer(),
                         Row(
                           children: const [
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star_border,
-                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star_border, color: Color(0xFFEBCB53), size: 18),
                           ],
                         ),
                       ],

@@ -448,11 +448,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Image.network(
-                      'https://i.imgur.com/BrHiKya.png', // Placeholder for cream hoodie image
+                      'assets/images/cream_jacket.png', // Placeholder for cream hoodie image
                       fit: BoxFit.contain,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 16),  
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

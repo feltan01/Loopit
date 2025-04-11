@@ -344,10 +344,9 @@ void _showConfirmationDialog(BuildContext context) {
                         color: const Color(0xFFE9F1E7),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: Color(0xFF4D6A56),
-                        size: 40,
+                      child: Image.asset(
+                      'assets/images/cream_jacket.png',
+                      fit: BoxFit.cover,
                       ),
                     ),
                     const SizedBox(width: 12),

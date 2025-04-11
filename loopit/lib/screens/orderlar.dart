@@ -189,7 +189,7 @@ class OrderDetailScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          'assets/jacket.png', // Replace with your actual jacket image path
+                          'assets/images/cream_jacket.png', // Replace with your actual jacket image path
                           fit: BoxFit.cover,
                         ),
                       ),

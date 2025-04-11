@@ -111,7 +111,7 @@ class _RatingScreenState extends State<RatingScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
-                        'assets/jacket.png',
+                        'assets/images/cream_jacket.png',
                         fit: BoxFit.cover,
                       ),
                     ),

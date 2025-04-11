@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'orders.dart';
+import 'payment_complete.dart';
 
 class PaymentConfirmationScreen extends StatefulWidget {
   final String virtualAccountNumber;
@@ -328,14 +328,14 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
               
               // Go to order button
               ElevatedButton(
-                onPressed: () {Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const Orders(), // Redirect to chat_buyer.dart
-                      ),
-                    );
-                },
+                   onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>  MyApp(),
+                        ),
+                      );
+                    },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: const Color(0xFF4A6741),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'orderlar.dart'; // Import for the HomePage
+import 'orders.dart'; // Import for the HomePage
 
 void main() {
   runApp(const MyApp());
@@ -115,7 +115,7 @@ class OrderCompletedScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Deal Done!',
+              'Payment Completed!',
               style: TextStyle(
                 color: Color(0xFF5F8D4E),
                 fontSize: 24,

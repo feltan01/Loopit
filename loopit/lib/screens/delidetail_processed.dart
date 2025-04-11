@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'delivery_confirmation.dart';
-import 'report.dart'; // Import the report problem screen
-// Import the DeliveryInfoPage
-import 'delivery_info.dart'; // Add this import for the delivery info page
+import 'report.dart';
+import 'delinfo_processed.dart';
 
 void main() {
-  runApp(const DeliveryDetailApp());
+  runApp(const DeliveryDetailProcessed ());
 }
 
-class DeliveryDetailApp extends StatelessWidget {
-  const DeliveryDetailApp({Key? key}) : super(key: key);
+class DeliveryDetailProcessed extends StatelessWidget {
+  const DeliveryDetailProcessed ({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +32,10 @@ class DeliveryDetailPage extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            _buildHeader(context), 
+            _buildHeader(context),
             const Divider(height: 1, color: Colors.grey),
-            _buildDeliveryInformation(context), // Pass context to access Navigator
+            _buildDeliveryInformation(
+                context), // Pass context to access Navigator
             const Divider(height: 1, color: Colors.grey),
             _buildOrderStatus(),
             const Divider(height: 1, color: Colors.grey),
@@ -86,7 +86,8 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryInformation(BuildContext context) { // Add context parameter
+  Widget _buildDeliveryInformation(BuildContext context) {
+    // Add context parameter
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -109,13 +110,14 @@ class DeliveryDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          GestureDetector( // Wrap container with GestureDetector
+          GestureDetector(
+            // Wrap container with GestureDetector
             onTap: () {
               // Navigate to DeliveryInfoPage when tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DeliveryInfoPage(),
+                  builder: (context) => const DeliveryInfoProcessed(),
                 ),
               );
             },
@@ -130,7 +132,7 @@ class DeliveryDetailPage extends StatelessWidget {
                   Icon(Icons.local_shipping_outlined, color: Color(0xFF4D6A46)),
                   SizedBox(width: 12),
                   Text(
-                    'Send package to the ABC delivery service !',
+                    'Package is being processed by ABC service',
                     style: TextStyle(
                       color: Color(0xFF4D6A46),
                       fontSize: 15,
@@ -232,7 +234,8 @@ class DeliveryDetailPage extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage('https://via.placeholder.com/40'),
+                          backgroundImage:
+                              NetworkImage('https://via.placeholder.com/40'),
                           radius: 14,
                         ),
                         const SizedBox(width: 8),
@@ -245,11 +248,16 @@ class DeliveryDetailPage extends StatelessWidget {
                         const Spacer(),
                         Row(
                           children: const [
-                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star_border, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star,
+                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star,
+                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star,
+                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star,
+                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star_border,
+                                color: Color(0xFFEBCB53), size: 18),
                           ],
                         ),
                       ],

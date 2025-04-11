@@ -69,7 +69,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     'Order details',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                       color: primaryGreen,
                     ),
                   ),

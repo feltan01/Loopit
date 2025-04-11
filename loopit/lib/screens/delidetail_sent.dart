@@ -5,11 +5,11 @@ import 'report.dart'; // Import the report problem screen
 import 'delivery_info.dart'; // Add this import for the delivery info page
 
 void main() {
-  runApp(const DeliveryDetailApp());
+  runApp(const DeliveryDetailSent());
 }
 
-class DeliveryDetailApp extends StatelessWidget {
-  const DeliveryDetailApp({Key? key}) : super(key: key);
+class DeliveryDetailSent extends StatelessWidget {
+  const DeliveryDetailSent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +130,7 @@ class DeliveryDetailPage extends StatelessWidget {
                   Icon(Icons.local_shipping_outlined, color: Color(0xFF4D6A46)),
                   SizedBox(width: 12),
                   Text(
-                    'Send package to the ABC delivery service !',
+                    'Package is being sent by ABC service',
                     style: TextStyle(
                       color: Color(0xFF4D6A46),
                       fontSize: 15,

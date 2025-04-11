@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'transaction_hub.dart';
 import 'report.dart'; 
-import 'delinfo_sent.dart'; 
+import 'delinfo_confirmed.dart'; 
 
 void main() {
-  runApp(const DeliveryDetailSent());
+  runApp(const DeliveryDetailConfirmed());
 }
 
-class DeliveryDetailSent extends StatelessWidget {
-  const DeliveryDetailSent({Key? key}) : super(key: key);
+class DeliveryDetailConfirmed extends StatelessWidget {
+  const DeliveryDetailConfirmed({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +30,33 @@ class DeliveryDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(
+        child: Stack(
           children: [
-            _buildHeader(context),
-            const Divider(height: 1, color: Colors.grey),
-            _buildDeliveryInformation(
-                context), // Pass context to access Navigator
-            const Divider(height: 1, color: Colors.grey),
-            _buildOrderStatus(),
-            const Divider(height: 1, color: Colors.grey),
-            _buildItemDetail(),
-            const Divider(height: 1, color: Colors.grey),
-            _buildOrderTotal(),
-            const Divider(height: 1, color: Colors.grey),
-            _buildReportSection(context),
+            // Main content
+            ListView(
+              children: [
+                _buildHeader(context), 
+                const Divider(height: 1, color: Colors.grey),
+                _buildDeliveryInformation(context), // Pass context to access Navigator
+                const Divider(height: 1, color: Colors.grey),
+                _buildOrderStatus(),
+                const Divider(height: 1, color: Colors.grey),
+                _buildItemDetail(),
+                const Divider(height: 1, color: Colors.grey),
+                _buildOrderTotal(),
+                const Divider(height: 1, color: Colors.grey),
+                _buildReportSection(context),
+                // Add extra padding at the bottom to accommodate the finish button
+                const SizedBox(height: 100),
+              ],
+            ),
+            // Finish button positioned at the bottom
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildFinishButton(context),
+            ),
           ],
         ),
       ),
@@ -86,8 +99,7 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryInformation(BuildContext context) {
-    // Add context parameter
+  Widget _buildDeliveryInformation(BuildContext context) { // Add context parameter
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -110,14 +122,13 @@ class DeliveryDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          GestureDetector(
-            // Wrap container with GestureDetector
+          GestureDetector( // Wrap container with GestureDetector
             onTap: () {
               // Navigate to DeliveryInfoPage when tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DeliveryInfoSent(),
+                  builder: (context) => const DeliveryInfoConfirmed(),
                 ),
               );
             },
@@ -132,7 +143,7 @@ class DeliveryDetailPage extends StatelessWidget {
                   Icon(Icons.local_shipping_outlined, color: Color(0xFF4D6A46)),
                   SizedBox(width: 12),
                   Text(
-                    'Package is being sent by ABC service',
+                    'Buyer has confirmed the arrival of package',
                     style: TextStyle(
                       color: Color(0xFF4D6A46),
                       fontSize: 15,
@@ -162,11 +173,11 @@ class DeliveryDetailPage extends StatelessWidget {
           ),
           SizedBox(width: 12),
           Text(
-            'Not Complete',
+            'Complete',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFEBCB53),
+              color: Color(0xFF5CAF5C), // Changed to green for Complete
             ),
           ),
         ],
@@ -234,8 +245,7 @@ class DeliveryDetailPage extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage:
-                              NetworkImage('https://via.placeholder.com/40'),
+                          backgroundImage: NetworkImage('https://via.placeholder.com/40'),
                           radius: 14,
                         ),
                         const SizedBox(width: 8),
@@ -248,16 +258,11 @@ class DeliveryDetailPage extends StatelessWidget {
                         const Spacer(),
                         Row(
                           children: const [
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star,
-                                color: Color(0xFFEBCB53), size: 18),
-                            Icon(Icons.star_border,
-                                color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star, color: Color(0xFFEBCB53), size: 18),
+                            Icon(Icons.star_border, color: Color(0xFFEBCB53), size: 18),
                           ],
                         ),
                       ],
@@ -359,6 +364,46 @@ class DeliveryDetailPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  // New method to build the Finish button
+  Widget _buildFinishButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          // Add your finish action here
+          Navigator.pop(context); // Example: go back to previous screen
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFEAF2E3),
+          foregroundColor: const Color(0xFF4D6A46),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 0,
+        ),
+        child: const Text(
+          'Finish',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }

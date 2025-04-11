@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+
 void main() {
-  runApp(const DeliveryInfoWait());
+  runApp(const DeliveryInfoConfirmed());
 }
 
-class DeliveryInfoWait extends StatelessWidget {
-  const DeliveryInfoWait({Key? key}) : super(key: key);
+class DeliveryInfoConfirmed extends StatelessWidget {
+  const DeliveryInfoConfirmed({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +87,7 @@ class DeliveryInfoPage extends StatelessWidget {
                     number: 1, 
                     text: 'Send the package to the ABC delivery service.',
                     isCompleted: true,
+                    isBold: true,
                   ),
                   _buildDeliveryStep(
                     number: 2, 
@@ -101,7 +103,6 @@ class DeliveryInfoPage extends StatelessWidget {
                     number: 4, 
                     text: 'The package has been sent by the ABC delivery service.',
                     isCompleted: true,
-                    isBold: true,
                   ),
                   _buildDeliveryStep(
                     number: 5, 

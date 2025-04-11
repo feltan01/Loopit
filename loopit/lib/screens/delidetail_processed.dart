@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'delivery_confirmation.dart';
+import 'transaction_hub.dart';
 import 'report.dart';
 import 'delinfo_processed.dart';
 
@@ -66,7 +66,7 @@ class DeliveryDetailPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DeliveryConfirmation(),
+                    builder: (context) => const TransactionHub(),
                   ),
                 );
               },

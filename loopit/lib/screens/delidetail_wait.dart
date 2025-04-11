@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'delivery_confirmation.dart';
+import 'transaction_hub.dart';
 import 'report.dart'; 
 import 'delinfo_wait.dart';
 
@@ -34,11 +34,13 @@ class DeliveryDetailPage extends StatelessWidget {
           children: [
             _buildHeader(context), 
             const Divider(height: 1, color: Colors.grey),
-            _buildDeliveryInformation(context), // Pass context to access Navigator
+            _buildDeliveryInformation(context),
             const Divider(height: 1, color: Colors.grey),
             _buildOrderStatus(),
             const Divider(height: 1, color: Colors.grey),
             _buildItemDetail(),
+            const Divider(height: 1, color: Colors.grey),
+            _buildProofOfDelivery(context), // Adding the new proof of delivery section
             const Divider(height: 1, color: Colors.grey),
             _buildOrderTotal(),
             const Divider(height: 1, color: Colors.grey),
@@ -65,7 +67,7 @@ class DeliveryDetailPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DeliveryConfirmation(),
+                    builder: (context) => const TransactionHub(),
                   ),
                 );
               },
@@ -85,7 +87,7 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryInformation(BuildContext context) { // Add context parameter
+  Widget _buildDeliveryInformation(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -108,9 +110,8 @@ class DeliveryDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          GestureDetector( // Wrap container with GestureDetector
+          GestureDetector(
             onTap: () {
-              // Navigate to DeliveryInfoPage when tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -257,6 +258,53 @@ class DeliveryDetailPage extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // New method for the proof of delivery section
+  Widget _buildProofOfDelivery(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Proof of Delivery',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4D6A46),
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () {
+              // Add functionality for when the proof button is tapped
+              // Could show a dialog with the image or navigate to a proof detail page
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAF2E3),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.image_outlined, color: Color(0xFF4D6A46)),
+                  SizedBox(width: 12),
+                  Text(
+                    'Proof of delivery',
+                    style: TextStyle(
+                      color: Color(0xFF4D6A46),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

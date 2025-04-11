@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'orderdetails_va.dart';
 import 'delivery_detail.dart';
+import 'orderdetails_va.dart';
+
 void main() {
   runApp(const DeliveryConfirmation());
 }
@@ -56,13 +57,13 @@ class _DeliveryConfirmationPageState extends State<DeliveryConfirmationPage> {
           child: ListView(
             children: [
               const SizedBox(height: 16),
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 16),
               const Divider(color: Colors.grey, height: 1),
               const SizedBox(height: 20),
               _buildDeliveryDetails(),
               const SizedBox(height: 40),
-              _buildInformationForm(),
+              _buildInformationForm(context),
               const SizedBox(height: 20),
             ],
           ),
@@ -71,7 +72,7 @@ class _DeliveryConfirmationPageState extends State<DeliveryConfirmationPage> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         Container(
@@ -187,7 +188,7 @@ class _DeliveryConfirmationPageState extends State<DeliveryConfirmationPage> {
     );
   }
 
-  Widget _buildInformationForm() {
+  Widget _buildInformationForm(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

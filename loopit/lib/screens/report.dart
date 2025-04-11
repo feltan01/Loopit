@@ -20,13 +20,7 @@ class ReportProblemScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const OrderdetailsCodSeller(), // Redirect to chat_buyer.dart
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         elevation: 0,

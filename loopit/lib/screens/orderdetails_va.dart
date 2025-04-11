@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/delivery_confirmation';
+import 'delivery_confirmation.dart';
 import 'report.dart';
 
 void main() {
@@ -481,7 +481,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DeliveryConfirmationPage(),
+                        builder: (context) => const DeliveryConfirmation(),
                       ),
                     );
                   },

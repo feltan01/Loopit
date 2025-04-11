@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'delivery_confirmation.dart';
+import 'report.dart'; // Import the report problem screen
 
 void main() {
   runApp(const DeliveryDetailApp());
@@ -29,7 +31,7 @@ class DeliveryDetailPage extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            _buildHeader(),
+            _buildHeader(context), 
             const Divider(height: 1, color: Colors.grey),
             _buildDeliveryInformation(),
             const Divider(height: 1, color: Colors.grey),
@@ -39,14 +41,14 @@ class DeliveryDetailPage extends StatelessWidget {
             const Divider(height: 1, color: Colors.grey),
             _buildOrderTotal(),
             const Divider(height: 1, color: Colors.grey),
-            _buildReportSection(),
+            _buildReportSection(context), // Pass context here
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -59,7 +61,12 @@ class DeliveryDetailPage extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Color(0xFF4D6A46)),
               onPressed: () {
-                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DeliveryConfirmation(),
+                  ),
+                );
               },
             ),
           ),
@@ -297,27 +304,37 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReportSection() {
+  Widget _buildReportSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-        children: const [
-          Icon(Icons.warning_amber_rounded, color: Colors.grey),
-          SizedBox(width: 8),
-          Text(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.grey),
+          const SizedBox(width: 8),
+          const Text(
             'Products/Transaction trouble?',
             style: TextStyle(
               fontSize: 14,
               color: Colors.black87,
             ),
           ),
-          SizedBox(width: 8),
-          Text(
-            'Report',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4D6A46),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReportProblemScreen(),
+                ),
+              );
+            },
+            child: const Text(
+              'Report',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4D6A46),
+              ),
             ),
           ),
         ],
@@ -325,3 +342,6 @@ class DeliveryDetailPage extends StatelessWidget {
     );
   }
 }
+
+// Remove this mixin if it's causing issues
+// mixin context {}

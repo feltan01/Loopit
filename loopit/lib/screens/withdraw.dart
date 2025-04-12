@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/wallet.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -15,19 +16,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins',
       ),
-      home: const BalanceDepositPage(),
+      home: const BalanceWithdrawPage(),
     );
   }
 }
 
-class BalanceDepositPage extends StatefulWidget {
-  const BalanceDepositPage({Key? key}) : super(key: key);
+class BalanceWithdrawPage extends StatefulWidget {
+  const BalanceWithdrawPage({Key? key}) : super(key: key);
 
   @override
-  State<BalanceDepositPage> createState() => _BalanceDepositPageState();
+  State<BalanceWithdrawPage> createState() => _BalanceWithdrawPageState();
 }
 
-class _BalanceDepositPageState extends State<BalanceDepositPage> {
+class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
   final TextEditingController _depositController = TextEditingController(text: 'Rp 50.000');
   int? _selectedBankIndex;
   final List<PaymentMethod> _paymentMethods = [
@@ -73,7 +74,12 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
           IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 20),
             onPressed: () {
-              // Handle back button press
+              // Navigate back to wallet.dart
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const WalletBalanceScreen(), // Replace with your WalletPage class name if different
+                ),
+              );
             },
           ),
           const SizedBox(width: 8),
@@ -334,7 +340,7 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
   Widget _buildDepositButton() {
     return ElevatedButton(
       onPressed: () {
-        // Handle deposit button press
+        // Handle withdraw button press
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFD3EAD3),

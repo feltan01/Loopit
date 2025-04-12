@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loopit/screens/deposit.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
 import 'package:loopit/screens/what_is_history.dart';
+import 'package:loopit/screens/withdraw.dart';
 
 void main() {
   runApp(const MyApp());
@@ -244,7 +245,7 @@ class WalletBalanceScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BalanceDepositPage()),
+                      builder: (context) => const BalanceWithdrawPage()),
                 );
               },
             ),

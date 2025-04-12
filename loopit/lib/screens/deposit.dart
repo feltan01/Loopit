@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/wallet.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -73,7 +74,11 @@ class _BalanceDepositPageState extends State<BalanceDepositPage> {
           IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 20),
             onPressed: () {
-              // Handle back button press
+              // Navigate back to wallet screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const WalletBalanceScreen()),
+              );
             },
           ),
           const SizedBox(width: 8),

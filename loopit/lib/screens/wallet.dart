@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/deposit.dart';
+import 'package:loopit/screens/history_withdrawn.dart';
+import 'package:loopit/screens/what_is_history.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +37,8 @@ class AnimatedButton extends StatefulWidget {
   State<AnimatedButton> createState() => _AnimatedButtonState();
 }
 
-class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProviderStateMixin {
+class _AnimatedButtonState extends State<AnimatedButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -163,7 +167,8 @@ class WalletBalanceScreen extends StatelessWidget {
                   // Balance Amount
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
                     child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -228,31 +233,39 @@ class WalletBalanceScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Withdraw Button
             AnimatedButton(
               text: 'Withdraw Balance',
               onPressed: () {
                 print('Withdraw Balance button pressed');
-                // Add withdraw logic here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BalanceDepositPage()),
+                );
               },
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Deposit Button
             AnimatedButton(
               text: 'Deposit Balance',
               onPressed: () {
                 print('Deposit Balance button pressed');
-                // Add deposit logic here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BalanceDepositPage()),
+                );
               },
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Transaction History Section
             Row(
               children: [
@@ -271,23 +284,9 @@ class WalletBalanceScreen extends StatelessWidget {
                     splashColor: Colors.grey.withOpacity(0.3),
                     onTap: () {
                       print('Question mark icon pressed');
-                      // Show information dialog or tooltip
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Transaction History'),
-                            content: const Text('This section shows your recent transactions and activity.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Close'),
-                              ),
-                            ],
-                          );
-                        },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TransactionHistoryInfoScreen()),
                       );
                     },
                     child: Container(
@@ -305,15 +304,18 @@ class WalletBalanceScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
-            // History Button
+
             AnimatedButton(
               text: 'History',
               onPressed: () {
                 print('History button pressed');
-                // Navigate to history page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const WithdrawnHistoryScreen()),
+                );
               },
             ),
           ],

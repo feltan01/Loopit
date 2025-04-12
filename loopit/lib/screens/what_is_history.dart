@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/wallet.dart'; // Add this import
 
 void main() {
   runApp(const MyApp());
@@ -32,8 +33,12 @@ class TransactionHistoryInfoScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // Go back action
+            // Navigate back to wallet screen
             print('Back button pressed');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const WalletBalanceScreen()),
+            );
           },
         ),
         title: const Text(

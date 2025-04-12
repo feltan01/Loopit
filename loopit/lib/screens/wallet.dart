@@ -3,6 +3,7 @@ import 'package:loopit/screens/deposit.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
 import 'package:loopit/screens/what_is_history.dart';
 import 'package:loopit/screens/withdraw.dart';
+import 'package:loopit/screens/profile.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -84,7 +85,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  splashColor: Colors.green.withOpacity(0.3),
+                  splashColor: const Color.fromARGB(255, 71, 158, 74).withOpacity(0.3),
                   highlightColor: Colors.green.withOpacity(0.1),
                   onTap: widget.onPressed,
                   child: Container(
@@ -122,8 +123,12 @@ class WalletBalanceScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // Back button action
-            print('Back button pressed');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(), 
+              ),
+            );
           },
         ),
         title: const Text(

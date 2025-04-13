@@ -1,11 +1,13 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import authenticate
-from .models import LoopitUser, Profile
-from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer
+from django.shortcuts import get_object_or_404
+from .models import LoopitUser, Profile, Listing, ListingImage
+from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer, ListingSerializer, ListingImageSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = LoopitUser.objects.all()
@@ -77,3 +79,57 @@ class ProfileViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class ListingViewSet(viewsets.ModelViewSet):
+    queryset = Listing.objects.all()
+    serializer_class = ListingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        # Filter listings based on query parameters
+        queryset = Listing.objects.all()
+        category = self.request.query_params.get('category', None)
+        if category:
+            queryset = queryset.filter(category=category)
+        
+        # You can add more filters as needed
+        return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+    
+    @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
+    def upload_images(self, request, pk=None):
+        listing = self.get_object()
+        
+        # Check image count limit (10 as specified in the front-end)
+        current_count = listing.images.count()
+        if current_count >= 10:
+            return Response(
+                {"detail": "Maximum 10 images allowed per listing."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get the uploaded images
+        images = request.FILES.getlist('images')
+        
+        # Ensure we don't exceed the limit with new uploads
+        if current_count + len(images) > 10:
+            return Response(
+                {"detail": f"You can only add {10 - current_count} more images."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Save the images
+        for image in images:
+            ListingImage.objects.create(listing=listing, image=image)
+        
+        # Return updated listing data
+        serializer = self.get_serializer(listing)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def my_listings(self, request):
+        listings = Listing.objects.filter(owner=request.user)
+        serializer = self.get_serializer(listings, many=True)
+        return Response(serializer.data)

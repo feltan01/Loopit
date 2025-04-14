@@ -40,8 +40,15 @@ class UserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
-            
-            user = authenticate(username=email, password=password)
+
+            # Custom authentication via email
+            try:
+                user = LoopitUser.objects.get(email=email)
+            except LoopitUser.DoesNotExist:
+                return Response({'error': 'Email tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
+
+            user = authenticate(request, email=email, password=password)  # custom user uses email
+
             if user:
                 refresh = RefreshToken.for_user(user)
                 return Response({
@@ -50,9 +57,10 @@ class UserViewSet(viewsets.ModelViewSet):
                     'email': user.email,
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                })
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+                }, status=status.HTTP_200_OK)
+
+            return Response({'error': 'Password salah'}, status=status.HTTP_401_UNAUTHORIZED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -68,7 +76,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+
     def update(self, request, pk=None):
         try:
             profile = Profile.objects.get(user=request.user)
@@ -80,54 +88,46 @@ class ProfileViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
-        # Filter listings based on query parameters
         queryset = Listing.objects.all()
         category = self.request.query_params.get('category', None)
         if category:
             queryset = queryset.filter(category=category)
-        
-        # You can add more filters as needed
         return queryset
-    
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-    
+
     @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
     def upload_images(self, request, pk=None):
         listing = self.get_object()
-        
-        # Check image count limit (10 as specified in the front-end)
+
         current_count = listing.images.count()
         if current_count >= 10:
             return Response(
                 {"detail": "Maximum 10 images allowed per listing."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # Get the uploaded images
+
         images = request.FILES.getlist('images')
-        
-        # Ensure we don't exceed the limit with new uploads
         if current_count + len(images) > 10:
             return Response(
                 {"detail": f"You can only add {10 - current_count} more images."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # Save the images
+
         for image in images:
             ListingImage.objects.create(listing=listing, image=image)
-        
-        # Return updated listing data
+
         serializer = self.get_serializer(listing)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=['get'])
     def my_listings(self, request):
         listings = Listing.objects.filter(owner=request.user)

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:loopit/screens/forgot_password.dart';
 import 'package:loopit/screens/signup.dart';
 import 'package:loopit/screens/home_page.dart';
@@ -214,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                                           elevation: 0,
                                           foregroundColor: _isFormValid ? Colors.white : Colors.white.withOpacity(0.5),
                                         ),
-                                        onPressed: _isFormValid ? _handleLogin : null,
+                                        onPressed: _isFormValid ? _loginUser : null,
                                         child: const Text(
                                           "Login",
                                           style: TextStyle(
@@ -340,4 +343,44 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+  
+  Future<void> _loginUser() async {
+  final url = Uri.parse('http://127.0.0.1:8000/api/token/'); // Ganti dengan base URL API kamu
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    final accessToken = data['access'];
+    final refreshToken = data['refresh'];
+
+    // Simpan token di SharedPreferences atau Provider (opsional)
+    // Navigate ke HomePage
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Login Failed"),
+        content: const Text("Invalid email or password."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          )
+        ],
+      ),
+    );
+  }
 }
+}
+

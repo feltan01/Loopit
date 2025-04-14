@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
 from django.conf import settings
 
 class LoopitUser(AbstractUser):
@@ -22,13 +21,13 @@ class LoopitUser(AbstractUser):
             ("can_view_user", "Can view user"),
         ]
 
-    # Using related_name to prevent conflicts with the built-in user model
+    # Override default related names to avoid conflicts
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to.',
-        related_name='custom_users',  # Avoids conflicts with default user model
+        related_name='custom_users',
         related_query_name='custom_user'
     )
     
@@ -37,17 +36,19 @@ class LoopitUser(AbstractUser):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name='custom_users',  # Avoids conflicts with default user model
+        related_name='custom_users',
         related_query_name='custom_user'
     )
 
+
 class Profile(models.Model):
-    user = models.OneToOneField(LoopitUser, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     
     def __str__(self):
         return f"{self.user.email}'s Profile"
+
 
 class Listing(models.Model):
     CONDITION_CHOICES = [

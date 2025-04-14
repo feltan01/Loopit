@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Profile
-from .models import Listing, ListingImage
+from .models import Profile, Listing, ListingImage
 
 User = get_user_model()
 
@@ -29,7 +28,16 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 # Serializer untuk Login
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            raise serializers.ValidationError("Email dan password wajib diisi.")
+        
+        return data
 
 
 # Serializer untuk Profil
@@ -58,7 +66,6 @@ class ListingSerializer(serializers.ModelSerializer):
         read_only_fields = ['owner', 'created_at', 'updated_at']
     
     def create(self, validated_data):
-        # Assign the current user as the owner
         user = self.context['request'].user
         listing = Listing.objects.create(owner=user, **validated_data)
         return listing

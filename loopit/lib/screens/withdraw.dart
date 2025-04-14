@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/wallet.dart'; 
+import 'package:loopit/screens/wallet.dart';
+import 'package:loopit/screens/withdraw_completed.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +17,20 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins',
       ),
-      home: const BalanceWithdrawPage(),
+      home: const BalanceWithdrawalPage(),
     );
   }
 }
 
-class BalanceWithdrawPage extends StatefulWidget {
-  const BalanceWithdrawPage({Key? key}) : super(key: key);
+class BalanceWithdrawalPage extends StatefulWidget {
+  const BalanceWithdrawalPage({super.key});
 
   @override
-  State<BalanceWithdrawPage> createState() => _BalanceWithdrawPageState();
+  State<BalanceWithdrawalPage> createState() => _BalanceWithdrawalPageState();
 }
 
-class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
-  final TextEditingController _depositController = TextEditingController(text: 'Rp 50.000');
+class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
+  final TextEditingController _withdrawalController = TextEditingController(text: 'Rp 50.000');
   int? _selectedBankIndex;
   final List<PaymentMethod> _paymentMethods = [
     PaymentMethod("BCA", "assets/icons/bca.png"),
@@ -50,15 +51,17 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHeader(),
-              const SizedBox(height: 20),
-              _buildBalanceCard(),
-              const SizedBox(height: 20),
-              _buildDepositInput(),
-              const SizedBox(height: 20),
-              _buildPaymentMethodList(),
-              const Spacer(),
-              _buildDepositButton(),
-              const SizedBox(height: 20),
+              // Use a reduced height balance card
+              _buildBalanceCardCompact(),
+              const SizedBox(height: 10),
+              // Use a reduced height withdrawal input
+              _buildWithdrawalInputCompact(),
+              const SizedBox(height: 10),
+              // Show fewer payment methods
+              _buildPaymentMethodCompact(),
+              const Spacer(flex: 1),
+              _buildWithdrawalButton(),
+              const SizedBox(height: 12),
             ],
           ),
         ),
@@ -68,16 +71,18 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            icon: const Icon(Icons.arrow_back, size: 20),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
             onPressed: () {
-              // Navigate back to wallet.dart
-              Navigator.of(context).pushReplacement(
+              Navigator.push(
+                context,
                 MaterialPageRoute(
-                  builder: (context) => const WalletBalanceScreen(), // Replace with your WalletPage class name if different
+                  builder: (context) => const WalletBalanceScreen(),
                 ),
               );
             },
@@ -95,7 +100,7 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
     );
   }
 
-  Widget _buildBalanceCard() {
+  Widget _buildBalanceCardCompact() {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFD3EAD3),
@@ -109,21 +114,21 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Balance Total:',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -142,45 +147,45 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
                 const Text(
                   'Rp.000.000',
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
                     Text(
-                      'Monthly\nRefunded Cash:',
+                      'Monthly Refunded Cash:',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Colors.black87,
                       ),
                     ),
                     Text(
                       'Rp.000.000',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
                     Text(
                       'Total Money gained:',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Colors.black87,
                       ),
                     ),
                     Text(
                       'Rp.000.000',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -194,7 +199,7 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
     );
   }
 
-  Widget _buildDepositInput() {
+  Widget _buildWithdrawalInputCompact() {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFD3EAD3),
@@ -208,21 +213,21 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
             'How much would you like to Withdraw',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -237,17 +242,18 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
               ],
             ),
             child: TextField(
-              controller: _depositController,
+              controller: _withdrawalController,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               style: const TextStyle(
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF8E8E8E),
               ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
+                isDense: true,
               ),
             ),
           ),
@@ -256,33 +262,60 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
     );
   }
 
-  Widget _buildPaymentMethodList() {
+  Widget _buildPaymentMethodCompact() {
+    // Only show first 3 payment methods to prevent overflow
+    final displayMethods = _paymentMethods.take(3).toList();
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Choose your preferred Withdrawal Location',
+          'Choose your preferred Withdrawal method',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 12),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _paymentMethods.length,
-          separatorBuilder: (context, index) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final method = _paymentMethods[index];
-            return _buildPaymentMethodItem(method);
-          },
+        const SizedBox(height: 8),
+        // Build fixed-sized payment method items
+        Column(
+          children: [
+            for (int i = 0; i < displayMethods.length; i++) ...[
+              _buildPaymentMethodItemCompact(displayMethods[i]),
+              if (i < displayMethods.length - 1) 
+                const Divider(height: 1, thickness: 0.5),
+            ],
+          ],
         ),
+        // Add a "View more" option if needed
+        if (_paymentMethods.length > 3) 
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    // Show modal with all payment methods
+                    _showAllPaymentMethods();
+                  },
+                  child: const Text(
+                    'View more payment options',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
 
-  Widget _buildPaymentMethodItem(PaymentMethod method) {
+  Widget _buildPaymentMethodItemCompact(PaymentMethod method) {
     final index = _paymentMethods.indexOf(method);
     
     return InkWell(
@@ -292,7 +325,7 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 6.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -300,36 +333,45 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
               children: [
                 Image.asset(
                   method.iconPath,
-                  width: 24,
-                  height: 24,
+                  width: 20,
+                  height: 20,
                   errorBuilder: (context, error, stackTrace) => 
                     Container(
-                      width: 24, 
-                      height: 24, 
+                      width: 20, 
+                      height: 20, 
                       color: Colors.grey.withOpacity(0.3),
-                      child: const Icon(Icons.account_balance, size: 16, color: Colors.blue),
+                      child: const Icon(Icons.account_balance, size: 14, color: Colors.blue),
                     ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Text(
                   method.name,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            // Add radio button
-            Radio<int>(
-              value: index,
-              groupValue: _selectedBankIndex,
-              onChanged: (value) {
-                setState(() {
-                  _selectedBankIndex = value;
-                });
-              },
-              activeColor: Colors.green.shade700,
+            // Use a more compact radio button
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: Radio<int>(
+                value: index,
+                groupValue: _selectedBankIndex,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedBankIndex = value;
+                  });
+                },
+                activeColor: Colors.green.shade700,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: const VisualDensity(
+                  horizontal: VisualDensity.minimumDensity,
+                  vertical: VisualDensity.minimumDensity,
+                ),
+              ),
             ),
           ],
         ),
@@ -337,10 +379,85 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
     );
   }
 
-  Widget _buildDepositButton() {
+  void _showAllPaymentMethods() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'All Payment Methods',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _paymentMethods.length,
+                  separatorBuilder: (context, index) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final method = _paymentMethods[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Image.asset(
+                        method.iconPath,
+                        width: 24,
+                        height: 24,
+                        errorBuilder: (context, error, stackTrace) => 
+                          Container(
+                            width: 24, 
+                            height: 24, 
+                            color: Colors.grey.withOpacity(0.3),
+                            child: const Icon(Icons.account_balance, size: 16, color: Colors.blue),
+                          ),
+                      ),
+                      title: Text(method.name),
+                      trailing: Radio<int>(
+                        value: index,
+                        groupValue: _selectedBankIndex,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedBankIndex = value;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _selectedBankIndex = index;
+                        });
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWithdrawalButton() {
     return ElevatedButton(
       onPressed: () {
-        // Handle withdraw button press
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WithdrawalConfirmationScreen(),
+          ),
+        );
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFD3EAD3),
@@ -350,12 +467,12 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12),
       ),
       child: const Text(
         'Withdraw Balance',
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -364,7 +481,7 @@ class _BalanceWithdrawPageState extends State<BalanceWithdrawPage> {
 
   @override
   void dispose() {
-    _depositController.dispose();
+    _withdrawalController.dispose();
     super.dispose();
   }
 }
@@ -375,3 +492,4 @@ class PaymentMethod {
 
   PaymentMethod(this.name, this.iconPath);
 }
+

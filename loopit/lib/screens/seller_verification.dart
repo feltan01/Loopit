@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
-import 'package:loopit/screens/home_page.dart';
 import 'new_listing.dart';
 import 'terms_condition.dart';
 
@@ -50,13 +49,12 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-              // Navigate to the ReportListingproblems page when pressed
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>HomePage()),
-              );
-            },
+            // Navigate to the ReportListingproblems page when pressed
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
         ),
         title: const Text(
           "Verification",
@@ -121,8 +119,12 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
                         : Colors.transparent,
                   ),
                   child: _hasUploadedID
-                      ? const Icon(Icons.check,
-                          color: Color(0xFF4E6645), size: 40)
+                      ? Image.asset(
+                          'assets/images/image.png',
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        )
                       : const Icon(Icons.add,
                           color: Color(0xFF4E6645), size: 40),
                 ),

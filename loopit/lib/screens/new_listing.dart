@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'listing_success.dart'; // Make sure to import the ListingSuccessPage
-
+import 'listing_success.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class NewListingPage extends StatefulWidget {
-  const NewListingPage({super.key});
+  const NewListingPage({Key? key}) : super(key: key);
 
   @override
   _NewListingPageState createState() => _NewListingPageState();
@@ -16,76 +17,97 @@ class _NewListingPageState extends State<NewListingPage> {
   final TextEditingController _conditionController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _productAgeController = TextEditingController();
-  int photoCount = 0;
+
+  List<File> _selectedImages = [];
   bool _hasUploadedID = false;
 
-  // Method to validate form inputs
+  int get photoCount => _selectedImages.length;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImages.add(File(pickedFile.path));
+        _hasUploadedID = true;
+      });
+    }
+  }
+
   bool _validateInputs() {
-    // Check if all required fields are filled
     if (_titleController.text.isEmpty) {
       _showErrorSnackBar('Please enter a title');
       return false;
     }
-
     if (_priceController.text.isEmpty) {
       _showErrorSnackBar('Please enter a price');
       return false;
     }
-
     if (_categoryController.text.isEmpty) {
       _showErrorSnackBar('Please select a category');
       return false;
     }
-
     if (_conditionController.text.isEmpty) {
       _showErrorSnackBar('Please specify the condition');
       return false;
     }
-
     if (_descriptionController.text.isEmpty) {
       _showErrorSnackBar('Please provide a description');
       return false;
     }
-
     if (_productAgeController.text.isEmpty) {
       _showErrorSnackBar('Please enter the product age');
       return false;
     }
-
     if (!_hasUploadedID || photoCount == 0) {
       _showErrorSnackBar('Please upload at least one photo');
       return false;
     }
-
     return true;
   }
 
-  // Method to show error snackbar
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(color: Colors.white),
-        ),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
       ),
     );
   }
 
-  // Method to handle save functionality
   void _handleSave() {
     if (_validateInputs()) {
-      // If all inputs are valid, navigate to ListingSuccessPage
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => ListingSuccessPage(
-            destinationPage:
-                const NewListingPage(), // Replace with your actual next page if different
+            destinationPage: const NewListingPage(),
           ),
         ),
       );
     }
+  }
+
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {int maxLines = 1}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFEAF3DC), width: 2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          border: InputBorder.none,
+        ),
+      ),
+    );
   }
 
   @override
@@ -124,7 +146,7 @@ class _NewListingPageState extends State<NewListingPage> {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: TextButton(
-                onPressed: _handleSave, // Updated to use _handleSave method
+                onPressed: _handleSave,
                 child: const Text(
                   "Save",
                   style: TextStyle(
@@ -145,7 +167,6 @@ class _NewListingPageState extends State<NewListingPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-
               // User Info Row
               Row(
                 children: [
@@ -171,17 +192,12 @@ class _NewListingPageState extends State<NewListingPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 35),
+
+              // Image Picker Button
               Center(
                 child: GestureDetector(
-                  onTap: () {
-                    // Function to handle image upload
-                    setState(() {
-                      _hasUploadedID = true;
-                      photoCount++; // Increment photo count
-                    });
-                  },
+                  onTap: _pickImage,
                   child: Container(
                     width: 100,
                     height: 100,
@@ -189,19 +205,13 @@ class _NewListingPageState extends State<NewListingPage> {
                       border:
                           Border.all(color: const Color(0xFF4E6645), width: 2),
                       borderRadius: BorderRadius.circular(8),
-                      color: _hasUploadedID
-                          ? const Color(0xFFEAF3DC)
-                          : Colors.transparent,
+                      color: const Color(0xFFEAF3DC),
                     ),
-                    child: _hasUploadedID
-                        ? const Icon(Icons.check,
-                            color: Color(0xFF4E6645), size: 40)
-                        : const Icon(Icons.add,
-                            color: Color(0xFF4E6645), size: 40),
+                    child: const Icon(Icons.add_a_photo,
+                        color: Color(0xFF4E6645), size: 40),
                   ),
                 ),
               ),
-
               const SizedBox(height: 8),
 
               // Photo Counter
@@ -213,9 +223,26 @@ class _NewListingPageState extends State<NewListingPage> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
-              // Form Fields
+              // Show image previews
+              if (_selectedImages.isNotEmpty)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: _selectedImages
+                        .map(
+                          (file) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Image.file(file,
+                                width: 80, height: 80, fit: BoxFit.cover),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+
+              const SizedBox(height: 16),
               _buildTextField(_titleController, "Title"),
               _buildTextField(_priceController, "Price"),
               _buildTextField(_categoryController, "Category"),
@@ -223,36 +250,9 @@ class _NewListingPageState extends State<NewListingPage> {
               _buildTextField(_descriptionController, "Description",
                   maxLines: 5),
               _buildTextField(_productAgeController, "Product age"),
-
               const SizedBox(height: 24),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // Existing _buildTextField method remains the same
-  Widget _buildTextField(TextEditingController controller, String hint,
-      {int maxLines = 1}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFEAF3DC), width: 2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(
-            color: Colors.grey,
-            fontSize: 16,
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: InputBorder.none,
         ),
       ),
     );

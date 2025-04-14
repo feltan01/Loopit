@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/home_page.dart';
+import 'package:loopit/screens/login_page.dart';
 import 'dart:async';
 
 
@@ -62,7 +62,7 @@ class _SuccessAnimationPageState extends State<SuccessAnimationPage>
     Future.delayed(const Duration(seconds: 10), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     });
   }

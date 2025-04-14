@@ -11,7 +11,7 @@ import '../models/order.dart';
 
 class ApiService {
   // Base URL of your Django backend
-  static const String baseUrl = 'http://10.0.2.2:8000/api/chat'; // for Android emulator
+  static const String baseUrl = 'http://192.168.0.106:8000/api/chat/conversations/'; // for Android emulator
   // Use 'http://localhost:8000/api/chat' for iOS simulator or web
   
   // Get token from SharedPreferences

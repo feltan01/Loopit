@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'loopit',
+    'chat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +77,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'loopit_db.wsgi.application'
+ASGI_APPLICATION = 'loopit_db.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -134,6 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -156,3 +168,6 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'loopit.LoopitUser'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

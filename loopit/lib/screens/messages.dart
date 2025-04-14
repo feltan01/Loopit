@@ -1,11 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/home_page.dart';
-import 'chat_buyer.dart';
-import 'chat_seller.dart';
-import 'home_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({super.key});
+import 'package:loopit/screens/home_page.dart';
+import '../models/user.dart';
+import '../models/conversation.dart';
+import '../services/api_service.dart';
+import 'chat_buyer.dart';
+
+class MessagesPage extends StatefulWidget {
+  final User currentUser;
+
+  const MessagesPage({
+    Key? key,
+    required this.currentUser,
+  }) : super(key: key);
+
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<MessagesPage> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Conversation> _conversations = [];
+  bool _isLoading = true;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConversations();
+
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  Future<void> _loadConversations() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final conversations = await ApiService.getConversations();
+      setState(() {
+        _conversations = conversations.cast<Conversation>();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load conversations: $e')),
+        );
+      }
+    }
+  }
+
+  List<Conversation> get _filteredConversations {
+    if (_searchQuery.isEmpty) return _conversations;
+
+    return _conversations.where((conversation) {
+      final otherUser = conversation.participants.firstWhere(
+        (user) => user.id != widget.currentUser.id,
+        orElse: () => User(id: -1, username: 'Unknown', email: ''),
+      );
+      return otherUser.username.toLowerCase().contains(_searchQuery);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +109,7 @@ class MessagesPage extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const HomePage(), // Redirect to chat_buyer.dart
-              ),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           },
         ),
@@ -50,6 +119,7 @@ class MessagesPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFE6F4E6),
@@ -71,79 +141,60 @@ class MessagesPage extends StatelessWidget {
           ),
           const Divider(height: 1),
           Expanded(
-            child: ListView(
-              children: [
-                MessageItem(
-                  userName: 'User 2',
-                  message: 'Good Morning! are you taking any offer for...',
-                  isUnread: true,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const ChatDetailScreen(), // Redirect to chat_buyer.dart
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _filteredConversations.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text(
+                              'No conversations yet',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _loadConversations,
+                        child: ListView.builder(
+                          itemCount: _filteredConversations.length,
+                          itemBuilder: (context, index) {
+                            final conversation = _filteredConversations[index];
+                            final otherUser = conversation.participants.firstWhere(
+                              (user) => user.id != widget.currentUser.id,
+                              orElse: () => User(id: -1, username: 'Unknown', email: ''),
+                            );
+                            final lastMessage = conversation.lastMessage;
+                            final unreadCount = conversation.unreadCount;
+
+                            return MessageItem(
+                              userName: otherUser.username,
+                              message: lastMessage?.text ?? 'No messages yet',
+                              messageTime: lastMessage?.createdAt ?? DateTime.now(),
+                              isUnread: lastMessage != null &&
+                                  lastMessage.isUnread &&
+                                  !lastMessage.isFromCurrentUser(widget.currentUser.id),
+                              unreadCount: unreadCount,
+                              isTyping: false, // You can hook this with socket data later
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatDetailScreen(
+                                      conversationId: conversation.id,
+                                      otherUser: otherUser,
+                                      currentUser: widget.currentUser,
+                                    ),
+                                  ),
+                                ).then((_) => _loadConversations());
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Buyer 1',
-                  message: 'Would you mind if i pay it on the spot?',
-                  isUnread: true,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const ChatSellerScreen(), // Redirect to chat_seller.dart
-                      ),
-                    );
-                  },
-                ),
-                MessageItem(
-                  userName: 'Buyer 2',
-                  message: 'Im sorry, but the shipping process could ta...',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ),
-                 MessageItem(
-                  userName: 'Seller 2',
-                  message: 'Thank you!!',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ),
-                 MessageItem(
-                  userName: 'Seller 3',
-                  message: 'Do you have it on green?',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ),
-                 MessageItem(
-                  userName: 'Buyer 3',
-                  message: 'I like this one.',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ),
-                 MessageItem(
-                  userName: 'Seller 2',
-                  message: 'Thank you!!',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ), MessageItem(
-                  userName: 'Seller 4',
-                  message: 'I prefer if you raise your offer',
-                  isUnread: true,
-                  onTap: () {
-                  },
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -154,16 +205,31 @@ class MessagesPage extends StatelessWidget {
 class MessageItem extends StatelessWidget {
   final String userName;
   final String message;
+  final DateTime messageTime;
   final bool isUnread;
+  final int unreadCount;
+  final bool isTyping;
   final VoidCallback onTap;
 
   const MessageItem({
-    super.key,
+    Key? key,
     required this.userName,
     required this.message,
+    required this.messageTime,
     this.isUnread = false,
+    this.unreadCount = 0,
+    this.isTyping = false,
     required this.onTap,
-  });
+  }) : super(key: key);
+
+  String _getMessagePreview() {
+    if (message.startsWith('[image]')) return '📷 Photo';
+    return message;
+  }
+
+  String _getTimeAgo() {
+    return timeago.format(messageTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,15 +238,16 @@ class MessageItem extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: CircleAvatar(
               backgroundColor: const Color(0xFF4A6741),
               radius: 20,
-              child: Icon(
-                Icons.person,
-                size: 18,
-                color: Colors.white.withOpacity(0.8),
+              child: Text(
+                userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             title: Text(
@@ -191,19 +258,36 @@ class MessageItem extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              message,
+              isTyping ? 'Typing...' : _getMessagePreview(),
               style: TextStyle(
                 color: Colors.black87.withOpacity(0.7),
-                overflow: TextOverflow.ellipsis,
+                fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
               ),
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            trailing: isUnread
-                ? const Icon(
-                    Icons.notifications,
-                    color: Color(0xFF4A6741),
+            trailing: unreadCount > 0
+                ? Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF4A6741),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
                   )
-                : null,
+                : Text(
+                    _getTimeAgo(),
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 12,
+                    ),
+                  ),
           ),
           const Divider(height: 1),
         ],

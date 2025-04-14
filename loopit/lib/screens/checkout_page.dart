@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/models/offer.dart';
 import 'address_selection_screen.dart';
 import 'payment_method_screen.dart';
 import 'payment_confirmation_screen.dart';
 import 'chat_buyer.dart';
+import '../models/user.dart';
+import '../models/message.dart';
+import '../models/product.dart';
+import '../services/api_service.dart';
+import '../services/websocket_service.dart';
+import 'checkout_page.dart';
 
 void main() {
   runApp(const Checkout());
@@ -25,7 +32,7 @@ class Checkout extends StatelessWidget {
 }
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+  const CheckoutPage({Key? key, required Offer offer}) : super(key: key);
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();

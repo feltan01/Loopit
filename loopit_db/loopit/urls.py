@@ -9,7 +9,7 @@ router.register(r'profiles', ProfileViewSet, basename='profile')
 router.register(r'listings', ListingViewSet, basename='listing')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls)),  # Includes all default router URLs
 
     # JWT Token Endpoints
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

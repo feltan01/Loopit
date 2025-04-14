@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import '../models/user.dart';
+import '../models/message.dart';
+import '../models/product.dart';
+import '../models/offer.dart';
+import '../services/api_service.dart';
+import '../services/websocket_service.dart';
 import 'checkout_page.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({super.key});
+  final int conversationId;
+  final User otherUser;
+  final User currentUser;
+
+  const ChatDetailScreen({
+    Key? key,
+    required this.conversationId,
+    required this.otherUser,
+    required this.currentUser,
+  }) : super(key: key);
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -10,55 +25,201 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<ChatMessage> _messages = [
-    ChatMessage(
-      sender: 'User 2',
-      text: 'Good Morning! are you taking any offer for the jacket you\'re selling?',
-      isMe: false,
-      time: 'Monday, 1 January',
-      hasProduct: true,
-      productImage: 'assets/images/cream_jacket.png',
-    ),
-    ChatMessage(
-      sender: 'Me',
-      text: 'Sure, just say the number and i\'ll think about it.',
-      isMe: false,
-      time: 'Today',
-    ),
-    ChatMessage(
-      sender: 'Me',
-      text: 'I\'d like to offer',
-      isMe: true,
-      time: 'Today',
-      hasOffer: true,
-      offerAmount: 'Rp 140.000',
-      productName: 'Jacket Cream color',
-      brandName: 'Brand ABC',
-      productImage: 'assets/images/cream_jacket.png',
-      offerStatus: 'Pending',
-    ),
-    ChatMessage(
-      sender: 'User 2',
-      text: 'I\'d like to offer',
-      isMe: false,
-      time: 'Today',
-      hasOffer: true,
-      offerAmount: 'Rp 140.000',
-      productName: 'Jacket Cream color',
-      brandName: 'Brand ABC',
-      productImage: 'assets/images/cream_jacket.png',
-      offerStatus: 'Accepted',
-    ),
-  ];
+  final List<Message> _messages = [];
+  final WebSocketService _webSocketService = WebSocketService();
+  bool _isLoading = true;
+  bool _isWebSocketConnected = false;
+  Product? _currentProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMessages();
+    _setupWebSocket();
+  }
+
+  void _setupWebSocket() async {
+    try {
+      // Connect to WebSocket
+      await _webSocketService.connectToConversation(widget.conversationId);
+      
+      setState(() {
+        _isWebSocketConnected = true;
+      });
+      
+      // Set up message handler
+      _webSocketService.onMessageReceived = (data) {
+        setState(() {
+          // Add new message from WebSocket
+          final newMessage = Message(
+            id: data['message_id'],
+            conversationId: widget.conversationId,
+            sender: User(
+              id: data['sender_id'],
+              username: data['sender_id'] == widget.currentUser.id
+                  ? widget.currentUser.username
+                  : widget.otherUser.username,
+              email: '', // Email not available in WebSocket data
+            ),
+            text: data['message'],
+            createdAt: DateTime.parse(data['timestamp']),
+          );
+          _messages.add(newMessage);
+        });
+      };
+      
+      // Set up reconnection logic
+      _webSocketService.onConnectionClosed = () {
+        setState(() {
+          _isWebSocketConnected = false;
+        });
+        // Try to reconnect after a delay
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted && !_isWebSocketConnected) {
+            _setupWebSocket();
+          }
+        });
+      };
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('WebSocket connection failed: $e')),
+      );
+      // Try to reconnect after a delay
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted && !_isWebSocketConnected) {
+          _setupWebSocket();
+        }
+      });
+    }
+  }
+
+  Future<void> _loadMessages() async {
+    setState(() {
+      _isLoading = true;
+    });
+    
+    try {
+      // Load conversation to get products and messages
+      final conversationData = await ApiService.getConversation(widget.conversationId);
+      
+      // Parse messages
+      final messagesList = List<Map<String, dynamic>>.from(conversationData['messages']);
+      final loadedMessages = messagesList.map((msgJson) => Message.fromJson(msgJson)).toList();
+      
+      setState(() {
+        _messages.clear();
+        _messages.addAll(loadedMessages);
+        _isLoading = false;
+      });
+      
+      // Find product if there's any offer
+      for (var msg in _messages) {
+        if (msg.offer != null) {
+          _currentProduct = msg.offer!.product;
+          break;
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load messages: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendMessage() async {
+    final messageText = _messageController.text.trim();
+    if (messageText.isEmpty) return;
+
+    try {
+      // No need to store the response if not using it
+      await ApiService.sendMessage(
+        widget.conversationId, 
+        messageText
+      );
+      
+      // Clear the input field
+      _messageController.clear();
+      
+      // The new message will come through the WebSocket
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send message: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _respondToOffer(int offerId, String status) async {
+    try {
+      await ApiService.respondToOffer(offerId, status);
+      
+      // Update the local state to reflect the change immediately
+      setState(() {
+        for (var message in _messages) {
+          if (message.offer?.id == offerId) {
+            // Create a new message with updated offer status to avoid direct mutation
+            final updatedOffer = Offer(
+              id: message.offer!.id,
+              conversationId: message.offer!.conversationId,
+              messageId: message.offer!.messageId,
+              product: message.offer!.product,
+              buyer: message.offer!.buyer,
+              amount: message.offer!.amount,
+              status: status,
+              createdAt: message.offer!.createdAt,
+            );
+            
+            // Replace the offer in the message
+            message = Message(
+              id: message.id,
+              conversationId: message.conversationId,
+              sender: message.sender,
+              text: message.text,
+              createdAt: message.createdAt,
+              offer: updatedOffer,
+            );
+            break;
+          }
+        }
+      });
+      
+      // Reload messages to ensure we have the latest data
+      await _loadMessages();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Offer ${status.toLowerCase()}'),
+            backgroundColor: status == 'ACCEPTED' ? Colors.green : Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to respond to offer: $e')),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _webSocketService.disconnect();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -68,12 +229,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: const AssetImage('assets/images/user_avatar.png'),
+              backgroundColor: Colors.grey[300],
+              child: Text(
+                widget.otherUser.username.isNotEmpty 
+                    ? widget.otherUser.username[0].toUpperCase() 
+                    : '?',
+                style: const TextStyle(fontSize: 18),
+              ),
             ),
             const SizedBox(width: 12),
-            const Text(
-              'User 2',
-              style: TextStyle(
+            Text(
+              widget.otherUser.username,
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -87,35 +254,50 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             Navigator.pop(context);
           },
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return _buildMessageItem(_messages[index]);
-              },
+        actions: [
+          // WebSocket connection indicator
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Icon(
+              _isWebSocketConnected ? Icons.wifi : Icons.wifi_off,
+              color: _isWebSocketConnected ? Colors.green : Colors.red,
+              size: 20,
             ),
           ),
-          _buildInputArea(),
         ],
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      return _buildMessageItem(_messages[index], screenWidth);
+                    },
+                  ),
+                ),
+                _buildInputArea(),
+              ],
+            ),
     );
   }
 
-  Widget _buildMessageItem(ChatMessage message) {
-    if (message.hasOffer) {
+  Widget _buildMessageItem(Message message, double screenWidth) {
+    final bool isMe = message.isFromCurrentUser(widget.currentUser.id);
+    
+    // Check if message has an offer
+    if (message.offer != null) {
+      final offer = message.offer!;
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
-          mainAxisAlignment: message.isMe 
-              ? MainAxisAlignment.end 
-              : MainAxisAlignment.start,
+          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Container(
-              width: 280,
+              width: screenWidth * 0.8, // Responsive width
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFFF0F5E6),
@@ -133,9 +315,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           color: const Color(0xFFFFF5EC),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Image.asset(
-                          message.productImage!,
+                        child: Image.network(
+                          offer.product.fullImageUrl,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.image_not_supported),
+                                Text(
+                                  'Image error',
+                                  style: TextStyle(fontSize: 10),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -144,14 +339,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              message.productName,
+                              offer.product.name,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              message.brandName,
+                              offer.product.brand,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -159,7 +354,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              message.offerAmount,
+                              'Rp ${offer.amount.toStringAsFixed(0)}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -171,36 +366,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  if (message.offerStatus == 'Pending')
-                    const Text(
-                      'Please wait for the seller\'s respond',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  if (message.offerStatus == 'Accepted')
-                    ElevatedButton(
-                      onPressed: () {Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const Checkout(), // Redirect to chat_buyer.dart
-                      ),
-                    );},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8BAF7F),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text(
-                        'Check Out',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  // Show different UI based on offer status and user role
+                  _buildOfferStatusUI(offer),
                 ],
               ),
             ),
@@ -213,36 +380,131 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment: message.isMe 
+        mainAxisAlignment: isMe 
             ? MainAxisAlignment.end 
             : MainAxisAlignment.start,
         children: [
           Container(
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.75,
+              maxWidth: screenWidth * 0.75,
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: message.isMe 
+              color: isMe 
                   ? const Color(0xFFE6F4E6) 
                   : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: message.isMe 
+              border: isMe 
                   ? null 
                   : Border.all(color: Colors.grey.shade300),
             ),
             child: Text(
               message.text,
-              style: TextStyle(
-                color: message.isMe 
-                    ? Colors.black 
-                    : Colors.black,
+              style: const TextStyle(
+                color: Colors.black,
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildOfferStatusUI(Offer offer) {
+    // Buyer waiting for response
+    if (offer.isPending && offer.buyer.id == widget.currentUser.id) {
+      return const Text(
+        'Please wait for the seller\'s response',
+        style: TextStyle(
+          color: Colors.grey,
+          fontSize: 12,
+        ),
+      );
+    }
+    
+    // Seller needs to respond to offer
+    if (offer.isPending && offer.product.seller.id == widget.currentUser.id) {
+      return Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () => _respondToOffer(offer.id, 'ACCEPTED'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8BAF7F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                'Accept',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () => _respondToOffer(offer.id, 'REJECTED'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+                side: const BorderSide(color: Colors.red),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text('Reject'),
+            ),
+          ),
+        ],
+      );
+    }
+    
+    // Buyer can checkout after accepted offer
+    if (offer.isAccepted && offer.buyer.id == widget.currentUser.id) {
+      return ElevatedButton(
+        onPressed: () {
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF8BAF7F),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: const Text(
+          'Check Out',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+    
+    // Seller sees status after accepting
+    if (offer.isAccepted && offer.product.seller.id == widget.currentUser.id) {
+      return const Text(
+        'Offer accepted. Waiting for buyer to checkout.',
+        style: TextStyle(
+          color: Colors.green,
+          fontSize: 12,
+        ),
+      );
+    }
+    
+    // Rejected offer status
+    if (offer.isRejected) {
+      return const Text(
+        'Offer rejected',
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 12,
+        ),
+      );
+    }
+    
+    // Default case (shouldn't happen)
+    return const SizedBox.shrink();
   }
 
   Widget _buildInputArea() {
@@ -260,24 +522,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: SafeArea(
         child: Row(
           children: [
-            OutlinedButton(
-              onPressed: _showBargainBottomSheet,
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+            if (_currentProduct != null)
+              OutlinedButton(
+                onPressed: () => _showBargainBottomSheet(_currentProduct!),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  backgroundColor: const Color(0xFFE6F4E6),
+                  side: BorderSide.none,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                backgroundColor: const Color(0xFFE6F4E6),
-                side: BorderSide.none,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              child: const Text(
-                'Bargain price',
-                style: TextStyle(
-                  color: Color(0xFF4A6741),
+                child: const Text(
+                  'Bargain price',
+                  style: TextStyle(
+                    color: Color(0xFF4A6741),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
+            if (_currentProduct != null) const SizedBox(width: 10),
             Expanded(
               child: TextField(
                 controller: _messageController,
@@ -300,23 +563,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                onPressed: () {
-                  if (_messageController.text.isNotEmpty) {
-                    setState(() {
-                      _messages.add(
-                        ChatMessage(
-                          sender: 'User',
-                          text: _messageController.text,
-                          isMe: true,
-                          time: 'Today',
-                        ),
-                      );
-                      _messageController.clear();
-                    });
-                  }
-                },
+                onPressed: _sendMessage,
                 icon: const Icon(
-                  Icons.add,
+                  Icons.send,
                   color: Colors.white,
                   size: 24,
                 ),
@@ -328,9 +577,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  void _showBargainBottomSheet() {
-    final TextEditingController offerController = TextEditingController();
-    
+  void _showBargainBottomSheet(Product product) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -339,181 +586,201 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            top: 20,
-            left: 20,
-            right: 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40.0,
-                  height: 4.0,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final TextEditingController offerController = TextEditingController();
+            bool isSubmitting = false;
+            
+            // Dispose controller when the bottom sheet is closed
+            Future.delayed(Duration.zero, () {
+              if (!mounted) return;
+              // This ensures the controller is disposed when the sheet is dismissed
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                Future.microtask(() {
+                  if (context.mounted) {
+                    offerController.addListener(() {
+                      if (!context.mounted) offerController.dispose();
+                    });
+                  }
+                });
+              });
+            });
+            
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 20,
+                left: 20,
+                right: 20,
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Make an Offer',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF5EC),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/cream_jacket.png',
-                      fit: BoxFit.cover,
+                  Center(
+                    child: Container(
+                      width: 40.0,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Jacket Cream color',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          'Brand ABC',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Original Price: Rp 200.000',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: offerController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Your offer (in Rp)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixText: 'Rp ',
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (offerController.text.isNotEmpty) {
-                      try {
-                        double.parse(offerController.text.replaceAll(',', '.'));
-                        
-                        setState(() {
-                          _messages.add(
-                            ChatMessage(
-                              sender: 'User',
-                              text: 'I\'d like to offer', 
-                              isMe: true,
-                              time: 'Today',
-                              hasOffer: true,
-                              offerAmount: 'Rp ${offerController.text}',
-                              productName: 'Jacket Cream color',
-                              brandName: 'Brand ABC',
-                              productImage: 'assets/images/cream_jacket.png',
-                              offerStatus: 'Pending',
-                            ),
-                          );
-                        });
-                        
-                        Navigator.pop(context);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter a valid number'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8BAF7F),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Send Offer',
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Make an Offer',
                     style: TextStyle(
-                      color: Colors.white,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF5EC),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Image.network(
+                          product.fullImageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.image_not_supported),
+                                Text(
+                                  'Image error',
+                                  style: TextStyle(fontSize: 10),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              product.brand,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Original Price: Rp ${product.price.toStringAsFixed(0)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: offerController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Your offer (in Rp)',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      prefixText: 'Rp ',
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isSubmitting ? null : () async {
+                        if (offerController.text.isEmpty) return;
+                        
+                        setSheetState(() {
+                          isSubmitting = true;
+                        });
+                        
+                        try {
+                          final amount = double.parse(offerController.text.replaceAll(',', '.'));
+                          
+                          try {
+                            await ApiService.makeOffer(
+                              widget.conversationId,
+                              product.id,
+                              amount,
+                            );
+                            
+                            // Reload messages to show the new offer
+                            await _loadMessages();
+                            
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to send offer: $e')),
+                              );
+                            }
+                            setSheetState(() {
+                              isSubmitting = false;
+                            });
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter a valid number'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                          setSheetState(() {
+                            isSubmitting = false;
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8BAF7F),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: isSubmitting 
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Send Offer',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         );
       },
-    ).then((_) {
-      offerController.dispose();
-    });
+    );
   }
-}
-
-class ChatMessage {
-  final String sender;
-  final String text;
-  final bool isMe;
-  final String time;
-  final bool hasProduct;
-  final bool hasOffer;
-  final String offerAmount;
-  final String productName;
-  final String brandName;
-  final String? productImage;
-  final String offerStatus;
-
-  ChatMessage({
-    required this.sender,
-    required this.text,
-    required this.isMe,
-    required this.time,
-    this.hasProduct = false,
-    this.hasOffer = false,
-    this.offerAmount = '',
-    this.productName = '',
-    this.brandName = '',
-    this.productImage,
-    this.offerStatus = '',
-  });
 }

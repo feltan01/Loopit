@@ -1,36 +1,52 @@
-com.example.loopit.app-jetified-play-services-base-18.0.1-0 C:\Users\Allegra\.gradle\caches\transforms-3\1506ef9538036b7dc0e9d88262038309\transformed\jetified-play-services-base-18.0.1\res
-com.example.loopit.app-jetified-core-1.0.0-1 C:\Users\Allegra\.gradle\caches\transforms-3\1c1c312cbd0c58e324a99604324cac4f\transformed\jetified-core-1.0.0\res
-com.example.loopit.app-jetified-play-services-basement-18.0.0-2 C:\Users\Allegra\.gradle\caches\transforms-3\24b27e3af82fb6f56d986847a5eec020\transformed\jetified-play-services-basement-18.0.0\res
-com.example.loopit.app-jetified-activity-1.9.3-3 C:\Users\Allegra\.gradle\caches\transforms-3\25d6b83f2fbedc132da7815b21c230ba\transformed\jetified-activity-1.9.3\res
-com.example.loopit.app-jetified-lifecycle-process-2.7.0-4 C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\res
-com.example.loopit.app-lifecycle-livedata-2.7.0-5 C:\Users\Allegra\.gradle\caches\transforms-3\373cccab14351c9b414e6c3205afa664\transformed\lifecycle-livedata-2.7.0\res
-com.example.loopit.app-jetified-startup-runtime-1.1.1-6 C:\Users\Allegra\.gradle\caches\transforms-3\53c63011a92b281fddde63efcaac72cf\transformed\jetified-startup-runtime-1.1.1\res
-com.example.loopit.app-jetified-android-maps-utils-3.6.0-7 C:\Users\Allegra\.gradle\caches\transforms-3\64fc5791afd5774b0b895158836097aa\transformed\jetified-android-maps-utils-3.6.0\res
-com.example.loopit.app-jetified-lifecycle-livedata-core-ktx-2.7.0-8 C:\Users\Allegra\.gradle\caches\transforms-3\6674a3b4045b923663229a69df96ec71\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
-com.example.loopit.app-jetified-play-services-maps-18.2.0-9 C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\res
-com.example.loopit.app-lifecycle-viewmodel-2.7.0-10 C:\Users\Allegra\.gradle\caches\transforms-3\783fcce15a804068ff5f3ac3b120a1eb\transformed\lifecycle-viewmodel-2.7.0\res
-com.example.loopit.app-jetified-annotation-experimental-1.4.0-11 C:\Users\Allegra\.gradle\caches\transforms-3\7dd43e53c72f1512922e626751e4c876\transformed\jetified-annotation-experimental-1.4.0\res
-com.example.loopit.app-core-runtime-2.2.0-12 C:\Users\Allegra\.gradle\caches\transforms-3\88b883b9298aa82372ca5b0fe9c1be21\transformed\core-runtime-2.2.0\res
-com.example.loopit.app-core-1.13.1-13 C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\res
-com.example.loopit.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-14 C:\Users\Allegra\.gradle\caches\transforms-3\9ebf29a84063548fffe0aa051ba8e5ec\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
-com.example.loopit.app-jetified-tracing-1.2.0-15 C:\Users\Allegra\.gradle\caches\transforms-3\9f0effeb5ca6bc830f63a2fc681dbf51\transformed\jetified-tracing-1.2.0\res
-com.example.loopit.app-jetified-savedstate-1.2.1-16 C:\Users\Allegra\.gradle\caches\transforms-3\a881b52b18bee50f4ebc86ae5f5ebe48\transformed\jetified-savedstate-1.2.1\res
-com.example.loopit.app-jetified-window-java-1.2.0-17 C:\Users\Allegra\.gradle\caches\transforms-3\b700c6071b93c83ba5e9ed6ef9abddd7\transformed\jetified-window-java-1.2.0\res
-com.example.loopit.app-jetified-window-1.2.0-18 C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\res
-com.example.loopit.app-lifecycle-runtime-2.7.0-19 C:\Users\Allegra\.gradle\caches\transforms-3\c868f36fcc1cc43569adac9e25bc14af\transformed\lifecycle-runtime-2.7.0\res
-com.example.loopit.app-fragment-1.7.1-20 C:\Users\Allegra\.gradle\caches\transforms-3\d0816802f2297dc9cde5afe6a2a8881e\transformed\fragment-1.7.1\res
-com.example.loopit.app-jetified-profileinstaller-1.3.1-21 C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\res
-com.example.loopit.app-jetified-core-ktx-1.13.1-22 C:\Users\Allegra\.gradle\caches\transforms-3\e8a29c55522bbed014d2c4bd204b1ed1\transformed\jetified-core-ktx-1.13.1\res
-com.example.loopit.app-lifecycle-livedata-core-2.7.0-23 C:\Users\Allegra\.gradle\caches\transforms-3\fb46491e840e334a0448fbba1a27dbff\transformed\lifecycle-livedata-core-2.7.0\res
-com.example.loopit.app-packaged_res-24 C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_plugin_android_lifecycle-2.0.27\android\build\intermediates\packaged_res\debug
-com.example.loopit.app-packaged_res-25 C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\google_maps_flutter_android-2.16.0\android\build\intermediates\packaged_res\debug
-com.example.loopit.app-packaged_res-26 C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\packaged_res\debug
-com.example.loopit.app-packaged_res-27 C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\path_provider_android-2.2.16\android\build\intermediates\packaged_res\debug
-com.example.loopit.app-packaged_res-28 C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\permission_handler_android-12.1.0\android\build\intermediates\packaged_res\debug
-com.example.loopit.app-pngs-29 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\build\generated\res\pngs\debug
-com.example.loopit.app-resValues-30 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\build\generated\res\resValues\debug
-com.example.loopit.app-packageDebugResources-31 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.example.loopit.app-packageDebugResources-32 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.example.loopit.app-merged_res-33 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\build\intermediates\merged_res\debug
-com.example.loopit.app-debug-34 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\debug\res
-com.example.loopit.app-main-35 C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\res
+com.example.loopit.app-lifecycle-livedata-2.7.0-0 C:\Users\Owen\.gradle\caches\transforms-3\00f0a30cf3ded2fc001be14c0c03915a\transformed\lifecycle-livedata-2.7.0\res
+com.example.loopit.app-jetified-datastore-release-1 C:\Users\Owen\.gradle\caches\transforms-3\04ce90138a1b4e38183d7a1268be0d9f\transformed\jetified-datastore-release\res
+com.example.loopit.app-jetified-lifecycle-process-2.7.0-2 C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\res
+com.example.loopit.app-fragment-1.7.1-3 C:\Users\Owen\.gradle\caches\transforms-3\06f0b9058adc4ab2a55e93e603c66531\transformed\fragment-1.7.1\res
+com.example.loopit.app-lifecycle-viewmodel-2.7.0-4 C:\Users\Owen\.gradle\caches\transforms-3\09d10b62fd3cc2cbfa5ed1b419d13ac2\transformed\lifecycle-viewmodel-2.7.0\res
+com.example.loopit.app-core-runtime-2.2.0-5 C:\Users\Owen\.gradle\caches\transforms-3\0f13b4980bbcc5b0234420ecb54282b3\transformed\core-runtime-2.2.0\res
+com.example.loopit.app-jetified-lifecycle-viewmodel-ktx-2.7.0-6 C:\Users\Owen\.gradle\caches\transforms-3\158911c23765e22bf517afb91b202c04\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
+com.example.loopit.app-lifecycle-runtime-2.7.0-7 C:\Users\Owen\.gradle\caches\transforms-3\2ba62b881de503a170d5a59fa6a4fe38\transformed\lifecycle-runtime-2.7.0\res
+com.example.loopit.app-jetified-startup-runtime-1.1.1-8 C:\Users\Owen\.gradle\caches\transforms-3\3797557afac31d66ebf0097cdc6d37bf\transformed\jetified-startup-runtime-1.1.1\res
+com.example.loopit.app-jetified-tracing-1.2.0-9 C:\Users\Owen\.gradle\caches\transforms-3\3d9af943d60bea975e74c205a0c041d6\transformed\jetified-tracing-1.2.0\res
+com.example.loopit.app-jetified-activity-1.9.3-10 C:\Users\Owen\.gradle\caches\transforms-3\42be59c56e89a4286a232da9482b1c56\transformed\jetified-activity-1.9.3\res
+com.example.loopit.app-jetified-savedstate-ktx-1.2.1-11 C:\Users\Owen\.gradle\caches\transforms-3\435c0bc1cc46b408feb5175f9958c8dc\transformed\jetified-savedstate-ktx-1.2.1\res
+com.example.loopit.app-jetified-datastore-core-release-12 C:\Users\Owen\.gradle\caches\transforms-3\47f150db8fc868ec5752ba4a925fa043\transformed\jetified-datastore-core-release\res
+com.example.loopit.app-jetified-core-1.0.0-13 C:\Users\Owen\.gradle\caches\transforms-3\480e327f224d50252ff1bc2032f21225\transformed\jetified-core-1.0.0\res
+com.example.loopit.app-jetified-profileinstaller-1.3.1-14 C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\res
+com.example.loopit.app-slidingpanelayout-1.2.0-15 C:\Users\Owen\.gradle\caches\transforms-3\5c362dc931dedefcb03614aa45bb4388\transformed\slidingpanelayout-1.2.0\res
+com.example.loopit.app-jetified-annotation-experimental-1.4.0-16 C:\Users\Owen\.gradle\caches\transforms-3\61447563c17c4e327e623e6bde50a6b2\transformed\jetified-annotation-experimental-1.4.0\res
+com.example.loopit.app-jetified-lifecycle-livedata-core-ktx-2.7.0-17 C:\Users\Owen\.gradle\caches\transforms-3\6664b077958bfda3b0fa99b8a613fb4f\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
+com.example.loopit.app-jetified-savedstate-1.2.1-18 C:\Users\Owen\.gradle\caches\transforms-3\68e48bffb0ad6995759496e4a0b18aac\transformed\jetified-savedstate-1.2.1\res
+com.example.loopit.app-coordinatorlayout-1.0.0-19 C:\Users\Owen\.gradle\caches\transforms-3\69e8ac81cde8184a183f8265f005503e\transformed\coordinatorlayout-1.0.0\res
+com.example.loopit.app-jetified-core-ktx-1.13.1-20 C:\Users\Owen\.gradle\caches\transforms-3\6dcff70fdfab52bf8233be67ca46412f\transformed\jetified-core-ktx-1.13.1\res
+com.example.loopit.app-transition-1.4.1-21 C:\Users\Owen\.gradle\caches\transforms-3\7421bc280e5f36841b2872a9845405b4\transformed\transition-1.4.1\res
+com.example.loopit.app-recyclerview-1.0.0-22 C:\Users\Owen\.gradle\caches\transforms-3\7bb596f8af78357a3994bcb2b8a22195\transformed\recyclerview-1.0.0\res
+com.example.loopit.app-jetified-android-maps-utils-3.6.0-23 C:\Users\Owen\.gradle\caches\transforms-3\8b41aa5ca38f74fefbd7bf8d464ea109\transformed\jetified-android-maps-utils-3.6.0\res
+com.example.loopit.app-jetified-play-services-maps-18.2.0-24 C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\res
+com.example.loopit.app-jetified-play-services-base-18.0.1-25 C:\Users\Owen\.gradle\caches\transforms-3\9147086ef115bc73044c08f965bcf819\transformed\jetified-play-services-base-18.0.1\res
+com.example.loopit.app-jetified-lifecycle-runtime-ktx-2.7.0-26 C:\Users\Owen\.gradle\caches\transforms-3\918f278b2b0cbd387a1387c15bb52b7a\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
+com.example.loopit.app-jetified-datastore-preferences-release-27 C:\Users\Owen\.gradle\caches\transforms-3\94656519125bc761429806af3aa2b05a\transformed\jetified-datastore-preferences-release\res
+com.example.loopit.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-28 C:\Users\Owen\.gradle\caches\transforms-3\a0b140f1c1c604f56154f2f64cbe3ef5\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.example.loopit.app-jetified-appcompat-resources-1.1.0-29 C:\Users\Owen\.gradle\caches\transforms-3\a3220a1c9e753278c17fdf3f5dcf080c\transformed\jetified-appcompat-resources-1.1.0\res
+com.example.loopit.app-preference-1.2.1-30 C:\Users\Owen\.gradle\caches\transforms-3\b8630ef964e24a9308903f626ad330a7\transformed\preference-1.2.1\res
+com.example.loopit.app-core-1.13.1-31 C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\res
+com.example.loopit.app-jetified-play-services-basement-18.0.0-32 C:\Users\Owen\.gradle\caches\transforms-3\bc22faac19b4c3108f1eee8f5384bfc3\transformed\jetified-play-services-basement-18.0.0\res
+com.example.loopit.app-jetified-fragment-ktx-1.7.1-33 C:\Users\Owen\.gradle\caches\transforms-3\bc6059afa0e3f4c9ca643af231145896\transformed\jetified-fragment-ktx-1.7.1\res
+com.example.loopit.app-jetified-window-1.2.0-34 C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\res
+com.example.loopit.app-jetified-window-java-1.2.0-35 C:\Users\Owen\.gradle\caches\transforms-3\df6f9689441581bbdc86201a771245e6\transformed\jetified-window-java-1.2.0\res
+com.example.loopit.app-jetified-activity-ktx-1.9.3-36 C:\Users\Owen\.gradle\caches\transforms-3\e3cfcbe2f9092f292ea4be0d9a205892\transformed\jetified-activity-ktx-1.9.3\res
+com.example.loopit.app-appcompat-1.1.0-37 C:\Users\Owen\.gradle\caches\transforms-3\e7d3197b00865a33fc8a108709736eeb\transformed\appcompat-1.1.0\res
+com.example.loopit.app-lifecycle-livedata-core-2.7.0-38 C:\Users\Owen\.gradle\caches\transforms-3\f2d3c82381e25eb13c3dfc99052152fb\transformed\lifecycle-livedata-core-2.7.0\res
+com.example.loopit.app-packaged_res-39 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_plugin_android_lifecycle-2.0.27\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-packaged_res-40 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\google_maps_flutter_android-2.16.0\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-packaged_res-41 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-packaged_res-42 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\path_provider_android-2.2.16\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-packaged_res-43 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\permission_handler_android-12.1.0\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-packaged_res-44 C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\shared_preferences_android-2.4.9\android\build\intermediates\packaged_res\debug
+com.example.loopit.app-pngs-45 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\build\generated\res\pngs\debug
+com.example.loopit.app-resValues-46 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\build\generated\res\resValues\debug
+com.example.loopit.app-packageDebugResources-47 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.loopit.app-packageDebugResources-48 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.loopit.app-merged_res-49 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\build\intermediates\merged_res\debug
+com.example.loopit.app-debug-50 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\debug\res
+com.example.loopit.app-main-51 C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\res

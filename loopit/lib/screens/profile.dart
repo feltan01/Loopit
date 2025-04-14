@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/seller_verification.dart';
 import 'package:loopit/screens/wallet.dart'; // Add this import for the wallet screen
+import 'package:loopit/screens/my_profile.dart'; // Add import for the MyProfileScreen
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +25,7 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
+  
   /// Header Profil
   Widget _buildProfileHeader() {
     return Column(
@@ -33,7 +34,7 @@ class ProfilePage extends StatelessWidget {
         CircleAvatar(
           radius: 50,
           backgroundImage: NetworkImage(
-              'https://i.imgur.com/your-image-url.jpg'), // Ganti dengan URL gambar profil
+            'https://i.imgur.com/your-image-url.jpg'), // Ganti dengan URL gambar profil
         ),
         SizedBox(height: 10),
         Text(
@@ -43,7 +44,7 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-
+  
   /// Bagian "Your Items"
   Widget _buildItemsSection() {
     return Padding(
@@ -67,7 +68,7 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
+  
   /// Kartu "Items on Sell" & "Items Sold"
   Widget _buildItemCard(String title, String count, String description) {
     return Expanded(
@@ -104,12 +105,18 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
+  
   /// List Menu Profil
   Widget _buildMenuList(BuildContext context) {
     return Column(
       children: [
-        _buildMenuItem(Icons.person, "My Profile", () {}),
+        _buildMenuItem(Icons.person, "My Profile", () {
+          // Navigate to the MyProfileScreen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyProfileScreen()),
+          );
+        }),
         _buildMenuItem(Icons.account_balance_wallet, "My Balance", () {
           // Navigate to the Wallet/Balance page
           Navigator.push(
@@ -123,7 +130,7 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-
+  
   /// Item Menu
   Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
@@ -132,7 +139,7 @@ class ProfilePage extends StatelessWidget {
       onTap: onTap,
     );
   }
-
+  
   /// Bottom Navigation Bar
   Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(

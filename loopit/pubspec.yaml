@@ -32,6 +32,8 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter: ^2.5.0
+  flutter_map: ^6.1.0
+  latlong2: 0.9.1
   # You may also need these packages for full functionality:
   image_picker: ^1.0.4  # For picking images for delivery proof
   permission_handler: ^11.0.1 

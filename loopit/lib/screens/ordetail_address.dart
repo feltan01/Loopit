@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'report.dart'; // Import the report screen
 import 'cod.dart';
 
+
 void main() {
   runApp(const OrderdetailsAddress());
 }
@@ -17,13 +18,13 @@ class OrderdetailsAddress extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const OrderDetailsPage(),
+      home: const OrderDetailsPageAddress(),
     );
   }
 }
 
-class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({Key? key}) : super(key: key);
+class OrderDetailsPageAddress extends StatelessWidget {
+  const OrderDetailsPageAddress({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

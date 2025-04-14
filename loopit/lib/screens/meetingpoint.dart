@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'ordetail_address.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:loopit/screens/ordetail_address.dart';
 
 class MeetingPointPage extends StatefulWidget {
   const MeetingPointPage({Key? key}) : super(key: key);
@@ -10,56 +11,101 @@ class MeetingPointPage extends StatefulWidget {
 }
 
 class _MeetingPointPageState extends State<MeetingPointPage> {
-  // Controller for the Google Map
-  late GoogleMapController _mapController;
+  final MapController _mapController = MapController();
 
-  // Initial camera position
-  final CameraPosition _initialPosition = const CameraPosition(
-    target: LatLng(-6.288433, 106.668209), // Coordinates for Bintaro area
-    zoom: 15.5,
-  );
+  LatLng _selectedLocation = const LatLng(-6.288433, 106.668209);
+  String _selectedLocationName = 'Fresh Market Emerald Bintaro';
+  String _selectedLocationAddress =
+      'Pintu Selatan Blok PE / KA-01, RW.1, Parigi, Pondok Aren, South Tangerang City, Banten 15227';
 
-  // Markers for the map
-  final Set<Marker> _markers = {};
+  final List<Map<String, dynamic>> _predefinedLocations = [
+    {
+      'id': 'fresh_market',
+      'position': const LatLng(-6.288433, 106.668209),
+      'title': 'Fresh Market Emerald Bintaro',
+      'address':
+          'Pintu Selatan Blok PE / KA-01, RW.1, Parigi, Pondok Aren, South Tangerang City, Banten 15227',
+      'color': Colors.red,
+    },
+    {
+      'id': 'donat_bahagia',
+      'position': const LatLng(-6.289433, 106.667709),
+      'title': 'Donat bahagia bintaro',
+      'address':
+          'Jl. Emerald Boulevard, Parigi, Pondok Aren, South Tangerang City, Banten',
+      'color': Colors.orange,
+    },
+    {
+      'id': 'jual_putih',
+      'position': const LatLng(-6.290033, 106.668909),
+      'title': 'JUAL PUTIH',
+      'address':
+          'Jl. CBD Emerald Blok CE/A, Parigi, Pondok Aren, South Tangerang City, Banten',
+      'color': Colors.blue,
+    },
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    // Add the Fresh Market marker
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('fresh_market'),
-        position: const LatLng(-6.288433, 106.668209),
-        infoWindow: const InfoWindow(
-          title: 'Fresh Market Emerald Bintaro',
+  List<Marker> _buildMarkers() {
+    List<Marker> markers = _predefinedLocations.map((location) {
+      return Marker(
+        width: 40,
+        height: 40,
+        point: location['position'],
+        child: GestureDetector(
+          onTap: () {
+            _selectLocation(
+              location['position'],
+              location['title'],
+              location['address'],
+            );
+          },
+          child: Icon(
+            Icons.location_pin,
+            color: location['color'],
+            size: 36,
+          ),
         ),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      ),
-    );
+      );
+    }).toList();
 
-    // Add additional markers for reference points
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('donat_bahagia'),
-        position: const LatLng(-6.289433, 106.667709),
-        infoWindow: const InfoWindow(
-          title: 'Donat bahagia bintaro',
+    // Add custom marker if it's not a predefined location
+    if (!_predefinedLocations
+        .any((loc) => loc['position'] == _selectedLocation)) {
+      markers.add(
+        Marker(
+          width: 40,
+          height: 40,
+          point: _selectedLocation,
+          child: const Icon(
+            Icons.location_pin,
+            color: Colors.green,
+            size: 36,
+          ),
         ),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      ),
-    );
+      );
+    }
 
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('jual_putih'),
-        position: const LatLng(-6.290033, 106.668909),
-        infoWindow: const InfoWindow(
-          title: 'JUAL PUTIH',
-        ),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      ),
-    );
+    return markers;
+  }
+
+  void _selectLocation(LatLng position, String name, String address) {
+    setState(() {
+      _selectedLocation = position;
+      _selectedLocationName = name;
+      _selectedLocationAddress = address;
+    });
+
+    _mapController.move(position, 16);
+  }
+
+  void _addCustomMarker(LatLng position) {
+    setState(() {
+      _selectedLocation = position;
+      _selectedLocationName = 'Custom Meeting Point';
+      _selectedLocationAddress = '${position.latitude}, ${position.longitude}';
+    });
+
+    _mapController.move(position, 16);
   }
 
   @override
@@ -67,19 +113,17 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
     return Scaffold(
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header
-            Container(
+            Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  // Back button
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6F4E6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE6F4E6),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -94,7 +138,6 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Title
                   const Text(
                     'Meeting Point',
                     style: TextStyle(
@@ -107,17 +150,26 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
               ),
             ),
 
-            // Map Container
+            // Map
             Expanded(
-              child: GoogleMap(
-                initialCameraPosition: _initialPosition,
-                markers: _markers,
-                mapType: MapType.normal,
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController = controller;
-                },
-                zoomControlsEnabled: false,
-                myLocationButtonEnabled: false,
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  center: _selectedLocation,
+                  zoom: 15.5,
+                  onTap: (tapPosition, latlng) => _addCustomMarker(latlng),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c'],
+                    userAgentPackageName: 'com.example.app',
+                  ),
+                  MarkerLayer(
+                    markers: _buildMarkers(),
+                  ),
+                ],
               ),
             ),
 
@@ -131,14 +183,11 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    const Icon(
-                      Icons.search,
-                      color: Color(0xFF4A6741),
-                    ),
-                    const SizedBox(width: 8),
-                    const Expanded(
+                  children: const [
+                    SizedBox(width: 16),
+                    Icon(Icons.search, color: Color(0xFF4A6741)),
+                    SizedBox(width: 8),
+                    Expanded(
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Search Location',
@@ -155,8 +204,45 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
               ),
             ),
 
-            // Meeting Point Info
+            // Quick Select Buttons
             Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: _predefinedLocations.map((location) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _selectLocation(
+                          location['position'],
+                          location['title'],
+                          location['address'],
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            _selectedLocationName == location['title']
+                                ? const Color(0xFF4A6741)
+                                : const Color(0xFFE6F4E6),
+                        foregroundColor:
+                            _selectedLocationName == location['title']
+                                ? Colors.white
+                                : const Color(0xFF4A6741),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(location['title']),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // Info Section
+            Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,36 +255,27 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Location Info
+                  const SizedBox(height: 8),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Color(0xFF4A6741),
-                        size: 20,
-                      ),
+                      const Icon(Icons.location_on, color: Color(0xFF4A6741)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              'Fresh Market Emerald Bintaro',
-                              style: TextStyle(
+                              _selectedLocationName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                                 color: Color(0xFF4A6741),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Pintu Selatan Blok PE / KA-01, RW.1, Parigi, Pondok Aren, South Tangerang City, Banten 15227',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                              ),
+                              _selectedLocationAddress,
+                              style: const TextStyle(color: Colors.black54),
                             ),
                           ],
                         ),
@@ -211,15 +288,16 @@ class _MeetingPointPageState extends State<MeetingPointPage> {
 
             // Confirm Button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const OrderdetailsAddress(),
-                    ),
-                  );
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const OrderdetailsAddress(), // Redirect to chat_buyer.dart
+              ),
+            );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE6F4E6),

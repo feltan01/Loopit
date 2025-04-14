@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'report.dart'; // Import the report screen
 import 'meetingpoint.dart'; // Import the meeting point page
 import 'transaction_hub.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(const OrderdetailsCodSeller());
@@ -23,8 +24,30 @@ class OrderdetailsCodSeller extends StatelessWidget {
   }
 }
 
-class OrderDetailsPage extends StatelessWidget {
+class OrderDetailsPage extends StatefulWidget {
   const OrderDetailsPage({Key? key}) : super(key: key);
+
+  @override
+  State<OrderDetailsPage> createState() => _OrderDetailsPageState();
+}
+
+class _OrderDetailsPageState extends State<OrderDetailsPage> {
+  // Default meeting point status
+  LatLng? meetingPointLocation;
+  String meetingPointAddress = 'Please set your meeting point';
+  bool hasMeetingPoint = false;
+
+  // Google Maps Controller
+  GoogleMapController? _mapController;
+
+  // Method to update meeting point data when returning from MeetingPointPage
+  void _updateMeetingPoint(LatLng location, String address) {
+    setState(() {
+      meetingPointLocation = location;
+      meetingPointAddress = address;
+      hasMeetingPoint = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,15 +225,24 @@ class OrderDetailsPage extends StatelessWidget {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  onTap: () {
-                                    // Navigate to MeetingPointPage when tapped
-                                    Navigator.push(
+                                  onTap: () async {
+                                    // Navigate to MeetingPointPage when tapped and wait for result
+                                    final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const MeetingPointPage(),
+                                        builder: (context) => const MeetingPointPage(),
                                       ),
                                     );
+                                    
+                                    // Check if we received meeting point data
+                                    if (result != null && result is Map<String, dynamic>) {
+                                      if (result.containsKey('location') && result.containsKey('address')) {
+                                        _updateMeetingPoint(
+                                          result['location'] as LatLng,
+                                          result['address'] as String,
+                                        );
+                                      }
+                                    }
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
@@ -226,11 +258,15 @@ class OrderDetailsPage extends StatelessWidget {
                                           size: 16,
                                         ),
                                         const SizedBox(width: 4),
-                                        const Text(
-                                          'Please set your meeting point',
-                                          style: TextStyle(
-                                            color: Color(0xFF4A6741),
-                                            fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Text(
+                                            meetingPointAddress,
+                                            style: const TextStyle(
+                                              color: Color(0xFF4A6741),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
                                         ),
                                       ],
@@ -257,9 +293,70 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                     ),
 
+                    const SizedBox(height: 16),
+
+                    // Map preview - Only shown when meeting point is set
+                    if (hasMeetingPoint && meetingPointLocation != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Meeting Point Location',
+                              style: TextStyle(
+                                fontSize: 16, 
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF4A6741),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFEEF1EA), width: 2),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: GoogleMap(
+                                  initialCameraPosition: CameraPosition(
+                                    target: meetingPointLocation!,
+                                    zoom: 15.0,
+                                  ),
+                                  markers: {
+                                    Marker(
+                                      markerId: const MarkerId('selected_meeting_point'),
+                                      position: meetingPointLocation!,
+                                      infoWindow: const InfoWindow(
+                                        title: 'Meeting Point',
+                                      ),
+                                    ),
+                                  },
+                                  zoomControlsEnabled: false,
+                                  mapToolbarEnabled: false,
+                                  myLocationButtonEnabled: false,
+                                  onMapCreated: (GoogleMapController controller) {
+                                    _mapController = controller;
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              meetingPointAddress,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     const Divider(
-                        height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
-                    const SizedBox(height: 20),
+                        height: 32, thickness: 1, color: Color(0xFFEEEEEE)),
+                    const SizedBox(height: 4),
 
                     // Total section
                     const Padding(
@@ -367,10 +464,44 @@ class OrderDetailsPage extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: hasMeetingPoint ? () {
+                    // Show confirmation dialog
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Meeting Point'),
+                          content: const Text(
+                            'Once confirmed, the meeting point cannot be changed and the buyer will be notified. Are you sure?'
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Handle confirmation logic here
+                                Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReportProblemScreen(),
+                                ),
+                              );
+                              },
+                              child: const Text('Confirm'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } : null, // Disable button if no meeting point is set
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEEF1EA),
                     foregroundColor: const Color(0xFF4A6741),
+                    disabledBackgroundColor: Colors.grey[300],
+                    disabledForegroundColor: Colors.grey[600],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),

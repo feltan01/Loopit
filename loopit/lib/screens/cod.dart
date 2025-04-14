@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:loopit/screens/payment_complete.dart';
 import 'dart:async';
 import 'report.dart';
 import 'cod_withfoto.dart';
+
 
 class CashOnDeliveryPage extends StatefulWidget {
   const CashOnDeliveryPage({Key? key}) : super(key: key);
@@ -346,7 +348,13 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle completion action
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const OrderComplete(), // Redirect to chat_seller.dart
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEEF1EA),

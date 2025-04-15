@@ -55,6 +55,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     'message': 'Login successful',
                     'user_id': user.id,
                     'email': user.email,
+                    'username': user.username, 
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                 }, status=status.HTTP_200_OK)
@@ -83,6 +84,8 @@ class UserViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# ... (imports tetap sama)
+
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
@@ -107,6 +110,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        try:
+            profile = Profile.objects.get(user=request.user)
+            serializer = self.get_serializer(profile)
+            return Response(serializer.data)
+        except Profile.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()

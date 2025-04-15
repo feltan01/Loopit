@@ -124,8 +124,7 @@ class WalletBalanceScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // Back button action
-            print('Back button pressed');
+            Navigator.pop(context);
           },
         ),
         title: const Text(

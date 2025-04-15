@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/seller_verification.dart';
-import 'package:loopit/screens/wallet.dart'; // Add this import for the wallet screen
-import 'package:loopit/screens/my_profile.dart'; // Add import for the MyProfileScreen
+import 'package:loopit/screens/wallet.dart';
+import 'package:loopit/screens/my_profile.dart';
+import 'package:loopit/screens/login_page.dart'; // Tambahkan ini
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,22 +20,20 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 20),
             _buildItemsSection(),
             SizedBox(height: 20),
-            _buildMenuList(context), // Pass context to the menu list
+            _buildMenuList(context),
           ],
         ),
       ),
     );
   }
-  
-  /// Header Profil
+
   Widget _buildProfileHeader() {
     return Column(
       children: [
         SizedBox(height: 20),
         CircleAvatar(
           radius: 50,
-          backgroundImage: NetworkImage(
-            'https://i.imgur.com/your-image-url.jpg'), // Ganti dengan URL gambar profil
+          backgroundImage: NetworkImage('https://i.imgur.com/your-image-url.jpg'),
         ),
         SizedBox(height: 10),
         Text(
@@ -44,8 +43,7 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-  
-  /// Bagian "Your Items"
+
   Widget _buildItemsSection() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -68,8 +66,7 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-  
-  /// Kartu "Items on Sell" & "Items Sold"
+
   Widget _buildItemCard(String title, String count, String description) {
     return Expanded(
       child: Container(
@@ -105,20 +102,17 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-  
-  /// List Menu Profil
+
   Widget _buildMenuList(BuildContext context) {
     return Column(
       children: [
         _buildMenuItem(Icons.person, "My Profile", () {
-          // Navigate to the MyProfileScreen
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const MyProfileScreen()),
           );
         }),
         _buildMenuItem(Icons.account_balance_wallet, "My Balance", () {
-          // Navigate to the Wallet/Balance page
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const WalletBalanceScreen()),
@@ -126,12 +120,17 @@ class ProfilePage extends StatelessWidget {
         }),
         _buildMenuItem(Icons.settings, "Settings", () {}),
         _buildMenuItem(Icons.info, "About App", () {}),
-        _buildMenuItem(Icons.logout, "LogOut", () {}),
+        _buildMenuItem(Icons.logout, "LogOut", () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+            (route) => false,
+          );
+        }),
       ],
     );
   }
-  
-  /// Item Menu
+
   Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.green[800]),
@@ -139,14 +138,13 @@ class ProfilePage extends StatelessWidget {
       onTap: onTap,
     );
   }
-  
-  /// Bottom Navigation Bar
+
   Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(
       backgroundColor: const Color(0xFFFFF5EE),
       selectedItemColor: const Color(0xFF4A6741),
       unselectedItemColor: Colors.grey,
-      currentIndex: 2, // Set to 2 since this is the profile page
+      currentIndex: 2,
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
         if (index == 0) {
@@ -159,8 +157,6 @@ class ProfilePage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const SellerVerificationPage()),
           );
-        } else if (index == 2) {
-          // No need to navigate - already on ProfilePage
         }
       },
       items: const [
@@ -169,7 +165,7 @@ class ProfilePage extends StatelessWidget {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline), // Navigasi ke SellerVerificationPage
+          icon: Icon(Icons.add_circle_outline),
           label: '',
         ),
         BottomNavigationBarItem(

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import 'verification_success.dart'; // Import halaman tujuan
+import 'verification_success.dart';
 
 class VerificationForgotPasswordPage extends StatefulWidget {
-  const VerificationForgotPasswordPage({super.key, required String email});
+  final String email;
+  final String uid;
+  final String token;
+
+  const VerificationForgotPasswordPage({
+    super.key,
+    required this.email,
+    required this.uid,
+    required this.token,
+  });
 
   @override
   _VerificationForgotPasswordPageState createState() =>
@@ -43,7 +52,12 @@ class _VerificationForgotPasswordPageState extends State<VerificationForgotPassw
     if (_isButtonEnabled) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const VerificationSuccessPage()),
+        MaterialPageRoute(
+          builder: (context) => VerificationSuccessPage(
+            uid: widget.uid,
+            token: widget.token,
+          ),
+        ),
       );
     }
   }
@@ -92,7 +106,7 @@ class _VerificationForgotPasswordPageState extends State<VerificationForgotPassw
             const SizedBox(height: 50),
             GestureDetector(
               onTap: () {
-                // TODO: Implement resend code logic
+                // TODO: Resend code logic
               },
               child: const Text(
                 "Resend Code",
@@ -106,8 +120,8 @@ class _VerificationForgotPasswordPageState extends State<VerificationForgotPassw
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isButtonEnabled
-                      ? const Color(0xFFABC192) // Warna aktif
-                      : Colors.grey.shade400, // Warna disable
+                      ? const Color(0xFFABC192)
+                      : Colors.grey.shade400,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -149,7 +163,7 @@ class _VerificationForgotPasswordPageState extends State<VerificationForgotPassw
             ),
             onChanged: (value) {
               if (value.isNotEmpty && index < 3) {
-                FocusScope.of(context).nextFocus(); // Pindah ke field berikutnya
+                FocusScope.of(context).nextFocus();
               }
               _checkOTPComplete();
             },

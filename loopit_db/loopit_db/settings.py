@@ -171,3 +171,5 @@ AUTH_USER_MODEL = 'loopit.LoopitUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

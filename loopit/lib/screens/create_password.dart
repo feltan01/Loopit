@@ -1,8 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:loopit/screens/password_changes_success.dart';
 
 class CreatePasswordPage extends StatefulWidget {
-  const CreatePasswordPage({super.key});
+  final String uid;
+  final String token;
+
+  const CreatePasswordPage({super.key, required this.uid, required this.token});
 
   @override
   _CreatePasswordPageState createState() => _CreatePasswordPageState();
@@ -14,6 +19,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   bool _isButtonEnabled = false;
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -37,15 +43,36 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     super.dispose();
   }
 
-  void _savePassword() {
-  if (_isButtonEnabled) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const PasswordChangedSuccessPage()),
-    );
-  }
-}
+  Future<void> _savePassword() async {
+    setState(() {
+      _isSaving = true;
+    });
 
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/password/reset/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'password': _newPasswordController.text,
+        'uid': widget.uid,
+        'token': widget.token,
+      }),
+    );
+
+    setState(() {
+      _isSaving = false;
+    });
+
+    if (response.statusCode == 200) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const PasswordChangedSuccessPage()),
+      );
+    } else {
+      final error = jsonDecode(response.body);
+      final message = error['non_field_errors']?[0] ?? "Failed to reset password.";
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +91,10 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            const Text(
-              "Create New Password",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            const Text("Create New Password", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFFE8F0E4),
-              ),
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFE8F0E4)),
               padding: const EdgeInsets.all(40),
               child: const Icon(Icons.lock, size: 80, color: Color(0xFF7D9E6A)),
             ),
@@ -104,11 +125,10 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                   backgroundColor: _isButtonEnabled ? const Color(0xFFABC192) : Colors.grey.shade400,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                onPressed: _isButtonEnabled ? _savePassword : null,
-                child: const Text(
-                  "Save",
-                  style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500),
-                ),
+                onPressed: _isButtonEnabled && !_isSaving ? _savePassword : null,
+                child: _isSaving
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Save", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500)),
               ),
             ),
           ],

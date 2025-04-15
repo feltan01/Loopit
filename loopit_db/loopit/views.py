@@ -7,7 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from .models import LoopitUser, Profile, Listing, ListingImage
-from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer, ListingSerializer, ListingImageSerializer
+from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer, ListingSerializer, ListingImageSerializer, PasswordResetSerializer, SetNewPasswordSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = LoopitUser.objects.all()
@@ -63,6 +63,25 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Forgot Password
+    @action(detail=False, methods=['POST'], permission_classes=[AllowAny])
+    def forgot_password(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            response = serializer.save()
+            return Response(response, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Reset Password
+    @action(detail=False, methods=['POST'], permission_classes=[AllowAny])
+    def reset_password(self, request):
+        serializer = SetNewPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            response = serializer.save()
+            return Response(response, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()

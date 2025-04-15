@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/your_listings.dart';
 import 'listing_success.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:loopit/services/api_service.dart';
+import 'package:flutter/foundation.dart';
 
 class NewListingPage extends StatefulWidget {
   const NewListingPage({Key? key}) : super(key: key);
@@ -25,13 +28,24 @@ class _NewListingPageState extends State<NewListingPage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
+
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _selectedImages.add(File(pickedFile.path));
-        _hasUploadedID = true;
-      });
+      if (kIsWeb) {
+        // Web: no File() support, but you can store the path for a preview
+        setState(() {
+          _selectedImages.add(File(
+              pickedFile.path)); // This is okay for upload, but not for preview
+          _hasUploadedID = true;
+        });
+      } else {
+        // Mobile: normal File usage
+        setState(() {
+          _selectedImages.add(File(pickedFile.path));
+          _hasUploadedID = true;
+        });
+      }
     }
   }
 
@@ -76,15 +90,35 @@ class _NewListingPageState extends State<NewListingPage> {
     );
   }
 
-  void _handleSave() {
+  void _handleSave() async {
     if (_validateInputs()) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => ListingSuccessPage(
-            destinationPage: const NewListingPage(),
+      try {
+        final listing = await ApiService.createListing(
+          _titleController.text,
+          _priceController.text,
+          _categoryController.text,
+          _conditionController.text,
+          _descriptionController.text,
+          _productAgeController.text,
+        );
+
+        if (listing == null || !listing.containsKey('id')) {
+          _showErrorSnackBar('Failed to create listing. Invalid response.');
+          return;
+        }
+
+        final int listingId = listing['id'];
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const YourListingPage(), // Go back to listings page
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        _showErrorSnackBar('Error saving listing: $e');
+      }
     }
   }
 
@@ -176,7 +210,7 @@ class _NewListingPageState extends State<NewListingPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: AssetImage('assets/default_profile.png'),
+                        image: AssetImage('assets/image.jpg'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -230,15 +264,24 @@ class _NewListingPageState extends State<NewListingPage> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: _selectedImages
-                        .map(
-                          (file) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Image.file(file,
-                                width: 80, height: 80, fit: BoxFit.cover),
-                          ),
-                        )
-                        .toList(),
+                    children: _selectedImages.map((file) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: kIsWeb
+                            ? Image.asset(
+                                'assets/images/placeholder.jpg',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                file,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                      );
+                    }).toList(),
                   ),
                 ),
 

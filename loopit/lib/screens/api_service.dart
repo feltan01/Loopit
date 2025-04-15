@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL for your Django API
-  static const String baseUrl = 'http://10.10.169.104:8000'; // Use this for Android emulator
+  static const String baseUrl = 'http://192.168.18.50:8000';
+  
+  static get yourAccessToken => null; // Use this for Android emulator
   // For iOS simulator, use: 'http://127.0.0.1:8000'
   // For physical devices, use your actual IP address
 
@@ -16,7 +18,7 @@ class ApiService {
   }
 
   // Create a new listing
-  static Future<Map<String, dynamic>> createListing(
+  static Future<Map<String, dynamic>?> createListing(
       String title,
       String price,
       String category,
@@ -46,10 +48,10 @@ class ApiService {
       );
 
       if (response.statusCode == 201) {
-        return jsonDecode(response.body);
+        return jsonDecode(response.body);  // ✅ This must be a valid Map
       } else {
-        throw Exception(
-            'Failed to create listing: ${response.statusCode} - ${response.body}');
+        print('Create listing failed: ${response.body}');
+        return null;  // ✅ Safe fallback
       }
     } catch (e) {
       throw Exception('Error creating listing: $e');
@@ -71,6 +73,7 @@ class ApiService {
 
       request.headers.addAll({
         'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
       });
 
       for (var image in images) {
@@ -95,12 +98,17 @@ class ApiService {
       throw Exception('Authentication token not found');
     }
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/listings/my_listings/'), 
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
+    final response = await http.post(
+  Uri.parse('http://192.168.0.102:8000/api/listings/'),
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $yourAccessToken',
+  },
+  body: jsonEncode({
+    // listing fields di sini
+  }),
+);
+
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

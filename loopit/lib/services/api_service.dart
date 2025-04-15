@@ -342,4 +342,8 @@ class ApiService {
   }
 
   static makeOffer(int conversationId, int id, double amount) {}
+
+  static uploadListingImages(int listingId, List<File> selectedImages) {}
+
+  static createListing(String text, String text2, String text3, String text4, String text5, String text6) {}
 }

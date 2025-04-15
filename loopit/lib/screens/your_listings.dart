@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/api_service.dart';
 import 'edit_listing.dart'; // Make sure to import the EditListingPage
 import 'new_listing.dart';
 import 'profile.dart';
@@ -30,16 +31,38 @@ class _YourListingPageState extends State<YourListingPage> {
   final TextEditingController _searchController = TextEditingController();
 
   // Sample data - in a real app, this would come from a database or API
-  final List<ListingModel> _listings = [
-    ListingModel(
-      title: 'Sepatu Staccato',
-      subtitle: 'Original',
-      price: 'Rp 645.000',
-      condition: '98% Like New',
-      imageUrl: 'assets/images/shoes.jpg',
-    ),
-    // Add more listings here as needed
-  ];
+  List<ListingModel> _listings = [];
+bool _isLoading = true;
+
+@override
+void initState() {
+  super.initState();
+  _fetchListings();
+}
+
+void _fetchListings() async {
+  try {
+    final data = await ApiService.getMyListings();
+    setState(() {
+      _listings = data.map<ListingModel>((item) {
+        return ListingModel(
+          title: item['title'],
+          subtitle: item['description'],
+          price: 'Rp ${item['price']}',
+          condition: item['condition'],
+          imageUrl: item['images'].isNotEmpty
+              ? 'http://192.168.0.102:8000${item['images'][0]['image']}'
+              : 'assets/images/placeholder.png',
+        );
+      }).toList();
+      _isLoading = false;
+    });
+  } catch (e) {
+    print('Error fetching listings: $e');
+    setState(() => _isLoading = false);
+  }
+}
+
 
   // Method to delete a listing
   void _deleteListing(int index) {

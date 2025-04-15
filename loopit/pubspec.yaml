@@ -111,7 +111,9 @@ flutter:
     - assets/images/hq2.png
     - assets/images/hq3.png
     - assets/fonts/Poppins-Regular.ttf
-    - assets/default_profile.png
+    - assets/images/default_profile.png
+    - assets/images/image.png
+    - assets/images/placeholder.jpg
   fonts:
     - family: Poppins
       fonts:

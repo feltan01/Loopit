@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:loopit/screens/forgot_password.dart';
 import 'package:loopit/screens/signup.dart';
 import 'package:loopit/screens/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -345,7 +346,7 @@ class _LoginPageState extends State<LoginPage> {
   }
   
   Future<void> _loginUser() async {
-  final url = Uri.parse('http://127.0.0.1:8000/api/token/'); // Ganti dengan base URL API kamu
+  final url = Uri.parse('http://127.0.0.1:8000/api/login/');
   final response = await http.post(
     url,
     headers: {'Content-Type': 'application/json'},
@@ -357,11 +358,12 @@ class _LoginPageState extends State<LoginPage> {
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    final accessToken = data['access'];
-    final refreshToken = data['refresh'];
+    final prefs = await SharedPreferences.getInstance();
 
-    // Simpan token di SharedPreferences atau Provider (opsional)
-    // Navigate ke HomePage
+    await prefs.setString('accessToken', data['access']);
+    await prefs.setString('refreshToken', data['refresh']);
+    await prefs.setString('username', data['username'] ?? '');  // aman walau null
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
@@ -383,4 +385,3 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 }
-

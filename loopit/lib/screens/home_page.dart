@@ -12,6 +12,7 @@ import 'saldo.dart';
 import 'seller_verification.dart';
 import 'messages.dart';
 import 'transaction_hub.dart';
+import '../models/user.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,14 +29,20 @@ class HomePage extends StatelessWidget {
             Image.asset("assets/images/logo.png", width: 90),
             const Spacer(),
             IconButton(
-              icon: const Icon(Icons.email_outlined, color: Colors.black),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MessagesPage()),
-                );
-              },
-            ),
+  icon: const Icon(Icons.email_outlined, color: Colors.black),
+  onPressed: () {
+    // Replace this with your actual currentUser object, for example:
+    User currentUser = User(id: 1, username: 'John Doe', email: 'john@example.com'); // Example of creating a user
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MessagesPage(currentUser: currentUser),
+      ),
+    );
+  },
+),
+
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.black),
               onPressed: () {

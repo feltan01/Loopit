@@ -13,8 +13,8 @@
 13         to allow setting breakpoints, to provide hot reload, etc.
 14    -->
 15    <uses-permission android:name="android.permission.INTERNET" />
-15-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\debug\AndroidManifest.xml:6:5-66
-15-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\debug\AndroidManifest.xml:6:22-64
+15-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\debug\AndroidManifest.xml:6:5-66
+15-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\debug\AndroidManifest.xml:6:22-64
 16    <!--
 17     Required to query activities that can process text, see:
 18         https://developer.android.com/training/package-visibility and
@@ -23,48 +23,48 @@
 21         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
 22    -->
 23    <queries>
-23-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:44:5-49:15
+23-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:44:5-49:15
 24        <intent>
-24-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:45:9-48:18
+24-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:45:9-48:18
 25            <action android:name="android.intent.action.PROCESS_TEXT" />
-25-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:46:13-72
-25-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:46:21-70
+25-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:46:13-72
+25-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:46:21-70
 26
 27            <data android:mimeType="text/plain" />
-27-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:47:13-50
-27-->C:\Users\Allegra\Documents\sem4\mobile app dev\MobileApp_UAS\Loopit\loopit\android\app\src\main\AndroidManifest.xml:47:19-48
+27-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:47:13-50
+27-->C:\Users\Owen\Documents\SEM 4\UAS LoopIt\Loopit\loopit\android\app\src\main\AndroidManifest.xml:47:19-48
 28        </intent>
 29        <!-- Needs to be explicitly declared on Android R+ -->
 30        <package android:name="com.google.android.apps.maps" />
-30-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:33:9-64
-30-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:33:18-61
+30-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:33:9-64
+30-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:33:18-61
 31    </queries> <!-- Include required permissions for Google Maps API to run. -->
 32    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-32-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:5-79
-32-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:22-76
+32-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:5-79
+32-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:22-76
 33
 34    <uses-feature
-34-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:26:5-28:35
+34-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:26:5-28:35
 35        android:glEsVersion="0x00020000"
-35-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:27:9-41
+35-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:27:9-41
 36        android:required="true" />
-36-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:28:9-32
+36-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:28:9-32
 37
 38    <permission
-38-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+38-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
 39        android:name="com.example.loopit.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-39-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+39-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
 40        android:protectionLevel="signature" />
-40-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+40-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
 41
 42    <uses-permission android:name="com.example.loopit.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-42-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-42-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+42-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+42-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
 43
 44    <application
 45        android:name="android.app.Application"
 46        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-46-->[androidx.core:core:1.13.1] C:\Users\Allegra\.gradle\caches\transforms-3\9bbfdbe942621bd996fbe3bdac3b4fe8\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+46-->[androidx.core:core:1.13.1] C:\Users\Owen\.gradle\caches\transforms-3\bbd3c057f7fccbc2113f79a0fa0d6e7c\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 47        android:debuggable="true"
 48        android:extractNativeLibs="true"
 49        android:icon="@mipmap/ic_launcher"
@@ -107,137 +107,137 @@
 86            android:value="YOUR_API_KEY_HERE" />
 87
 88        <provider
-88-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:9-17:20
+88-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:9-17:20
 89            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
-89-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-82
+89-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-82
 90            android:authorities="com.example.loopit.flutter.image_provider"
-90-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-74
+90-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-74
 91            android:exported="false"
-91-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-37
+91-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-37
 92            android:grantUriPermissions="true" >
-92-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-47
+92-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-47
 93            <meta-data
-93-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-16:75
+93-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-16:75
 94                android:name="android.support.FILE_PROVIDER_PATHS"
-94-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:17-67
+94-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:17-67
 95                android:resource="@xml/flutter_image_picker_file_paths" />
-95-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:17-72
+95-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:17-72
 96        </provider> <!-- Trigger Google Play services to install the backported photo picker module. -->
 97        <service
-97-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:19:9-31:19
+97-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:19:9-31:19
 98            android:name="com.google.android.gms.metadata.ModuleDependencies"
-98-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:20:13-78
+98-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:20:13-78
 99            android:enabled="false"
-99-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:21:13-36
+99-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:21:13-36
 100            android:exported="false" >
-100-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-37
+100-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-37
 101            <intent-filter>
-101-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-26:29
+101-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-26:29
 102                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
-102-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:25:17-94
-102-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:25:25-91
+102-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:25:17-94
+102-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:25:25-91
 103            </intent-filter>
 104
 105            <meta-data
-105-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:28:13-30:36
+105-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:28:13-30:36
 106                android:name="photopicker_activity:0:required"
-106-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:29:17-63
+106-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:29:17-63
 107                android:value="" />
-107-->[:image_picker_android] C:\Users\Allegra\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:30:17-33
+107-->[:image_picker_android] C:\Users\Owen\AppData\Local\Pub\Cache\hosted\pub.dev\image_picker_android-0.8.12+22\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:30:17-33
 108        </service> <!-- Needs to be explicitly declared on P+ -->
 109        <uses-library
-109-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:39:9-41:40
+109-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:39:9-41:40
 110            android:name="org.apache.http.legacy"
-110-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:40:13-50
+110-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:40:13-50
 111            android:required="false" />
-111-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\6ec6d13b7696fceaee406372ecd29774\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:41:13-37
+111-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\Owen\.gradle\caches\transforms-3\90ea45fb4fc38a9889ac47183be36d18\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:41:13-37
 112
 113        <activity
-113-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Allegra\.gradle\caches\transforms-3\1506ef9538036b7dc0e9d88262038309\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+113-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Owen\.gradle\caches\transforms-3\9147086ef115bc73044c08f965bcf819\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
 114            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-114-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Allegra\.gradle\caches\transforms-3\1506ef9538036b7dc0e9d88262038309\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+114-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Owen\.gradle\caches\transforms-3\9147086ef115bc73044c08f965bcf819\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:19-85
 115            android:exported="false"
-115-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Allegra\.gradle\caches\transforms-3\1506ef9538036b7dc0e9d88262038309\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+115-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Owen\.gradle\caches\transforms-3\9147086ef115bc73044c08f965bcf819\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:22:19-43
 116            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-116-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Allegra\.gradle\caches\transforms-3\1506ef9538036b7dc0e9d88262038309\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+116-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\Owen\.gradle\caches\transforms-3\9147086ef115bc73044c08f965bcf819\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:21:19-78
 117
 118        <meta-data
-118-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Allegra\.gradle\caches\transforms-3\24b27e3af82fb6f56d986847a5eec020\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:21:9-23:69
+118-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Owen\.gradle\caches\transforms-3\bc22faac19b4c3108f1eee8f5384bfc3\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:21:9-23:69
 119            android:name="com.google.android.gms.version"
-119-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Allegra\.gradle\caches\transforms-3\24b27e3af82fb6f56d986847a5eec020\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:22:13-58
+119-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Owen\.gradle\caches\transforms-3\bc22faac19b4c3108f1eee8f5384bfc3\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:22:13-58
 120            android:value="@integer/google_play_services_version" />
-120-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Allegra\.gradle\caches\transforms-3\24b27e3af82fb6f56d986847a5eec020\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:23:13-66
+120-->[com.google.android.gms:play-services-basement:18.0.0] C:\Users\Owen\.gradle\caches\transforms-3\bc22faac19b4c3108f1eee8f5384bfc3\transformed\jetified-play-services-basement-18.0.0\AndroidManifest.xml:23:13-66
 121
 122        <uses-library
-122-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:23:9-25:40
+122-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:23:9-25:40
 123            android:name="androidx.window.extensions"
-123-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:24:13-54
+123-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:24:13-54
 124            android:required="false" />
-124-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:25:13-37
+124-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:25:13-37
 125        <uses-library
-125-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:26:9-28:40
+125-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:26:9-28:40
 126            android:name="androidx.window.sidecar"
-126-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:27:13-51
+126-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:27:13-51
 127            android:required="false" />
-127-->[androidx.window:window:1.2.0] C:\Users\Allegra\.gradle\caches\transforms-3\bf211041ab188cfd904a60643f76da77\transformed\jetified-window-1.2.0\AndroidManifest.xml:28:13-37
+127-->[androidx.window:window:1.2.0] C:\Users\Owen\.gradle\caches\transforms-3\d2f7cc894342455a50c2680482fccc9c\transformed\jetified-window-1.2.0\AndroidManifest.xml:28:13-37
 128
 129        <provider
-129-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:24:9-32:20
+129-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:24:9-32:20
 130            android:name="androidx.startup.InitializationProvider"
-130-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:25:13-67
+130-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:25:13-67
 131            android:authorities="com.example.loopit.androidx-startup"
-131-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:26:13-68
+131-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:26:13-68
 132            android:exported="false" >
-132-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:27:13-37
+132-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:27:13-37
 133            <meta-data
-133-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+133-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
 134                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-134-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+134-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
 135                android:value="androidx.startup" />
-135-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Allegra\.gradle\caches\transforms-3\2e094c655277e9aa4d7988fbd3d56c6a\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+135-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Owen\.gradle\caches\transforms-3\06c08e8548dfee7b21d8731a2e13f5ae\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
 136            <meta-data
-136-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+136-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
 137                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-137-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+137-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
 138                android:value="androidx.startup" />
-138-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+138-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
 139        </provider>
 140
 141        <receiver
-141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
 142            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-142-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+142-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
 143            android:directBootAware="false"
-143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
 144            android:enabled="true"
-144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
 145            android:exported="true"
-145-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+145-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
 146            android:permission="android.permission.DUMP" >
-146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
 147            <intent-filter>
-147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
 148                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
 149            </intent-filter>
 150            <intent-filter>
-150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
 151                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
 152            </intent-filter>
 153            <intent-filter>
-153-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+153-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
 154                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
 155            </intent-filter>
 156            <intent-filter>
-156-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+156-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
 157                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Allegra\.gradle\caches\transforms-3\d2c836fff9d5f7beda73c8d22dfe18b8\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Owen\.gradle\caches\transforms-3\59ca59136a694cef85f9165d18a57287\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
 158            </intent-filter>
 159        </receiver>
 160    </application>

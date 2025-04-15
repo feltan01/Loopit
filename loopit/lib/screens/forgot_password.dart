@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'verification_forgotpassword.dart'; // Import halaman tujuan
+import 'package:http/http.dart' as http;
+import 'verification_forgotpassword.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -11,6 +13,7 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   bool _isEmailValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -30,15 +33,54 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
   }
 
-  void _sendVerification() {
-    if (_isEmailValid) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VerificationForgotPasswordPage(
-            email: _emailController.text,
+  Future<void> _sendVerification() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.10.153.114:8000/api/password/request-reset/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': _emailController.text}),
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final uid = data['uid'];
+        final token = data['token'];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerificationForgotPasswordPage(
+              email: _emailController.text,
+              uid: uid,
+              token: token,
+            ),
           ),
-        ),
+        );
+      } else {
+        try {
+          final error = jsonDecode(response.body);
+          final message = error['email']?[0] ?? "Something went wrong. Please try again.";
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        } catch (_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Unexpected response: ${response.statusCode}")),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
       );
     }
   }
@@ -55,11 +97,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
         title: const Text(
           "Forgot Password",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 18,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
         ),
         centerTitle: true,
       ),
@@ -69,31 +107,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 50),
-            // Gambar dari assets
-            Image.asset(
-              "assets/images/forgot_password.png",
-              width: 196,
-              height: 196,
-            ),
+            Image.asset("assets/images/forgot_password.png", width: 196, height: 196),
             const SizedBox(height: 60),
-            // Teks informasi
             const Text(
               "Please enter your email address to receive a verification code",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const SizedBox(height: 60),
-            // Input Email
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                "Email Address:",
-                style: TextStyle(color: Colors.black.withOpacity(0.7)),
-              ),
+              child: Text("Email Address:", style: TextStyle(color: Colors.black.withOpacity(0.7))),
             ),
             const SizedBox(height: 5),
             TextField(
@@ -105,29 +129,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             ),
             const SizedBox(height: 30),
-            // Tombol Kirim Verifikasi (aktif jika email terisi)
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _isEmailValid ? _sendVerification : null,
+                onPressed: _isEmailValid && !_isLoading ? _sendVerification : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isEmailValid
-                      ? const Color(0xFFABC192)
-                      : const Color(0xFFABC192).withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 0,
-                  foregroundColor: Colors.white,
+                  backgroundColor: _isEmailValid ? const Color(0xFFABC192) : const Color(0xFFABC192).withOpacity(0.5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                child: const Text(
-                  "Send Verification",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Send Verification", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
               ),
             ),
           ],

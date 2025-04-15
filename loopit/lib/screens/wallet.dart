@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/main.dart';
 import 'package:loopit/screens/deposit.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
 import 'package:loopit/screens/what_is_history.dart';
 import 'package:loopit/screens/withdraw.dart';
-import 'package:loopit/screens/profile.dart'; 
+import 'package:loopit/screens/withdraw_completed.dart';
 
 void main() {
   runApp(const MyApp());
@@ -85,7 +86,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  splashColor: const Color.fromARGB(255, 71, 158, 74).withOpacity(0.3),
+                  splashColor: Colors.green.withOpacity(0.3),
                   highlightColor: Colors.green.withOpacity(0.1),
                   onTap: widget.onPressed,
                   child: Container(
@@ -123,12 +124,7 @@ class WalletBalanceScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(), 
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         title: const Text(
@@ -250,7 +246,7 @@ class WalletBalanceScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BalanceWithdrawPage()),
+                      builder: (context) => const BalanceWithdrawalPage()),
                 );
               },
             ),
@@ -265,7 +261,7 @@ class WalletBalanceScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BalanceDepositPage()),
+                      builder: (context) => const BalanceDepositedPage()),
                 );
               },
             ),

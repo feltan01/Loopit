@@ -156,58 +156,62 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   Future<void> _respondToOffer(int offerId, String status) async {
-    try {
-      await ApiService.respondToOffer(offerId, status);
-      
-      // Update the local state to reflect the change immediately
-      setState(() {
-        for (var message in _messages) {
-          if (message.offer?.id == offerId) {
-            // Create a new message with updated offer status to avoid direct mutation
-            final updatedOffer = Offer(
-              id: message.offer!.id,
-              conversationId: message.offer!.conversationId,
-              messageId: message.offer!.messageId,
-              product: message.offer!.product,
-              buyer: message.offer!.buyer,
-              amount: message.offer!.amount,
-              status: status,
-              createdAt: message.offer!.createdAt,
-            );
-            
-            // Replace the offer in the message
-            message = Message(
-              id: message.id,
-              conversationId: message.conversationId,
-              sender: message.sender,
-              text: message.text,
-              createdAt: message.createdAt,
-              offer: updatedOffer,
-            );
-            break;
-          }
+  try {
+    await ApiService.respondToOffer(offerId, status);
+    
+    // Create a new list of messages with the updated offer
+    setState(() {
+      final List<Message> updatedMessages = _messages.map((message) {
+        if (message.offer?.id == offerId) {
+          // Create a new offer with updated status
+          final updatedOffer = Offer(
+            id: message.offer!.id,
+            conversationId: message.offer!.conversationId,
+            messageId: message.offer!.messageId,
+            product: message.offer!.product,
+            buyer: message.offer!.buyer,
+            amount: message.offer!.amount,
+            status: status,
+            createdAt: message.offer!.createdAt,
+          );
+          
+          // Create and return a new message with the updated offer
+          return Message(
+            id: message.id,
+            conversationId: message.conversationId,
+            sender: message.sender,
+            text: message.text,
+            createdAt: message.createdAt,
+            offer: updatedOffer,
+          );
         }
-      });
+        return message;
+      }).toList();
       
-      // Reload messages to ensure we have the latest data
-      await _loadMessages();
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Offer ${status.toLowerCase()}'),
-            backgroundColor: status == 'ACCEPTED' ? Colors.green : Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to respond to offer: $e')),
-        );
-      }
+      // Replace the messages list with the updated one
+      _messages.clear();
+      _messages.addAll(updatedMessages);
+    });
+    
+    // Reload messages to ensure we have the latest data
+    await _loadMessages();
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Offer ${status.toLowerCase()}'),
+          backgroundColor: status == 'ACCEPTED' ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to respond to offer: $e')),
+      );
     }
   }
+}
 
   @override
   void dispose() {
@@ -464,7 +468,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // Buyer can checkout after accepted offer
     if (offer.isAccepted && offer.buyer.id == widget.currentUser.id) {
       return ElevatedButton(
-        onPressed: () {
+        onPressed: () {;
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF8BAF7F),
@@ -473,7 +477,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ),
         ),
         child: const Text(
-          'Check Out',
+          'Checkout',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -576,211 +580,205 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       ),
     );
   }
-
+  
   void _showBargainBottomSheet(Product product) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final TextEditingController offerController = TextEditingController();
-            bool isSubmitting = false;
-            
-            // Dispose controller when the bottom sheet is closed
-            Future.delayed(Duration.zero, () {
-              if (!mounted) return;
-              // This ensures the controller is disposed when the sheet is dismissed
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!context.mounted) return;
-                Future.microtask(() {
-                  if (context.mounted) {
-                    offerController.addListener(() {
-                      if (!context.mounted) offerController.dispose();
-                    });
-                  }
-                });
-              });
-            });
-            
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 20,
-                left: 20,
-                right: 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.0,
-                      height: 4.0,
+  final TextEditingController offerController = TextEditingController();
+  
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setSheetState) {
+          bool isSubmitting = false;
+          
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 20,
+              left: 20,
+              right: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Make an Offer',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Make an Offer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5EC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Image.network(
-                          product.fullImageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.image_not_supported),
-                                Text(
-                                  'Image error',
-                                  style: TextStyle(fontSize: 10),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              product.brand,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Original Price: Rp ${product.price.toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: offerController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Your offer (in Rp)',
-                      border: OutlineInputBorder(
+                        color: const Color(0xFFFFF5EC),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      prefixText: 'Rp ',
+                      child: Image.network(
+                        product.fullImageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.image_not_supported),
+                              Text(
+                                'Image error',
+                                style: TextStyle(fontSize: 10),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            product.brand,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Original Price: Rp ${product.price.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: offerController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Your offer (in Rp)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixText: 'Rp ',
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : () async {
-                        if (offerController.text.isEmpty) return;
-                        
-                        setSheetState(() {
-                          isSubmitting = true;
-                        });
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isSubmitting ? null : () async {
+                      if (offerController.text.isEmpty) return;
+                      
+                      setSheetState(() {
+                        isSubmitting = true;
+                      });
+                      
+                      try {
+                        final amount = double.parse(offerController.text.replaceAll(',', '.'));
                         
                         try {
-                          final amount = double.parse(offerController.text.replaceAll(',', '.'));
+                          await ApiService.makeOffer(
+                            widget.conversationId,
+                            product.id,
+                            amount,
+                          );
                           
-                          try {
-                            await ApiService.makeOffer(
-                              widget.conversationId,
-                              product.id,
-                              amount,
-                            );
-                            
-                            // Reload messages to show the new offer
+                          // Dispose controller before popping
+                          offerController.dispose();
+                          
+                          // Pop the bottom sheet
+                          Navigator.pop(context);
+                          
+                          // Reload messages to show the new offer
+                          if (mounted) {
                             await _loadMessages();
-                            
-                            Navigator.pop(context);
-                          } catch (e) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed to send offer: $e')),
-                              );
-                            }
-                            setSheetState(() {
-                              isSubmitting = false;
-                            });
                           }
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please enter a valid number'),
-                                backgroundColor: Colors.red,
-                              ),
+                              SnackBar(content: Text('Failed to send offer: $e')),
                             );
                           }
                           setSheetState(() {
                             isSubmitting = false;
                           });
                         }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8BAF7F),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: isSubmitting 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Send Offer',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter a valid number'),
+                              backgroundColor: Colors.red,
                             ),
+                          );
+                        }
+                        setSheetState(() {
+                          isSubmitting = false;
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8BAF7F),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
+                    child: isSubmitting 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Send Offer',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  ).whenComplete(() {
+    // Ensure the controller is disposed when the sheet is closed
+    offerController.dispose();
+  });
   }
 }

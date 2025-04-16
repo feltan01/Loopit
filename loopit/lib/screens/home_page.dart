@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/services/api_service.dart';
 import 'fashion_page.dart';
 import 'electronics_page.dart';
 import 'skincare_page.dart';
@@ -30,16 +31,43 @@ class HomePage extends StatelessWidget {
             const Spacer(),
             IconButton(
   icon: const Icon(Icons.email_outlined, color: Colors.black),
-  onPressed: () {
-    // Replace this with your actual currentUser object, for example:
-    User currentUser = User(id: 1, username: 'John Doe', email: 'john@example.com'); // Example of creating a user
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MessagesPage(currentUser: currentUser),
-      ),
-    );
+  onPressed: () async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+      
+      // Get current user info from API
+      final currentUser = await ApiService.getUserInfo();
+      
+      // Close loading dialog
+      if (context.mounted) Navigator.pop(context);
+      
+      // Navigate to MessagesPage with real or default user
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagesPage(currentUser: currentUser),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog if there's an error
+      if (context.mounted) Navigator.pop(context);
+      
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load user data: $e')),
+        );
+      }
+    }
   },
 ),
 

@@ -11,9 +11,9 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      username: json['username'],
-      email: json['email'],
+      id: json['id'] ?? -1, // Provide a default value if null
+      username: json['username'] ?? 'Unknown User', // Default username if null
+      email: json['email'] ?? '', // Default empty email if null
     );
   }
 
@@ -24,4 +24,7 @@ class User {
       'email': email,
     };
   }
+
+  // Optional: Add a method to check if this is a default/placeholder user
+  bool get isDefaultUser => id == -1;
 }

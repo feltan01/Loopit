@@ -37,29 +37,39 @@ class _MessagesPageState extends State<MessagesPage> {
     });
   }
 
-  Future<void> _loadConversations() async {
+ Future<void> _loadConversations() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final conversations = await ApiService.getConversations();
     setState(() {
-      _isLoading = true;
+      _conversations = conversations;
+      _isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      _isLoading = false;
+      _conversations = []; // Ensure empty list if load fails
     });
 
-    try {
-      final conversations = await ApiService.getConversations();
-      setState(() {
-        _conversations = conversations.cast<Conversation>();
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load conversations: $e')),
-        );
-      }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load conversations: $e'),
+          action: SnackBarAction(
+            label: 'Login Again',
+            onPressed: () {
+              // Navigate back to login page
+              Navigator.of(context).pushReplacementNamed('/login');
+            },
+          ),
+        ),
+      );
     }
   }
+}
 
   List<Conversation> get _filteredConversations {
     if (_searchQuery.isEmpty) return _conversations;

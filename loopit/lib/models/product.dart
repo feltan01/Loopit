@@ -47,13 +47,7 @@ class Product {
     };
   }
 
-  // Full image URL including base path
   String get fullImageUrl {
-    // Assuming your Django server is running at same host
-    // Change this depending on your deployment
-    if (image.startsWith('http')) {
-      return image;
-    }
-    return 'http://10.0.2.2:8000$image';
+    return 'http://192.168.0.106:8000$image';
   }
 }

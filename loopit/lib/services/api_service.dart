@@ -10,7 +10,7 @@ import '../models/product.dart';
 import '../models/order.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.10.161.119:8000/api';
+  static const String baseUrl = 'http://10.10.169.101:8000/api';
 
   // Token Management
   static Future<String?> getToken() async {
@@ -53,7 +53,8 @@ class ApiService {
   }
 
   // Authentication Methods
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+      String username, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/token/'),
       headers: {'Content-Type': 'application/json'},
@@ -75,7 +76,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> register(String username, String email, String password) async {
+  static Future<Map<String, dynamic>> register(
+      String username, String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/chat/auth/register/'),
       headers: {'Content-Type': 'application/json'},
@@ -146,18 +148,12 @@ class ApiService {
         return User.fromJson(data);
       } else {
         return User(
-          id: -1, 
-          username: 'DefaultUser', 
-          email: 'default@example.com'
-        );
+            id: -1, username: 'DefaultUser', email: 'default@example.com');
       }
     } catch (e) {
       print('Error fetching user info: $e');
       return User(
-        id: -1, 
-        username: 'DefaultUser', 
-        email: 'default@example.com'
-      );
+          id: -1, username: 'DefaultUser', email: 'default@example.com');
     }
   }
 
@@ -218,7 +214,8 @@ class ApiService {
   }
 
   // Messages
-  static Future<List<Map<String, dynamic>>> getMessages(int conversationId) async {
+  static Future<List<Map<String, dynamic>>> getMessages(
+      int conversationId) async {
     final headers = await getHeaders();
     final response = await http.get(
       Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
@@ -233,7 +230,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> sendMessage(int conversationId, String text) async {
+  static Future<Map<String, dynamic>> sendMessage(
+      int conversationId, String text) async {
     final headers = await getHeaders();
     final response = await http.post(
       Uri.parse('$baseUrl/chat/messages/'),
@@ -328,7 +326,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> respondToOffer(int offerId, String status) async {
+  static Future<Map<String, dynamic>> respondToOffer(
+      int offerId, String status) async {
     final headers = await getHeaders();
     final response = await http.post(
       Uri.parse('$baseUrl/offers/$offerId/respond/'),
@@ -361,8 +360,8 @@ class ApiService {
     }
   }
 
-
   static uploadListingImages(int listingId, List<File> selectedImages) {}
 
-  static createListing(String text, String text2, String text3, String text4, String text5, String text6) {}
+  static createListing(String text, String text2, String text3, String text4,
+      String text5, String text6) {}
 }

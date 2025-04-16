@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL for your Django API
-  static const String baseUrl = 'http://192.168.18.50:8000';
-  
+  static const String baseUrl = 'http://10.10.169.101:8000';
+
   static get yourAccessToken => null; // Use this for Android emulator
   // For iOS simulator, use: 'http://127.0.0.1:8000'
   // For physical devices, use your actual IP address
@@ -14,52 +14,64 @@ class ApiService {
   // Get the JWT token from shared preferences
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
+    return prefs.getString('access_token'); // must match your login save
   }
 
   // Create a new listing
   static Future<Map<String, dynamic>?> createListing(
-      String title,
-      String price,
-      String category,
-      String condition,
-      String description,
-      String productAge) async {
-    try {
-      final token = await getToken();
-      if (token == null) {
-        throw Exception('Authentication token not found');
-      }
+    String title,
+    String price,
+    String category,
+    String condition,
+    String description,
+    String productAge,
+  ) async {
+    final url = Uri.parse(
+        'http://10.10.169.101:8000/api/listings/'); // ✅ ganti sesuai IP kamu
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/listings/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'title': title,
-          'price': price.replaceAll('Rp ', '').replaceAll('.', ''),
-          'category': category,
-          'condition': condition,
-          'description': description,
-          'product_age': productAge,
-        }),
-      );
+    final token = await getToken();
+    print("🔐 TOKEN: $token");
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final body = jsonEncode({
+      'title': title,
+      'price': int.tryParse(price), // must be int
+      'category': category,
+      'condition': condition,
+      'description': description,
+      'product_age': productAge,
+    });
+
+    print("📤 Sending request...");
+    print("📡 URL: $url");
+    print("🔐 TOKEN: $token");
+    print("📦 BODY: $body");
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      print("📥 Status Code: ${response.statusCode}");
+      print("📥 Response Body: ${response.body}");
 
       if (response.statusCode == 201) {
-        return jsonDecode(response.body);  // ✅ This must be a valid Map
+        return jsonDecode(response.body);
       } else {
-        print('Create listing failed: ${response.body}');
-        return null;  // ✅ Safe fallback
+        return null;
       }
     } catch (e) {
-      throw Exception('Error creating listing: $e');
+      print("🔥 Exception: $e");
+      return null;
     }
   }
 
+
   // Upload images to a listing
-  static Future<bool> uploadListingImages(int listingId, List<File> images) async {
+  static Future<bool> uploadListingImages(
+      int listingId, List<File> images) async {
     try {
       final token = await getToken();
       if (token == null) {
@@ -92,41 +104,40 @@ class ApiService {
 
   // Get user's listings
   static Future<List<dynamic>> getMyListings() async {
-  try {
-    final token = await getToken();
-    if (token == null) {
-      throw Exception('Authentication token not found');
+    try {
+      final token = await getToken();
+      if (token == null) {
+        throw Exception('Authentication token not found');
+      }
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/listings/'), // ✅ make sure this is correct
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print("📥 Status Code: ${response.statusCode}");
+      print("📥 Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception(
+            'Failed to fetch listings: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching listings: $e');
     }
-
-    final response = await http.post(
-  Uri.parse('http://192.168.0.102:8000/api/listings/'),
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $yourAccessToken',
-  },
-  body: jsonEncode({
-    // listing fields di sini
-  }),
-);
-
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to fetch listings: ${response.statusCode} - ${response.body}');
-    }
-  } catch (e) {
-    throw Exception('Error fetching listings: $e');
   }
-}
-
 
   // Delete a listing
   static Future<bool> deleteListing(int listingId) async {
     try {
       final token = await getToken();
       if (token == null) {
-        throw Exception('Authentication token not found');
+        throw Exception('🚫 Token is null! Are you logged in?');
       }
 
       final response = await http.delete(

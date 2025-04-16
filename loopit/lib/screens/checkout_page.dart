@@ -1,15 +1,10 @@
 // import 'package:flutter/material.dart';
-// import 'package:loopit/models/offer.dart';
 // import 'address_selection_screen.dart';
 // import 'payment_method_screen.dart';
 // import 'payment_confirmation_screen.dart';
 // import 'chat_buyer.dart';
-// import '../models/user.dart';
-// import '../models/message.dart';
-// import '../models/product.dart';
+// import '../models/offer.dart';
 // import '../services/api_service.dart';
-// import '../services/websocket_service.dart';
-// import 'checkout_page.dart';
 
 // void main() {
 //   runApp(const Checkout());

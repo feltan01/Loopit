@@ -10,7 +10,7 @@ import '../models/product.dart';
 import '../models/order.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.10.169.101:8000/api';
+  static const String baseUrl = 'http://192.168.18.50:8000/api';
 
   // Token Management
   static Future<String?> getToken() async {

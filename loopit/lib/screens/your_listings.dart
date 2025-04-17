@@ -51,7 +51,7 @@ void _fetchListings() async {
           price: 'Rp ${item['price']}',
           condition: item['condition'],
           imageUrl: item['images'].isNotEmpty
-              ? 'http://192.168.0.102:8000${item['images'][0]['image']}'
+              ? 'http://192.168.18.50:8000${item['images'][0]['image']}'
               : 'assets/images/placeholder.png',
         );
       }).toList();

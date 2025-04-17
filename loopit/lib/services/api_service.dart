@@ -4,10 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
-import '../models/message.dart';
-import '../models/offer.dart';
-import '../models/product.dart';
-import '../models/order.dart';
 
 class ApiService {
   static const String baseUrl = 'http://192.168.18.207:8000/api';
@@ -40,7 +36,9 @@ class ApiService {
   }
 
   // Headers with Authentication
-  static Future<Map<String, String>> getHeaders() async {
+  // Headers with Authentication
+static Future<Map<String, String>> getHeaders({bool requireAuth = false}) async {
+  if (requireAuth) {
     final token = await getToken();
     if (token == null) {
       throw Exception('No authentication token available');
@@ -50,7 +48,12 @@ class ApiService {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
+  } else {
+    return {
+      'Content-Type': 'application/json',
+    };
   }
+}
 
   // Authentication Methods
   static Future<Map<String, dynamic>> login(
@@ -158,51 +161,34 @@ class ApiService {
   }
 
   // Conversations
-  static Future<List<Conversation>> getConversations() async {
-    try {
-      // Check if token exists
-      final token = await getToken();
-      if (token == null) {
-        print('❌ No token found');
-        throw Exception('No authentication token available');
-      }
+  // Conversations
+static Future<List<Conversation>> getConversations() async {
+  try {
+    final headers = await getHeaders(requireAuth: false); // Allow fetching without token
+    final response = await http.get(
+      Uri.parse('$baseUrl/chat/conversations/'),
+      headers: headers,
+    );
 
-      final headers = await getHeaders();
-      print('🔑 Conversations Request Headers: $headers');
+    print('📊 Conversations Response Status: ${response.statusCode}');
+    print('📄 Conversations Response Body: ${response.body}');
 
-      final response = await http.get(
-        Uri.parse('$baseUrl/conversations/'),
-        headers: headers,
-      );
-
-      print('📊 Conversations Response Status: ${response.statusCode}');
-      print('📄 Conversations Response Body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => Conversation.fromJson(json)).toList();
-      } else if (response.statusCode == 401) {
-        // Try to refresh token
-        try {
-          await refreshAccessToken();
-          return getConversations(); // Retry with new token
-        } catch (e) {
-          print('❌ Token refresh failed: $e');
-          throw Exception('Authentication failed. Please log in again.');
-        }
-      } else {
-        throw Exception('Failed to load conversations: ${response.body}');
-      }
-    } catch (e) {
-      print('❌ Conversations Fetch Error: $e');
-      rethrow;
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Conversation.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load conversations: ${response.body}');
     }
+  } catch (e) {
+    print('❌ Conversations Fetch Error: $e');
+    rethrow;
   }
+}
 
   static Future<Map<String, dynamic>> getConversation(int id) async {
     final headers = await getHeaders();
     final response = await http.get(
-      Uri.parse('$baseUrl/conversations/$id/'),
+      Uri.parse('$baseUrl/chat/conversations/$id/'),
       headers: headers,
     );
 
@@ -213,22 +199,23 @@ class ApiService {
     }
   }
 
-  // Messages
-  static Future<List<Map<String, dynamic>>> getMessages(
-      int conversationId) async {
-    final headers = await getHeaders();
-    final response = await http.get(
-      Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
-      headers: headers,
-    );
+static Future<List<Map<String, dynamic>>> getMessages(int conversationId) async {
+  final headers = await getHeaders(); // Assuming this requires a token
+  final response = await http.get(
+    Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
+    headers: headers,
+  );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load messages: ${response.body}');
+  if (response.statusCode == 200) {
+    final List<dynamic>? data = jsonDecode(response.body);
+    if (data == null) {
+      return []; // Return an empty list if data is null
     }
+    return List<Map<String, dynamic>>.from(data);
+  } else {
+    throw Exception('Failed to load messages: ${response.body}');
   }
+}
 
   static Future<Map<String, dynamic>> sendMessage(
       int conversationId, String text) async {

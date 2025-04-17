@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/api_service.dart';
-import 'edit_listing.dart'; // Make sure to import the EditListingPage
+import 'edit_listing.dart'; 
 import 'new_listing.dart';
 import 'profile.dart';
 
@@ -10,6 +10,7 @@ class ListingModel {
   final String price;
   final String condition;
   final String imageUrl;
+  final int id;
 
   ListingModel({
     required this.title,
@@ -17,6 +18,7 @@ class ListingModel {
     required this.price,
     required this.condition,
     required this.imageUrl,
+    required this.id, 
   });
 }
 
@@ -46,12 +48,13 @@ void _fetchListings() async {
     setState(() {
       _listings = data.map<ListingModel>((item) {
         return ListingModel(
+          id: item['id'],
           title: item['title'],
           subtitle: item['description'],
           price: 'Rp ${item['price']}',
           condition: item['condition'],
           imageUrl: item['images'].isNotEmpty
-              ? 'http://192.168.18.50:8000${item['images'][0]['image']}'
+              ? 'http://192.168.18.207:8000${item['images'][0]['image']}'
               : 'assets/images/placeholder.png',
         );
       }).toList();
@@ -152,7 +155,7 @@ void _fetchListings() async {
                           // Product image
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
+                            child: Image.network(
                               listing.imageUrl,
                               width: 100,
                               height: 100,
@@ -229,14 +232,17 @@ void _fetchListings() async {
                                     ListTile(
                                       leading: const Icon(Icons.edit),
                                       title: const Text('Edit Listing'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        // Navigate to EditListingPage with initial values
-                                        Navigator.push(
+                                      onTap: () async {
+                                        Navigator.pop(
+                                            context); // Close the bottom sheet
+
+                                        final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 EditListingPage(
+                                              listingId: listing
+                                                  .id, // ✅ make sure `listing.id` is available
                                               initialTitle: listing.title,
                                               initialPrice: listing.price,
                                               initialCondition:
@@ -244,8 +250,14 @@ void _fetchListings() async {
                                             ),
                                           ),
                                         );
+
+                                        // ✅ Refresh listings if update was successful
+                                        if (result == true) {
+                                          _fetchListings();
+                                        }
                                       },
                                     ),
+
                                     ListTile(
                                       leading: const Icon(Icons.delete,
                                           color: Colors.red),

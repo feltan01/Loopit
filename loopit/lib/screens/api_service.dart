@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL for your Django API
-  static const String baseUrl = 'http://192.168.18.50:8000';
+  static const String baseUrl = 'http://192.168.18.207:8000';
 
   static get yourAccessToken => null; // Use this for Android emulator
   // For iOS simulator, use: 'http://127.0.0.1:8000'
@@ -15,6 +17,55 @@ class ApiService {
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token'); // must match your login save
+  }
+
+  static Future<bool> updateListing({
+    required int listingId,
+    required String title,
+    required String price,
+    required String category,
+    required String condition,
+    required String description,
+    required String productAge,
+  }) async {
+    final url = Uri.parse('$baseUrl/api/listings/$listingId/');
+    final token = await getToken();
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final body = jsonEncode({
+      'title': title,
+      'price': int.tryParse(price.replaceAll(RegExp(r'[^0-9]'), '')),
+      'category': category,
+      'condition': condition,
+      'description': description,
+      'product_age': productAge,
+    });
+
+    print("📤 PUT $url");
+    print("📦 BODY: $body");
+    print("🔐 TOKEN: $token");
+
+    try {
+      final response = await http.put(url, headers: headers, body: body);
+
+      print("📥 Status Code: ${response.statusCode}");
+      print("📥 Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        print("✅ Listing updated successfully");
+        return true;
+      } else {
+        print("❌ Failed to update listing: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("🔥 Exception during update: $e");
+      return false;
+    }
   }
 
   // Create a new listing
@@ -27,7 +78,7 @@ class ApiService {
     String productAge,
   ) async {
     final url = Uri.parse(
-        'http://10.10.169.101:8000/api/listings/'); // ✅ ganti sesuai IP kamu
+        'http://192.168.18.207:8000/api/listings/'); // ✅ ganti sesuai IP kamu
 
     final token = await getToken();
     print("🔐 TOKEN: $token");
@@ -68,37 +119,38 @@ class ApiService {
     }
   }
 
-
   // Upload images to a listing
-  static Future<bool> uploadListingImages(
-      int listingId, List<File> images) async {
-    try {
-      final token = await getToken();
-      if (token == null) {
-        throw Exception('Authentication token not found');
-      }
+  static Future<void> uploadListingImages(
+      int listingId, List<dynamic> images) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
 
+    for (var image in images) {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('$baseUrl/listings/$listingId/upload_images/'),
       );
 
-      request.headers.addAll({
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      });
+      request.headers['Authorization'] = 'Bearer $token';
 
-      for (var image in images) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'images',
-          image.path,
-        ));
+      if (kIsWeb && image is Uint8List) {
+        request.files.add(
+          http.MultipartFile.fromBytes('image', image,
+              filename: 'web_image.jpg'),
+        );
+      } else if (image is File) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
       }
 
-      final response = await request.send();
-      return response.statusCode == 200;
-    } catch (e) {
-      throw Exception('Error uploading images: $e');
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      print("UPLOAD IMAGE STATUS: ${response.statusCode}");
+
+      if (response.statusCode != 201) {
+        print("Image upload failed: ${response.body}");
+      }
     }
   }
 
@@ -153,3 +205,4 @@ class ApiService {
     }
   }
 }
+

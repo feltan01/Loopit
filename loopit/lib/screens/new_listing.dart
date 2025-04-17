@@ -120,7 +120,7 @@ class _NewListingPageState extends State<NewListingPage> {
 
         final int listingId = listing['id'];
         print("✅ Listing created with ID: $listingId");
-
+        await ApiService.uploadListingImages(listingId, _selectedImages);
         // Navigate to ListingSuccessPage
         Navigator.pushReplacement(
           context,

@@ -6,6 +6,9 @@ class EditListingPage extends StatefulWidget {
   final String initialPrice;
   final String initialCondition;
   final int listingId;
+  final String initialCategory;
+  final String initialDescription;
+  final String initialProductAge;
 
   const EditListingPage({
     super.key,
@@ -13,6 +16,9 @@ class EditListingPage extends StatefulWidget {
     required this.initialPrice,
     required this.initialCondition,
     required this.listingId,
+    required this.initialCategory,
+    required this.initialDescription,
+    required this.initialProductAge
   });
 
   @override
@@ -23,15 +29,13 @@ class _EditListingPageState extends State<EditListingPage> {
   // Controllers for text fields
   late TextEditingController _titleController;
   late TextEditingController _priceController;
-  final _categoryController = TextEditingController(text: 'Fashion / Wardrobe');
+  late TextEditingController _categoryController;
   late TextEditingController _conditionController;
-  final _descriptionController = TextEditingController(
-    text:
-        'Sepatu Trending Staccato !!!\nLike New\nBrand New Open Box\nWarna Grey to White\nSize M fit L',
-  );
-  final _productAgeController = TextEditingController(text: '6 months');
-
-  int photoCount = 1; // Assuming one photo is already uploaded
+  late TextEditingController _descriptionController;
+  late TextEditingController _productAgeController;
+  
+  get photoCount => null;
+// Assuming one photo is already uploaded
 
   @override
   void initState() {
@@ -40,6 +44,9 @@ class _EditListingPageState extends State<EditListingPage> {
     _titleController = TextEditingController(text: widget.initialTitle);
     _priceController = TextEditingController(text: widget.initialPrice);
     _conditionController = TextEditingController(text: widget.initialCondition);
+    _categoryController = TextEditingController(text: widget.initialCategory);
+    _descriptionController = TextEditingController(text: widget.initialDescription);
+    _productAgeController = TextEditingController(text: widget.initialProductAge);
   }
 
   // Method to save changes
@@ -65,7 +72,6 @@ class _EditListingPageState extends State<EditListingPage> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -156,9 +162,7 @@ class _EditListingPageState extends State<EditListingPage> {
                 child: GestureDetector(
                   onTap: () {
                     // Function to handle image upload
-                    setState(() {
-                      photoCount++; // Increment photo count
-                    });
+                  
                   },
                   child: Container(
                     width: 100,

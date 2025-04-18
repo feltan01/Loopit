@@ -11,6 +11,9 @@ class ListingModel {
   final String condition;
   final String imageUrl;
   final int id;
+  final String category;
+  final String description;
+  final String productAge;
 
   ListingModel({
     required this.title,
@@ -19,6 +22,9 @@ class ListingModel {
     required this.condition,
     required this.imageUrl,
     required this.id, 
+    required this.category,
+    required this.description,
+    required this.productAge,
   });
 }
 
@@ -43,28 +49,34 @@ void initState() {
 }
 
 void _fetchListings() async {
-  try {
-    final data = await ApiService.getMyListings();
-    setState(() {
-      _listings = data.map<ListingModel>((item) {
-        return ListingModel(
-          id: item['id'],
-          title: item['title'],
-          subtitle: item['description'],
-          price: 'Rp ${item['price']}',
-          condition: item['condition'],
-          imageUrl: item['images'].isNotEmpty
-              ? 'http://192.168.18.207:8000${item['images'][0]['image']}'
-              : 'assets/images/placeholder.png',
-        );
-      }).toList();
-      _isLoading = false;
-    });
-  } catch (e) {
-    print('Error fetching listings: $e');
-    setState(() => _isLoading = false);
+    try {
+      final data = await ApiService.getMyListings();
+      print('Fetched data: $data');
+
+      setState(() {
+        _listings = data.map<ListingModel>((item) {
+          return ListingModel(
+            id: item['id'],
+            title: item['title'],
+            subtitle: item['description'],
+            price: item['price'].toString(), // ✅ RAW VALUE
+            condition: item['condition'],
+            category: item['category'],
+            description: item['description'],
+            productAge: item['product_age'], // ✅ use correct key
+            imageUrl: item['images'].isNotEmpty
+                ? 'http://192.168.18.207:8000${item['images'][0]['image']}'
+                : 'assets/images/placeholder.png',
+          );
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching listings: $e');
+      setState(() => _isLoading = false);
+    }
   }
-}
+
 
 
   // Method to delete a listing
@@ -240,14 +252,20 @@ void _fetchListings() async {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                EditListingPage(
-                                              listingId: listing
-                                                  .id, // ✅ make sure `listing.id` is available
-                                              initialTitle: listing.title,
-                                              initialPrice: listing.price,
-                                              initialCondition:
-                                                  listing.condition,
-                                            ),
+                                              EditListingPage(
+                                                    listingId: listing.id,
+                                                    initialTitle: listing.title,
+                                                    initialPrice: listing.price,
+                                                    initialCondition:
+                                                        listing.condition,
+                                                    initialCategory:
+                                                        listing.category,
+                                                    initialDescription:
+                                                        listing.description,
+                                                    initialProductAge:
+                                                        listing.productAge,
+                                                  ),
+
                                           ),
                                         );
 

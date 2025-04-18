@@ -9,14 +9,31 @@ class ApiService {
   // Base URL for your Django API
   static const String baseUrl = 'http://192.168.18.207:8000';
 
-  static get yourAccessToken => null; // Use this for Android emulator
-  // For iOS simulator, use: 'http://127.0.0.1:8000'
-  // For physical devices, use your actual IP address
-
-  // Get the JWT token from shared preferences
+  static get yourAccessToken => null; 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token'); // must match your login save
+  }
+
+  static Future<List<Map<String, dynamic>>> getAllListings() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/listings/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is List) {
+        return decoded.cast<Map<String, dynamic>>();
+      } else {
+        return []; // fallback to empty list
+      }
+    } else {
+      throw Exception('Failed to load listings');
+    }
   }
 
   static Future<bool> updateListing({

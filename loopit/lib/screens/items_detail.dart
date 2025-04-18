@@ -99,7 +99,7 @@ class _ItemsDetailsState extends State<ItemsDetails> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const FashionPage(),
+                  builder: (context) => const FashionPage(listings: [],),
                 ),
               );
             },

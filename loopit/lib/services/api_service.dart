@@ -351,4 +351,6 @@ static Future<List<Map<String, dynamic>>> getMessages(int conversationId) async 
 
   static createListing(String text, String text2, String text3, String text4,
       String text5, String text6) {}
+
+  static getAllListings() {}
 }

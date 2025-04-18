@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/main.dart';
 import 'package:loopit/screens/items_detail.dart';
+import 'home_page.dart';
 
 class FashionPage extends StatefulWidget {
-  const FashionPage({super.key});
+  final List<Map<String, dynamic>> listings;
+
+  const FashionPage({super.key, required this.listings});
 
   @override
   State<FashionPage> createState() => _FashionPageState();
 }
+
 
 class _FashionPageState extends State<FashionPage> {
   final PageController _pageController = PageController();
@@ -86,8 +90,7 @@ class _FashionPageState extends State<FashionPage> {
         children: [
           GestureDetector(
             onTap: () {
-              // Navigate to HomePage when back arrow is tapped
-              Navigator.of(context).pushReplacementNamed('/homepage');
+              MaterialPageRoute(builder: (context) => const HomePage());
             },
             child: Container(
               width: 48,
@@ -235,7 +238,9 @@ class _FashionPageState extends State<FashionPage> {
               children: const [
                 Icon(Icons.filter_list, color: Colors.black54),
                 SizedBox(width: 4),
-                Text("Filter", style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500)),
+                Text("Filter",
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -245,37 +250,6 @@ class _FashionPageState extends State<FashionPage> {
   }
 
   Widget _buildProductGrid() {
-    List<Map<String, dynamic>> products = [
-      {
-        "name": "Canon Kalkulator Scientific F-718SGA",
-        "price": "Rp 100.000",
-        "condition": "87% Good",
-        "conditionColor": const Color(0xFFFFC107),
-        "image": "assets/images/calculator.png",
-      },
-      {
-        "name": "Tablet Xiaomi Pad 6",
-        "price": "Rp 50.000",
-        "condition": "99% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/tablet.png",
-      },
-      {
-        "name": "Speaker Bluetooth Minis",
-        "price": "Rp 90.000",
-        "condition": "90% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/speaker.png",
-      },
-      {
-        "name": "Speaker Bluetooth Minis",
-        "price": "Rp 90.000",
-        "condition": "90% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/speaker.png",
-      },
-    ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -286,15 +260,19 @@ class _FashionPageState extends State<FashionPage> {
           mainAxisSpacing: 12,
           childAspectRatio: 0.75,
         ),
-        itemCount: products.length,
+        itemCount: widget.listings.length,
         itemBuilder: (context, index) {
+          final product = widget.listings[index];
           return _buildProductItem(
             context,
-            products[index]["name"],
-            products[index]["price"],
-            products[index]["condition"],
-            products[index]["conditionColor"],
-            products[index]["image"],
+            product["title"] ?? product["name"], // adjust key to match API
+            product["price"] ?? "Rp -",
+            product["condition"] ?? "",
+            product["condition"].toString().contains("Like New")
+                ? const Color(0xFF4CAF50)
+                : const Color(0xFFFFC107),
+            product["image_url"] ??
+                "assets/images/placeholder.png", // Adjust this
             index,
           );
         },
@@ -302,7 +280,8 @@ class _FashionPageState extends State<FashionPage> {
     );
   }
 
-  Widget _buildProductItem(BuildContext context, String name, String price, String condition, Color conditionColor, String image, int index) {
+  Widget _buildProductItem(BuildContext context, String name, String price,
+      String condition, Color conditionColor, String image, int index) {
     return InkWell(
       onTap: () {
         // Navigate to the ItemsDetails when item is tapped
@@ -343,14 +322,20 @@ class _FashionPageState extends State<FashionPage> {
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
-              child: Image.asset(
+              child: Image.network(
                 image,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  'assets/images/placeholder.png',
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
                 height: 140,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
-            
+
             // Product details
             Padding(
               padding: const EdgeInsets.all(10),
@@ -381,10 +366,11 @@ class _FashionPageState extends State<FashionPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: condition.contains("Like New") 
-                              ? const Color(0xFFE7F5D9) 
+                          color: condition.contains("Like New")
+                              ? const Color(0xFFE7F5D9)
                               : const Color(0xFFFFF8E0),
                           borderRadius: BorderRadius.circular(20),
                         ),

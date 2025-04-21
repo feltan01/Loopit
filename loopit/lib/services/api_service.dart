@@ -6,7 +6,7 @@ import '../models/user.dart';
 import '../models/conversation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.18.207:8000/api';
+  static const String baseUrl = 'http://192.168.18.50:8000/api';
 
   // Token Management
   static Future<String?> getToken() async {
@@ -37,23 +37,24 @@ class ApiService {
 
   // Headers with Authentication
   // Headers with Authentication
-static Future<Map<String, String>> getHeaders({bool requireAuth = false}) async {
-  if (requireAuth) {
-    final token = await getToken();
-    if (token == null) {
-      throw Exception('No authentication token available');
-    }
+  static Future<Map<String, String>> getHeaders(
+      {bool requireAuth = false}) async {
+    if (requireAuth) {
+      final token = await getToken();
+      if (token == null) {
+        throw Exception('No authentication token available');
+      }
 
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-  } else {
-    return {
-      'Content-Type': 'application/json',
-    };
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+    } else {
+      return {
+        'Content-Type': 'application/json',
+      };
+    }
   }
-}
 
   // Authentication Methods
   static Future<Map<String, dynamic>> login(
@@ -162,28 +163,29 @@ static Future<Map<String, String>> getHeaders({bool requireAuth = false}) async 
 
   // Conversations
   // Conversations
-static Future<List<Conversation>> getConversations() async {
-  try {
-    final headers = await getHeaders(requireAuth: false); // Allow fetching without token
-    final response = await http.get(
-      Uri.parse('$baseUrl/chat/conversations/'),
-      headers: headers,
-    );
+  static Future<List<Conversation>> getConversations() async {
+    try {
+      final headers =
+          await getHeaders(requireAuth: false); // Allow fetching without token
+      final response = await http.get(
+        Uri.parse('$baseUrl/chat/conversations/'),
+        headers: headers,
+      );
 
-    print('📊 Conversations Response Status: ${response.statusCode}');
-    print('📄 Conversations Response Body: ${response.body}');
+      print('📊 Conversations Response Status: ${response.statusCode}');
+      print('📄 Conversations Response Body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Conversation.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load conversations: ${response.body}');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => Conversation.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load conversations: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Conversations Fetch Error: $e');
+      rethrow;
     }
-  } catch (e) {
-    print('❌ Conversations Fetch Error: $e');
-    rethrow;
   }
-}
 
   static Future<Map<String, dynamic>> getConversation(int id) async {
     final headers = await getHeaders();
@@ -199,23 +201,24 @@ static Future<List<Conversation>> getConversations() async {
     }
   }
 
-static Future<List<Map<String, dynamic>>> getMessages(int conversationId) async {
-  final headers = await getHeaders(); // Assuming this requires a token
-  final response = await http.get(
-    Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
-    headers: headers,
-  );
+  static Future<List<Map<String, dynamic>>> getMessages(
+      int conversationId) async {
+    final headers = await getHeaders(); // Assuming this requires a token
+    final response = await http.get(
+      Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
+      headers: headers,
+    );
 
-  if (response.statusCode == 200) {
-    final List<dynamic>? data = jsonDecode(response.body);
-    if (data == null) {
-      return []; // Return an empty list if data is null
+    if (response.statusCode == 200) {
+      final List<dynamic>? data = jsonDecode(response.body);
+      if (data == null) {
+        return []; // Return an empty list if data is null
+      }
+      return List<Map<String, dynamic>>.from(data);
+    } else {
+      throw Exception('Failed to load messages: ${response.body}');
     }
-    return List<Map<String, dynamic>>.from(data);
-  } else {
-    throw Exception('Failed to load messages: ${response.body}');
   }
-}
 
   static Future<Map<String, dynamic>> sendMessage(
       int conversationId, String text) async {

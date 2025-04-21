@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL for your Django API
-  static const String baseUrl = 'http://192.168.18.207:8000';
+  static const String baseUrl = 'http://192.168.18.50:8000';
 
   static get yourAccessToken => null; 
   static Future<String?> getToken() async {
@@ -95,7 +95,7 @@ class ApiService {
     String productAge,
   ) async {
     final url = Uri.parse(
-        'http://192.168.18.207:8000/api/listings/'); // ✅ ganti sesuai IP kamu
+        'http://192.168.18.50:8000/api/listings/'); // ✅ ganti sesuai IP kamu
 
     final token = await getToken();
     print("🔐 TOKEN: $token");

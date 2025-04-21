@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cod_withfoto.dart'; // Import the destination page
+import 'package:loopit/screens/cod.dart';
 
 void main() {
   runApp(const Deliveryproof());
@@ -22,12 +22,12 @@ class ProofOfDeliveryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       body: Column(
         children: [
           // Header with back button and title
           Container(
-            padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+            padding:
+                const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
             child: Row(
               children: [
                 // Back button in light green circle with navigation
@@ -35,7 +35,8 @@ class ProofOfDeliveryPage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const codwithphoto()),
+                      MaterialPageRoute(
+                          builder: (context) => const CashOnDeliveryPage()),
                     );
                   },
                   child: Container(
@@ -64,7 +65,7 @@ class ProofOfDeliveryPage extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Image with black borders
           Container(
             width: double.infinity,
@@ -90,7 +91,8 @@ class ProofOfDeliveryPage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                          Icon(Icons.image_not_supported,
+                              size: 50, color: Colors.grey),
                           SizedBox(height: 8),
                           Text("Delivery confirmation photo"),
                         ],

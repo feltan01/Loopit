@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loopit/screens/payment_complete.dart';
-import 'dart:async';
 import 'report.dart';
-import 'cod_withfoto.dart';
-
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CashOnDeliveryPage extends StatefulWidget {
   const CashOnDeliveryPage({Key? key}) : super(key: key);
@@ -15,42 +16,81 @@ class CashOnDeliveryPage extends StatefulWidget {
 
 class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
   // Google Map Controller
-  final Completer<GoogleMapController> _mapController = Completer();
+ final LatLng meetingPoint = LatLng(-6.288433, 106.668209);
+  final LatLng userLocation = LatLng(-6.292033, 106.668909);
 
   // Initial camera position (Emerald Bintaro coordinates)
   static const LatLng _meetingPointLocation = LatLng(-6.288433, 106.668209);
 
-  // Map markers
-  final Set<Marker> _markers = {
-    const Marker(
-      markerId: MarkerId('fresh_market'),
-      position: _meetingPointLocation,
-      infoWindow: InfoWindow(title: 'Fresh Market Emerald Bintaro'),
-    ),
-    Marker(
-      markerId: MarkerId('user_location'),
-      position: LatLng(-6.292033, 106.668909),
-      infoWindow: InfoWindow(title: 'Your Location'),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-    )
-  };
+String? pickedImageName;
 
-  // Map route polylines
-  final Set<Polyline> _polylines = {
-    Polyline(
-      polylineId: const PolylineId('route'),
-      color: Colors.green.withOpacity(0.7),
-      width: 5,
-      points: const [
-        LatLng(-6.288433, 106.668209), // Fresh Market
-        LatLng(-6.288933, 106.670209), // Route point 1
-        LatLng(-6.290033, 106.671209), // Route point 2
-        LatLng(-6.291033, 106.670809), // Route point 3
-        LatLng(-6.292033, 106.668909), // User location
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedImage =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        pickedImageName = pickedImage.name;
+      });
+    }
+  }
+
+Widget buildMapSection() {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height * 0.35,
+    child: FlutterMap(
+      options: MapOptions(
+        center: meetingPoint,
+        zoom: 15.5,
+      ),
+      children: [
+          if (!kIsWeb)
+            TileLayer(
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: ['a', 'b', 'c'],
+              userAgentPackageName: 'com.example.app',
+            ),
+          if (kIsWeb)
+            TileLayer(
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: ['a', 'b', 'c'],
+            ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              width: 40,
+              height: 40,
+              point: meetingPoint,
+              child: const Icon(Icons.location_pin, color: Colors.red, size: 36),
+            ),
+            Marker(
+              width: 40,
+              height: 40,
+              point: userLocation,
+              child: const Icon(Icons.person_pin_circle, color: Colors.green, size: 36),
+            ),
+          ],
+        ),
+        PolylineLayer(
+          polylines: [
+            Polyline(
+              points: [
+                meetingPoint,
+                LatLng(-6.288933, 106.670209),
+                LatLng(-6.290033, 106.671209),
+                LatLng(-6.291033, 106.670809),
+                userLocation,
+              ],
+              strokeWidth: 5.0,
+              color: Colors.green.withOpacity(0.7),
+            ),
+          ],
+        ),
       ],
     ),
-  };
-
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,24 +131,7 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
             ),
 
             // Map Section (About 35% of screen height)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.35,
-              child: GoogleMap(
-                initialCameraPosition: const CameraPosition(
-                  target: _meetingPointLocation,
-                  zoom: 15.0,
-                ),
-                markers: _markers,
-                polylines: _polylines,
-                mapType: MapType.normal,
-                myLocationEnabled: false,
-                zoomControlsEnabled: false,
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController.complete(controller);
-                },
-              ),
-            ),
-
+          buildMapSection(),
             // Meeting Point Section
             Expanded(
               child: SingleChildScrollView(
@@ -270,21 +293,14 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: TextButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const codwithphoto(),
-                              ),
-                            );
-                          },
+                          onPressed: pickImage,
                           icon: const Icon(
                             Icons.photo_camera_outlined,
                             color: Colors.grey,
                           ),
-                          label: const Text(
-                            'Attach your delivery proof',
-                            style: TextStyle(
+                          label: Text(
+                            pickedImageName ?? 'Attach your delivery proof',
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
                             ),
@@ -295,6 +311,7 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
                           ),
                         ),
                       ),
+
 
                       const SizedBox(height: 24),
 

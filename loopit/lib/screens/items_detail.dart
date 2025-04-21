@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/chat_buyer.dart';
 import 'package:loopit/screens/fashion_page.dart';
+import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/saved_products.dart';
 
 // Import the proper User model
@@ -99,7 +100,7 @@ class _ItemsDetailsState extends State<ItemsDetails> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const FashionPage(listings: [],),
+                  builder: (context) => const HomePage(),
                 ),
               );
             },

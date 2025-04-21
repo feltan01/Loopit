@@ -1,231 +1,391 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/wallet.dart';
-
+import 'package:flutter/services.dart';
+import 'package:loopit/screens/deposit_completed.dart';
 
 void main() {
-  runApp(const DepositConfirmationApp());
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+  runApp(const MyApp());
 }
 
-class DepositConfirmationApp extends StatelessWidget {
-  const DepositConfirmationApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white, // Changed from Colors.grey[100] to white
       ),
-      home: const DepositConfirmationScreen(),
+      home: const DepositConfirmation(),
     );
   }
 }
 
-class DepositConfirmationScreen extends StatelessWidget {
-  const DepositConfirmationScreen({super.key});
+class DepositConfirmation extends StatelessWidget {
+  const DepositConfirmation({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Custom colors to match the image exactly
+    final lightGreen = const Color(0xFFECF7ED); // Lighter mint green for card background
+    final darkGreen = const Color(0xFF578E5C); // Darker green for buttons and accent elements
+    final blueColor = const Color(0xFF2196F3); // Blue for BCA text
+
     return Scaffold(
+      backgroundColor: Colors.white, // Changed from Colors.grey[100] to white
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Success icon
-              Center(
-                child: Container(
-                  width: 150.0,
-                  height: 150.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFE6F7E6),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.check,
-                      size: 90,
-                      color: const Color(0xFF5A8251),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Title text
-              const Center(
-                child: Text(
-                  'Deposit Request Sent',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF5A8251),
-                  ),
-                ),
-              ),
-              
-              // Date and time
-              Center(
-                child: Text(
-                  '12th November 2024    12:07:28 WIB',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Deposit details card
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6F7E6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Amount
-                    Text(
-                      'Amount:',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Rp 50.000',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF5A8251),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Deposit details white card
-                    Container(
-                      padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  // Back button in a circular background
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: Container(
+                      height: 40,
+                      width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        color: lightGreen,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Deposit Location
-                          Text(
-                            'Deposit Location:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[800],
-                            ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: darkGreen,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ),
+                  
+                  // Main content - scrollable
+                  Padding(
+                    padding: const EdgeInsets.only(top: 70.0),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: lightGreen, // Making entire card light green to match image
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 5,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0D6EFD).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                              // Header with timer icon
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(
-                                      Icons.water_drop,
-                                      size: 14,
-                                      color: const Color(0xFF0D6EFD),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.access_time,
+                                          color: darkGreen,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Complete Payment before",
+                                              style: TextStyle(
+                                                color: darkGreen,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            const Text(
+                                              "1 January 2025, 23:59 WIB",
+                                              style: TextStyle(
+                                                color: Color(0xFF666666),
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 2),
                                     const Text(
-                                      'BCA',
+                                      "23:59:59",
                                       style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0D6EFD),
+                                        color: Color(0xFF666666),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '1234 5678 90X YZ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[800],
+                              
+                              // Virtual Account Section
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Virtual Account Number",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Text(
+                                              "8077708581196079",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            // Pressable copy icon
+                                            GestureDetector(
+                                              onTap: () {
+                                                Clipboard.setData(const ClipboardData(text: "8077708581196079"))
+                                                  .then((_) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text("Virtual Account number copied to clipboard"),
+                                                        duration: Duration(seconds: 2),
+                                                      ),
+                                                    );
+                                                  }
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.copy_outlined,
+                                                size: 18,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        // BCA logo section
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "BCA",
+                                              style: TextStyle(
+                                                color: blueColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Icon(
+                                              Icons.account_balance,
+                                              color: blueColor,
+                                              size: 16,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      "Details",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    
+                                    // Deposit row
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: const [
+                                        Text(
+                                          "Deposit",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                        Text(
+                                          "Rp 50.000",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    
+                                    // Admin Fee row
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: const [
+                                        Text(
+                                          "Admin fee",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                        Text(
+                                          "Rp 1.000",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    
+                                    const Divider(color: Color(0x33000000)),
+                                    const SizedBox(height: 8),
+                                    
+                                    // Total row
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: const [
+                                        Text(
+                                          "Total",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                        Text(
+                                          "Rp 51.000",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF333333),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    
+                                    const SizedBox(height: 16),
+                                    
+                                    // Important notice
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.grey.withOpacity(0.2),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Important :",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF333333),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          RichText(
+                                            text: TextSpan(
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xFF666666),
+                                                height: 1.4,
+                                              ),
+                                              children: const [
+                                                TextSpan(
+                                                  text: "• Transfer into Virtual Account Number only available to the bank that ",
+                                                ),
+                                                TextSpan(
+                                                  text: "You have chosen.",
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                                ),
+                                                TextSpan(
+                                                  text: " You cannot transfer into/from another different banks.",
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          
-                          // Deposit Status
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Deposit Status:',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                              const Text(
-                                'Success',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF76C893),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(height: 24),
-              
-              // Confirm button with navigation to wallet.dart
-              SizedBox(
+            ),
+            
+            // Updated confirm button with matching green color from image
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
                 height: 50,
-                child: TextButton(
+                child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to the Wallet screen when button is pressed
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const WalletBalanceScreen()),
+                    // Navigate to the deposit completed screen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const DepositCompleted(),
+                      ),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFFE6F7E6),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF578E5C), // Matching green color from the image
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    elevation: 0,
                   ),
                   child: const Text(
-                    'Confirm',
+                    "Confirm Payment",
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF5A8251),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

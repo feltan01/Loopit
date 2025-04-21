@@ -56,78 +56,99 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 ),
 
                 // Profile Info
+                // Profile Info
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   transform: Matrix4.translationValues(0, -40, 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Profile image
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/profile_picture.png'),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              username ?? 'User',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF5D6852),
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: List.generate(
-                                5,
-                                (index) => const Icon(
-                                  Icons.star_border,
-                                  size: 16,
-                                  color: Color(0xFFBDBDBD),
+                      // Profile image and user info
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 45,
+                            backgroundImage:
+                                AssetImage('assets/images/profile_picture.png'),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                username ?? 'User',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF5D6852),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'No description.',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            const SizedBox(height: 10),
-                            const Row(
-                              children: [
-                                Icon(Icons.location_on,
-                                    size: 16, color: Color(0xFF5D6852)),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Location has not been set by user.',
-                                  style: TextStyle(color: Color(0xFF5D6852)),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: List.generate(
+                                  5,
+                                  (index) => const Icon(
+                                    Icons.star_border,
+                                    size: 16,
+                                    color: Color(0xFFBDBDBD),
+                                  ),
                                 ),
-                              ],
-                            )
-                          ],
-                        ),
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'No description.',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              const SizedBox(height: 10),
+                              const Row(
+                                children: [
+                                  Icon(Icons.location_on,
+                                      size: 16, color: Color(0xFF5D6852)),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Location has not been set by user.',
+                                    style: TextStyle(
+                                      color: Color(0xFF5D6852),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
+
                       // Edit button
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                            horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE8F5E9),
                           borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(2, 2),
+                            )
+                          ],
                         ),
                         child: const Text(
                           'Edit profile',
-                          style: TextStyle(color: Color(0xFF5D6852)),
+                          style: TextStyle(
+                            color: Color(0xFF5D6852),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
 
                 const Divider(thickness: 1),
 

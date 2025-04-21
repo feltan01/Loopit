@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (lib/screens/order_complete.dart)",
+            "type": "dart",
+            "request": "launch",
+            "cwd": "loopit",
+            "program": "lib/screens/order_complete.dart"
+        }
+    ]
+}

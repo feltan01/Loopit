@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/history_deposited.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
+import 'package:loopit/screens/wallet.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +41,14 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WalletBalanceScreen(),
+              ),
+            );
+          },
         ),
         title: const Text(
           'Transaction History',
@@ -57,11 +65,11 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: [
-                _buildFilterTab('Withdrawn'),
+                _buildWithdrawnTab(),
                 const SizedBox(width: 8),
-                _buildFilterTab('Deposited'),
+                _buildDepositedTab(),
                 const SizedBox(width: 8),
-                _buildFilterTab('All'),
+                _buildAllTab(),
               ],
             ),
           ),
@@ -134,22 +142,8 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Color(0xFF8DB376),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterTab(String text) {
-    final isActive = activeFilter == text;
+  Widget _buildWithdrawnTab() {
+    final isActive = activeFilter == 'Withdrawn';
     
     return Expanded(
       child: TweenAnimationBuilder<Color?>(
@@ -165,32 +159,15 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  activeFilter = text;
+                  activeFilter = 'Withdrawn';
                 });
                 
-                // Navigate to the appropriate screen based on the selected tab
-                if (text == 'Withdrawn' && activeFilter != 'Withdrawn') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WithdrawnHistoryScreen(),
-                    ),
-                  );
-                } else if (text == 'Deposited' && activeFilter != 'Deposited') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DepositedHistoryScreen(),
-                    ),
-                  );
-                } else if (text == 'All' && activeFilter != 'All') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AllTransactionHistoryScreen(),
-                    ),
-                  );
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WithdrawnHistoryScreen(),
+                  ),
+                );
               },
               child: Container(
                 height: 36,
@@ -211,7 +188,7 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  text,
+                  'Withdrawn',
                   style: TextStyle(
                     color: isActive ? Colors.black87 : Colors.black54,
                     fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
@@ -221,6 +198,140 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildDepositedTab() {
+    final isActive = activeFilter == 'Deposited';
+    
+    return Expanded(
+      child: TweenAnimationBuilder<Color?>(
+        duration: const Duration(milliseconds: 300),
+        tween: ColorTween(
+          begin: isActive ? const Color(0xFF8DB376) : Colors.white,
+          end: isActive ? const Color(0xFF8DB376) : Colors.white,
+        ),
+        builder: (context, color, _) {
+          return AnimatedScale(
+            scale: isActive ? 1.0 : 0.97,
+            duration: const Duration(milliseconds: 200),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  activeFilter = 'Deposited';
+                });
+                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DepositedHistoryScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                  boxShadow: isActive ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ] : null,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Deposited',
+                  style: TextStyle(
+                    color: isActive ? Colors.black87 : Colors.black54,
+                    fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAllTab() {
+    final isActive = activeFilter == 'All';
+    
+    return Expanded(
+      child: TweenAnimationBuilder<Color?>(
+        duration: const Duration(milliseconds: 300),
+        tween: ColorTween(
+          begin: isActive ? const Color(0xFF8DB376) : Colors.white,
+          end: isActive ? const Color(0xFF8DB376) : Colors.white,
+        ),
+        builder: (context, color, _) {
+          return AnimatedScale(
+            scale: isActive ? 1.0 : 0.97,
+            duration: const Duration(milliseconds: 200),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  activeFilter = 'All';
+                });
+                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllTransactionHistoryScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                  boxShadow: isActive ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ] : null,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'All',
+                  style: TextStyle(
+                    color: isActive ? Colors.black87 : Colors.black54,
+                    fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color.fromARGB(255, 84, 113, 66),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -244,13 +355,13 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
             children: [
               Row(
                 children: [
-                  Icon(icon, size: 14, color: Colors.grey),
+                  Icon(icon, size: 14, color: const Color.fromARGB(255, 84, 113, 66)),
                   const SizedBox(width: 4),
                   const Text(
                     'Date and Time',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -268,14 +379,14 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
                   Icon(
                     method == 'mBCA' ? Icons.account_balance : Icons.payment,
                     size: 14,
-                    color: Colors.grey,
+                    color: const Color.fromARGB(255, 84, 113, 66),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     isDeposit ? 'Deposit method' : 'Withdrawal method',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -300,7 +411,7 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
                     'Amount:',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -321,7 +432,7 @@ class _AllTransactionHistoryScreenState extends State<AllTransactionHistoryScree
                     'Status:',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],

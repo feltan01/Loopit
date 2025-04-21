@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/history_all.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
+import 'package:loopit/screens/wallet.dart'; // Added import for wallet.dart
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +41,11 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          // Modified to navigate to wallet.dart
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WalletBalanceScreen()),
+          ),
         ),
         title: const Text(
           'Transaction History',
@@ -194,13 +199,13 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
             children: [
               Row(
                 children: [
-                  Icon(icon, size: 14, color: Colors.grey),
+                  Icon(icon, size: 14, color: const Color.fromARGB(255, 84, 113, 66)),
                   const SizedBox(width: 4),
                   const Text(
                     'Date and Time',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -218,14 +223,14 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
                   Icon(
                     method == 'mBCA' ? Icons.account_balance : Icons.payment,
                     size: 14,
-                    color: Colors.grey,
+                    color: const Color.fromARGB(255, 84, 113, 66),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     isDeposit ? 'Deposit method' : 'Withdrawal method',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -250,7 +255,7 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
                     'Amount:',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -271,7 +276,7 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
                     'Status:',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 84, 113, 66),
                     ),
                   ),
                 ],
@@ -292,4 +297,3 @@ class _DepositedHistoryScreenState extends State<DepositedHistoryScreen> {
     );
   }
 }
-

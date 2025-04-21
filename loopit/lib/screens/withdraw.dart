@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/main.dart';
 import 'package:loopit/screens/wallet.dart';
 import 'package:loopit/screens/withdraw_completed.dart';
 
@@ -42,26 +43,39 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions
+    final screenSize = MediaQuery.of(context).size;
+    final horizontalPadding = screenSize.width * 0.05; // 5% of screen width
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHeader(),
-              // Use a reduced height balance card
-              _buildBalanceCardCompact(),
-              const SizedBox(height: 10),
-              // Use a reduced height withdrawal input
-              _buildWithdrawalInputCompact(),
-              const SizedBox(height: 10),
-              // Show fewer payment methods
-              _buildPaymentMethodCompact(),
-              const Spacer(flex: 1),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildBalanceCardCompact(),
+                      SizedBox(height: screenSize.height * 0.015),
+                      _buildWithdrawalInputCompact(),
+                      SizedBox(height: screenSize.height * 0.015),
+                      _buildPaymentMethodCompact(),
+                      // Reduced bottom padding to move everything up slightly
+                      SizedBox(height: screenSize.height * 0.03), // Changed from 0.05
+                    ],
+                  ),
+                ),
+              ),
+              // Fixed position button at bottom
               _buildWithdrawalButton(),
-              const SizedBox(height: 12),
+              // Increased bottom padding to prevent overflow
+              SizedBox(height: screenSize.height * 0.03), // Changed from 0.02
             ],
           ),
         ),
@@ -263,8 +277,12 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
   }
 
   Widget _buildPaymentMethodCompact() {
-    // Only show first 3 payment methods to prevent overflow
-    final displayMethods = _paymentMethods.take(3).toList();
+    // Get screen dimensions to determine how many methods to show
+    final screenSize = MediaQuery.of(context).size;
+    final itemsToShow = screenSize.height < 600 ? 2 : 3;
+    
+    // Only show first N payment methods to prevent overflow
+    final displayMethods = _paymentMethods.take(itemsToShow).toList();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,17 +296,24 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
         ),
         const SizedBox(height: 8),
         // Build fixed-sized payment method items
-        Column(
-          children: [
-            for (int i = 0; i < displayMethods.length; i++) ...[
-              _buildPaymentMethodItemCompact(displayMethods[i]),
-              if (i < displayMethods.length - 1) 
-                const Divider(height: 1, thickness: 0.5),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Column(
+            children: [
+              for (int i = 0; i < displayMethods.length; i++) ...[
+                _buildPaymentMethodItemCompact(displayMethods[i]),
+                if (i < displayMethods.length - 1) 
+                  const Divider(height: 1, thickness: 0.5),
+              ],
             ],
-          ],
+          ),
         ),
         // Add a "View more" option if needed
-        if (_paymentMethods.length > 3) 
+        if (_paymentMethods.length > itemsToShow) 
           Padding(
             padding: const EdgeInsets.only(top: 4.0),
             child: Row(
@@ -325,7 +350,7 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -365,7 +390,7 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
                     _selectedBankIndex = value;
                   });
                 },
-                activeColor: Colors.green.shade700,
+                activeColor: const Color.fromRGBO(56, 142, 60, 1),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 visualDensity: const VisualDensity(
                   horizontal: VisualDensity.minimumDensity,
@@ -382,11 +407,13 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
   void _showAllPaymentMethods() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true, // Make sheet take less space
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.6, // 60% of screen height
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -450,30 +477,35 @@ class _BalanceWithdrawalPageState extends State<BalanceWithdrawalPage> {
   }
 
   Widget _buildWithdrawalButton() {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const WithdrawalConfirmationScreen(),
+    // Get screen dimensions for responsive button size
+    final screenSize = MediaQuery.of(context).size;
+    
+    return SizedBox(
+      height: 52, // Reduced from 56 to make it slightly smaller
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const WithdrawalConfirmationScreen(),
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromRGBO(87, 142, 92, 1), // Darker green like reference
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFD3EAD3),
-        foregroundColor: Colors.black,
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          padding: const EdgeInsets.symmetric(vertical: 10), // Reduced from 12
         ),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-      ),
-      child: const Text(
-        'Withdraw Balance',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+        child: const Text(
+          'Withdraw Balance',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -492,4 +524,3 @@ class PaymentMethod {
 
   PaymentMethod(this.name, this.iconPath);
 }
-

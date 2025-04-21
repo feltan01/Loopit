@@ -17,19 +17,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      home: const OrderComplete(),
+      home: const OrderCompleteCOD(),
     );
   }
 }
 
-class OrderComplete extends StatefulWidget {
-  const OrderComplete({Key? key}) : super(key: key);
+class OrderCompleteCOD extends StatefulWidget {
+  const OrderCompleteCOD({Key? key}) : super(key: key);
 
   @override
-  State<OrderComplete> createState() => _OrderCompletionScreenState();
+  State<OrderCompleteCOD> createState() => _OrderCompletionScreenState();
 }
 
-class _OrderCompletionScreenState extends State<OrderComplete>
+class _OrderCompletionScreenState extends State<OrderCompleteCOD>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;

@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/payment_complete.dart';
+import 'package:loopit/screens/order_complete.dart';
 import 'report.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class CashOnDeliveryPage extends StatefulWidget {
   const CashOnDeliveryPage({Key? key}) : super(key: key);
@@ -369,7 +368,7 @@ Widget buildMapSection() {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            const OrderComplete(), // Redirect to chat_seller.dart
+                            const OrderCompleteCOD(),
                       ),
                     );
                   },

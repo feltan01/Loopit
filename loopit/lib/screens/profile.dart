@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/seller_verification.dart';
 import 'package:loopit/screens/wallet.dart';
 import 'package:loopit/screens/my_profile.dart';
 import 'package:loopit/screens/login_page.dart';
+import 'package:loopit/screens/settings.dart';
+import 'package:loopit/screens/about_app.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,15 +26,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserProfile() async {
-  final prefs = await SharedPreferences.getInstance();
-  final storedUsername = prefs.getString('username');
+    final prefs = await SharedPreferences.getInstance();
+    final storedUsername = prefs.getString('username');
 
-  setState(() {
-    username = storedUsername;
-  });
-}
-
-
+    setState(() {
+      username = storedUsername;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +57,10 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       children: [
         const SizedBox(height: 20),
-        CircleAvatar(
+        const CircleAvatar(
           radius: 50,
-          backgroundColor: const Color(0xFFE8F0E4), // hijau muda
-          child: const Icon(
-            Icons.person,
-            size: 50,
-            color: Color(0xFF7D9E6A), // hijau tua
-          ),
+          backgroundImage: AssetImage('assets/images/profile_picture.png'),
+          backgroundColor: Color(0xFFE8F0E4),
         ),
         const SizedBox(height: 10),
         Text(
@@ -142,20 +137,29 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildMenuList(BuildContext context) {
     return Column(
       children: [
-        _buildMenuItem(Icons.person, "My Profile", () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const MyProfileScreen()));
+        _buildMenuItem(Icons.person, "My Profile", () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MyProfileScreen()),
+          );
         }),
         _buildMenuItem(Icons.account_balance_wallet, "My Balance", () {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletBalanceScreen()));
         }),
-        _buildMenuItem(Icons.settings, "Settings", () {}),
-        _buildMenuItem(Icons.info, "About App", () {}),
-        _buildMenuItem(Icons.logout, "LogOut", () {
+        _buildMenuItem(Icons.settings, "Settings", () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+        }),
+        _buildMenuItem(Icons.info, "About App", () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutAppPage()));
+        }),
+        _buildMenuItem(Icons.logout, "LogOut", () async {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.clear(); // ✅ Hapus semua data SharedPreferences
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const LoginPage()),
             (route) => false,
-         
           );
         }),
       ],

@@ -49,13 +49,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class ConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]  # Allow any user to access this endpoint
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return Conversation.objects.filter(participants=self.request.user).order_by('-updated_at')
         
-        return Conversation.objects.none()
+        # Return all conversations if the user is not authenticated
+        return Conversation.objects.all()  # Adjust this based on your requirements
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

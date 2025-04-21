@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ElectronicsPage extends StatefulWidget {
-  const ElectronicsPage({super.key});
+  final List<Map<String, dynamic>> listings;
+
+  const ElectronicsPage({super.key, required this.listings});
 
   @override
   State<ElectronicsPage> createState() => _ElectronicsPageState();
@@ -234,30 +236,6 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
   }
 
   Widget _buildProductGrid() {
-    List<Map<String, dynamic>> products = [
-      {
-        "name": "Canon Kalkulator Scientific F-718SGA",
-        "price": "Rp 100.000",
-        "condition": "87% Good",
-        "conditionColor": const Color(0xFFFFC107),
-        "image": "assets/images/calculator.png",
-      },
-      {
-        "name": "Tablet Xiaomi Pad 6",
-        "price": "Rp 50.000",
-        "condition": "99% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/tablet.png",
-      },
-      {
-        "name": "Speaker Bluetooth Minis",
-        "price": "Rp 90.000",
-        "condition": "90% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/speaker.png",
-      },
-    ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -268,14 +246,17 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
           mainAxisSpacing: 12,
           childAspectRatio: 0.75,
         ),
-        itemCount: products.length,
+        itemCount: widget.listings.length,
         itemBuilder: (context, index) {
+          final product = widget.listings[index];
           return _buildProductItem(
-            products[index]["name"],
-            products[index]["price"],
-            products[index]["condition"],
-            products[index]["conditionColor"],
-            products[index]["image"],
+            product["title"] ?? product["name"],
+            product["price"] ?? "Rp -",
+            product["condition"] ?? "Unknown",
+            (product["condition"] ?? "").toString().contains("Like New")
+                ? const Color(0xFF4CAF50)
+                : const Color(0xFFFFC107),
+            product["image_url"] ?? "assets/images/placeholder.png", // fallback
           );
         },
       ),
@@ -304,8 +285,14 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
             ),
-            child: Image.asset(
+            child: Image.network(
               image,
+              errorBuilder: (context, error, stackTrace) => Image.asset(
+                'assets/images/placeholder.png',
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
               height: 140,
               width: double.infinity,
               fit: BoxFit.cover,

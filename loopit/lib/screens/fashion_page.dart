@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/main.dart';
+import 'package:loopit/screens/items_detail.dart';
+import 'home_page.dart';
 
 class FashionPage extends StatefulWidget {
-  const FashionPage({super.key});
+  final List<Map<String, dynamic>> listings;
+
+  const FashionPage({super.key, required this.listings});
 
   @override
   State<FashionPage> createState() => _FashionPageState();
 }
+
 
 class _FashionPageState extends State<FashionPage> {
   final PageController _pageController = PageController();
@@ -83,7 +89,9 @@ class _FashionPageState extends State<FashionPage> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              MaterialPageRoute(builder: (context) => const HomePage());
+            },
             child: Container(
               width: 48,
               height: 48,
@@ -98,16 +106,22 @@ class _FashionPageState extends State<FashionPage> {
             ),
           ),
           const Spacer(),
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: Color(0xFFEAF3DC),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.favorite_border,
-              color: Color(0xFF4A6741),
+          GestureDetector(
+            onTap: () {
+              // Navigate to SavedProducts when heart icon is tapped
+              Navigator.of(context).pushNamed('/saved_products');
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: const BoxDecoration(
+                color: Color(0xFFEAF3DC),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.favorite_border,
+                color: Color(0xFF4A6741),
+              ),
             ),
           ),
         ],
@@ -224,7 +238,9 @@ class _FashionPageState extends State<FashionPage> {
               children: const [
                 Icon(Icons.filter_list, color: Colors.black54),
                 SizedBox(width: 4),
-                Text("Filter", style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500)),
+                Text("Filter",
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -234,30 +250,6 @@ class _FashionPageState extends State<FashionPage> {
   }
 
   Widget _buildProductGrid() {
-    List<Map<String, dynamic>> products = [
-      {
-        "name": "Canon Kalkulator Scientific F-718SGA",
-        "price": "Rp 100.000",
-        "condition": "87% Good",
-        "conditionColor": const Color(0xFFFFC107),
-        "image": "assets/images/calculator.png",
-      },
-      {
-        "name": "Tablet Xiaomi Pad 6",
-        "price": "Rp 50.000",
-        "condition": "99% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/tablet.png",
-      },
-      {
-        "name": "Speaker Bluetooth Minis",
-        "price": "Rp 90.000",
-        "condition": "90% Like New",
-        "conditionColor": const Color(0xFF4CAF50),
-        "image": "assets/images/speaker.png",
-      },
-    ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -268,103 +260,137 @@ class _FashionPageState extends State<FashionPage> {
           mainAxisSpacing: 12,
           childAspectRatio: 0.75,
         ),
-        itemCount: products.length,
+        itemCount: widget.listings.length,
         itemBuilder: (context, index) {
+          final product = widget.listings[index];
           return _buildProductItem(
-            products[index]["name"],
-            products[index]["price"],
-            products[index]["condition"],
-            products[index]["conditionColor"],
-            products[index]["image"],
+            context,
+            product["title"] ?? product["name"], // adjust key to match API
+            product["price"] ?? "Rp -",
+            product["condition"] ?? "",
+            product["condition"].toString().contains("Like New")
+                ? const Color(0xFF4CAF50)
+                : const Color(0xFFFFC107),
+            product["image_url"] ??
+                "assets/images/placeholder.png", // Adjust this
+            index,
           );
         },
       ),
     );
   }
 
-  Widget _buildProductItem(String name, String price, String condition, Color conditionColor, String image) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Product image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: Image.asset(
-              image,
-              height: 140,
-              width: double.infinity,
-              fit: BoxFit.cover,
+  Widget _buildProductItem(BuildContext context, String name, String price,
+      String condition, Color conditionColor, String image, int index) {
+    return InkWell(
+      onTap: () {
+        // Navigate to the ItemsDetails when item is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemsDetails(
+              // Use the parameter names that your ItemsDetails class expects
+              // Common parameter names might be:
+              name: name,
+              price: price,
+              condition: condition,
+              image: image,
+              // If your class requires additional parameters, provide them as needed:
+              // id: index.toString(),
             ),
           ),
-          
-          // Product details
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF4A6741),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product image
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.network(
+                image,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  'assets/images/placeholder.png',
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A6741),
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            // Product details
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF4A6741),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: condition.contains("Like New") 
-                            ? const Color(0xFFE7F5D9) 
-                            : const Color(0xFFFFF8E0),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        condition,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: conditionColor,
+                  const SizedBox(height: 6),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A6741),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: condition.contains("Like New")
+                              ? const Color(0xFFE7F5D9)
+                              : const Color(0xFFFFF8E0),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          condition,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: conditionColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const Icon(Icons.more_horiz, color: Colors.black54),
-                  ],
-                ),
-              ],
+                      const Icon(Icons.more_horiz, color: Colors.black54),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

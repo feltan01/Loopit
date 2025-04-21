@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/api_service.dart';
 
 class EditListingPage extends StatefulWidget {
   final String initialTitle;
   final String initialPrice;
   final String initialCondition;
+  final int listingId;
+  final String initialCategory;
+  final String initialDescription;
+  final String initialProductAge;
 
   const EditListingPage({
     super.key,
     required this.initialTitle,
     required this.initialPrice,
     required this.initialCondition,
+    required this.listingId,
+    required this.initialCategory,
+    required this.initialDescription,
+    required this.initialProductAge
   });
 
   @override
@@ -20,15 +29,13 @@ class _EditListingPageState extends State<EditListingPage> {
   // Controllers for text fields
   late TextEditingController _titleController;
   late TextEditingController _priceController;
-  final _categoryController = TextEditingController(text: 'Fashion / Wardrobe');
+  late TextEditingController _categoryController;
   late TextEditingController _conditionController;
-  final _descriptionController = TextEditingController(
-    text:
-        'Sepatu Trending Staccato !!!\nLike New\nBrand New Open Box\nWarna Grey to White\nSize M fit L',
-  );
-  final _productAgeController = TextEditingController(text: '6 months');
-
-  int photoCount = 1; // Assuming one photo is already uploaded
+  late TextEditingController _descriptionController;
+  late TextEditingController _productAgeController;
+  
+  get photoCount => null;
+// Assuming one photo is already uploaded
 
   @override
   void initState() {
@@ -37,22 +44,33 @@ class _EditListingPageState extends State<EditListingPage> {
     _titleController = TextEditingController(text: widget.initialTitle);
     _priceController = TextEditingController(text: widget.initialPrice);
     _conditionController = TextEditingController(text: widget.initialCondition);
+    _categoryController = TextEditingController(text: widget.initialCategory);
+    _descriptionController = TextEditingController(text: widget.initialDescription);
+    _productAgeController = TextEditingController(text: widget.initialProductAge);
   }
 
   // Method to save changes
-  void _saveChanges() {
-    // Create a result to pass back to the previous screen
-    final result = {
-      'title': _titleController.text,
-      'price': _priceController.text,
-      'condition': _conditionController.text,
-    };
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Listing updated successfully')),
+  void _saveChanges() async {
+    final updated = await ApiService.updateListing(
+      listingId: widget.listingId,
+      title: _titleController.text,
+      price: _priceController.text,
+      category: _categoryController.text,
+      condition: _conditionController.text,
+      description: _descriptionController.text,
+      productAge: _productAgeController.text,
     );
-    Navigator.of(context)
-        .pop(result); // Go back to previous screen with updated data
+
+    if (updated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Listing updated successfully')),
+      );
+      Navigator.of(context).pop(true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ Failed to update listing')),
+      );
+    }
   }
 
   @override
@@ -144,19 +162,19 @@ class _EditListingPageState extends State<EditListingPage> {
                 child: GestureDetector(
                   onTap: () {
                     // Function to handle image upload
-                    setState(() {
-                      photoCount++; // Increment photo count
-                    });
+                  
                   },
                   child: Container(
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF4E6645), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFF4E6645), width: 2),
                       borderRadius: BorderRadius.circular(8),
                       color: const Color(0xFFEAF3DC),
                     ),
-                    child: const Icon(Icons.add, color: Color(0xFF4E6645), size: 40),
+                    child: const Icon(Icons.add,
+                        color: Color(0xFF4E6645), size: 40),
                   ),
                 ),
               ),
@@ -179,7 +197,8 @@ class _EditListingPageState extends State<EditListingPage> {
               _buildTextField(_priceController, "Price"),
               _buildTextField(_categoryController, "Category"),
               _buildTextField(_conditionController, "Condition"),
-              _buildTextField(_descriptionController, "Description", maxLines: 5),
+              _buildTextField(_descriptionController, "Description",
+                  maxLines: 5),
               _buildTextField(_productAgeController, "Product age"),
 
               const SizedBox(height: 24),
@@ -191,7 +210,8 @@ class _EditListingPageState extends State<EditListingPage> {
   }
 
   // Updated TextField method to match NewListingPage design
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {int maxLines = 1}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -207,7 +227,8 @@ class _EditListingPageState extends State<EditListingPage> {
             color: Colors.grey,
             fontSize: 16,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: InputBorder.none,
         ),
       ),

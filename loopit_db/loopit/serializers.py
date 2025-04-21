@@ -69,10 +69,13 @@ class ListingSerializer(serializers.ModelSerializer):
                   'updated_at', 'images']
         read_only_fields = ['owner', 'created_at', 'updated_at']
     
-    def create(self, validated_data):
-        user = self.context['request'].user
-        listing = Listing.objects.create(owner=user, **validated_data)
-        return listing
+def create(self, validated_data):
+    user = self.context['request'].user
+    if not user or not user.is_authenticated:
+        raise serializers.ValidationError("User must be authenticated.")
+    validated_data.pop('owner', None)
+    return Listing.objects.create(owner=user, **validated_data)
+
 
 
 # Serializer untuk Forgot Password (Email Gimmick + Return Token/UID)

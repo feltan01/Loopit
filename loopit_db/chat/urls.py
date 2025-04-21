@@ -15,4 +15,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('auth/user/', UserInfoView.as_view(), name='user-info'),
   # Includes all default router URLs for the second app
-]
+] 

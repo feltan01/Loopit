@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/your_listings.dart';
 import 'listing_success.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:loopit/services/api_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:loopit/screens/api_service.dart';
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
+import 'your_listings.dart';
 
 class NewListingPage extends StatefulWidget {
   const NewListingPage({Key? key}) : super(key: key);
@@ -21,31 +21,30 @@ class _NewListingPageState extends State<NewListingPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _productAgeController = TextEditingController();
 
-  List<File> _selectedImages = [];
+  List<dynamic> _selectedImages = [];
   bool _hasUploadedID = false;
 
   int get photoCount => _selectedImages.length;
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
+  File? _pickedImage;
+  Uint8List? _webImageBytes;
 
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      if (kIsWeb) {
-        // Web: no File() support, but you can store the path for a preview
-        setState(() {
-          _selectedImages.add(File(
-              pickedFile.path)); // This is okay for upload, but not for preview
-          _hasUploadedID = true;
-        });
-      } else {
-        // Mobile: normal File usage
-        setState(() {
-          _selectedImages.add(File(pickedFile.path));
-          _hasUploadedID = true;
-        });
-      }
+      setState(() {
+        if (kIsWeb) {
+          pickedFile.readAsBytes().then((bytes) {
+            _selectedImages.add(bytes); // Uint8List for web
+          });
+        } else {
+          _selectedImages.add(File(pickedFile.path)); // File for mobile
+        }
+        _hasUploadedID = true;
+      });
     }
   }
 
@@ -56,6 +55,10 @@ class _NewListingPageState extends State<NewListingPage> {
     }
     if (_priceController.text.isEmpty) {
       _showErrorSnackBar('Please enter a price');
+      return false;
+    }
+    if (int.tryParse(_priceController.text) == null) {
+      _showErrorSnackBar('Price must be a number');
       return false;
     }
     if (_categoryController.text.isEmpty) {
@@ -93,6 +96,7 @@ class _NewListingPageState extends State<NewListingPage> {
   void _handleSave() async {
     if (_validateInputs()) {
       try {
+        print("📤 Sending request...");
         final listing = await ApiService.createListing(
           _titleController.text,
           _priceController.text,
@@ -102,21 +106,32 @@ class _NewListingPageState extends State<NewListingPage> {
           _productAgeController.text,
         );
 
-        if (listing == null || !listing.containsKey('id')) {
+        if (listing == null) {
+          print("❌ Response is null. Listing not created.");
           _showErrorSnackBar('Failed to create listing. Invalid response.');
           return;
         }
 
-        final int listingId = listing['id'];
+        if (!listing.containsKey('id')) {
+          print("❌ Listing created but missing 'id': $listing");
+          _showErrorSnackBar('Listing created but no ID returned.');
+          return;
+        }
 
+        final int listingId = listing['id'];
+        print("✅ Listing created with ID: $listingId");
+        await ApiService.uploadListingImages(listingId, _selectedImages);
+        // Navigate to ListingSuccessPage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const YourListingPage(), // Go back to listings page
+            builder: (context) => ListingSuccessPage(
+              destinationPage: const YourListingPage(),
+            ),
           ),
         );
       } catch (e) {
+        print("❗ Error during save: $e");
         _showErrorSnackBar('Error saving listing: $e');
       }
     }
@@ -204,14 +219,23 @@ class _NewListingPageState extends State<NewListingPage> {
               // User Info Row
               Row(
                 children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage('assets/image.jpg'),
-                        fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: _webImageBytes != null
+                              ? MemoryImage(_webImageBytes!) // For Flutter Web
+                              : (_pickedImage != null
+                                  ? FileImage(_pickedImage!) // For Mobile
+                                  : const AssetImage(
+                                          'assets/images/placeholder.jpg')
+                                      as ImageProvider),
+                        ),
                       ),
                     ),
                   ),
@@ -226,6 +250,7 @@ class _NewListingPageState extends State<NewListingPage> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 35),
 
               // Image Picker Button
@@ -264,18 +289,18 @@ class _NewListingPageState extends State<NewListingPage> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: _selectedImages.map((file) {
+                    children: _selectedImages.map((img) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: kIsWeb
-                            ? Image.asset(
-                                'assets/images/placeholder.jpg',
+                            ? Image.memory(
+                                img, // Uint8List
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
                               )
                             : Image.file(
-                                file,
+                                img, // File
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,

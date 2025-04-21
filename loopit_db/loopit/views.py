@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from .models import LoopitUser, Profile, Listing, ListingImage
 from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer, ListingSerializer, ListingImageSerializer, PasswordResetSerializer, SetNewPasswordSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = LoopitUser.objects.all()
@@ -122,17 +124,25 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [AllowAny]  # 👈 Recommended: restrict create to logged-in users
 
     def get_queryset(self):
         queryset = Listing.objects.all()
-        category = self.request.query_params.get('category', None)
+        category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        print("🔍 Logged-in user:", user)
+        
+        if user and user.is_authenticated:
+            serializer.save(owner=user)
+        else:
+            raise PermissionDenied("You must be authenticated.")
+
 
     @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
     def upload_images(self, request, pk=None):
@@ -158,8 +168,10 @@ class ListingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(listing)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
-    def my_listings(self, request):
-        listings = Listing.objects.filter(owner=request.user)
-        serializer = self.get_serializer(listings, many=True)
-        return Response(serializer.data)
+@action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+def my_listings(self, request):
+    listings = Listing.objects.filter(owner=request.user)
+    serializer = self.get_serializer(listings, many=True)
+    return Response(serializer.data)
+
+

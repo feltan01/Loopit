@@ -15,8 +15,32 @@ import 'messages.dart';
 import 'transaction_hub.dart';
 import '../models/user.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Map<String, dynamic>> allListings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchListings();
+  }
+
+  Future<void> fetchListings() async {
+    try {
+      final listings = await ApiService.getAllListings();
+      setState(() {
+        allListings = listings ?? [];
+      });
+    } catch (e) {
+      print('Error fetching listings: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,39 +279,90 @@ class HomePage extends StatelessWidget {
       {
         "title": "Fashion",
         "image": "assets/images/fashion.png",
-        "page": const FashionPage()
+        "page": FashionPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('electronics'))
+
+              .toList(),
+        ),
       },
       {
         "title": "Electronics",
         "image": "assets/images/electronics.png",
-        "page": const ElectronicsPage()
+        "page": ElectronicsPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('electronics'))
+              .toList(),
+        ),
       },
       {
         "title": "Skincare & Perfumes",
         "image": "assets/images/skincare.png",
-        "page": const SkincarePage()
+        "page": SkincarePage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('skincare & and perfumes'))
+              .toList(),
+        ),
       },
       {
         "title": "Books & Magazine",
         "image": "assets/images/books.png",
-        "page": const BooksPage()
+        "page": BooksPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('books & and magazines'))
+              .toList(),
+        ),
       },
       {
         "title": "Luxury Items",
         "image": "assets/images/luxury.png",
-        "page": const LuxuryPage()
+        "page": LuxuryPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('luxury'))
+              .toList(),
+        ),
       },
       {
         "title": "Toys",
         "image": "assets/images/toys.png",
-        "page": const ToysPage()
+        "page": ToysPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('toys'))
+              .toList(),
+        ),
       },
       {
         "title": "Others",
         "image": "assets/images/others.png",
-        "page": const OthersPage()
+        "page": OthersPage(
+          listings: allListings
+              .where((l) => l['category']
+                  .toString()
+                  .toLowerCase()
+                  .contains('others'))
+              .toList(),
+        ),
       },
     ];
+
 
     return GridView.builder(
       shrinkWrap: true,

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:loopit/main.dart';
 import 'package:loopit/screens/deposit.dart';
 import 'package:loopit/screens/history_withdrawn.dart';
+import 'package:loopit/screens/profile.dart';
 import 'package:loopit/screens/what_is_history.dart';
 import 'package:loopit/screens/withdraw.dart';
 import 'package:loopit/screens/withdraw_completed.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -124,7 +126,11 @@ class WalletBalanceScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            // Modified: Navigate to ProfilePage when back button is pressed
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfilePage()),
+            );
           },
         ),
         title: const Text(

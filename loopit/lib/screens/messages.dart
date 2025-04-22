@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
-
 import 'package:loopit/screens/home_page.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
 import '../services/api_service.dart';
 import 'chat_buyer.dart';
+import 'package:shared_preferences/shared_preferences.dart';  // Import shared_preferences
 
 class MessagesPage extends StatefulWidget {
   final User currentUser;
@@ -37,39 +37,49 @@ class _MessagesPageState extends State<MessagesPage> {
     });
   }
 
- Future<void> _loadConversations() async {
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    final conversations = await ApiService.getConversations();
+  Future<void> _loadConversations() async {
     setState(() {
-      _conversations = conversations;
-      _isLoading = false;
-    });
-  } catch (e) {
-    setState(() {
-      _isLoading = false;
-      _conversations = []; // Ensure empty list if load fails
+      _isLoading = true;
     });
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load conversations: $e'),
-          action: SnackBarAction(
-            label: 'Login Again',
-            onPressed: () {
-              // Navigate back to login page
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
+    try {
+      // Get token from SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('access_token');
+      print('Token: $token');  // Menambahkan log di sini untuk memastikan token diterima
+      if (token == null) {
+        throw Exception('No token found. Please log in again.');
+      }
+
+      final conversations = await ApiService.getConversations();
+      print('Conversations: $conversations');  // Log percakapan yang diambil dari API
+
+      setState(() {
+        _conversations = conversations;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _conversations = []; // Ensure empty list if load fails
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load conversations: $e'),
+            action: SnackBarAction(
+              label: 'Login Again',
+              onPressed: () {
+                // Navigate back to login page
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
-}
 
   List<Conversation> get _filteredConversations {
     if (_searchQuery.isEmpty) return _conversations;

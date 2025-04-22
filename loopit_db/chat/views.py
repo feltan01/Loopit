@@ -22,9 +22,10 @@ class UserInfoView(APIView):
     authentication_classes = [JWTAuthentication]
     
     def get(self, request):
+        print(f"Auth header: {request.META.get('HTTP_AUTHORIZATION')}")  # Add debugging
+        print(f"User authenticated: {request.user.is_authenticated}")     # Add debugging
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
-
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -53,11 +54,14 @@ class ConversationViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Conversation.objects.filter(participants=self.request.user).order_by('-updated_at')
+            print(f"Authenticated user: {self.request.user.username}")
+            conversations = Conversation.objects.filter(participants=self.request.user).order_by('-updated_at')
+            print(f"Conversations found: {conversations.count()}")
+            return conversations
+        print("User  is not authenticated.")
+        return Conversation.objects.none()
         
-        # Return all conversations if the user is not authenticated
-        return Conversation.objects.all()  # Adjust this based on your requirements
-    
+        
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         

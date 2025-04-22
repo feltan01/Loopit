@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Conditional import for WebSocket based on the platform
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -28,42 +29,80 @@ class WebSocketService {
 
   // Connect to WebSocket for a specific conversation
   Future<void> connectToConversation(int conversationId) async {
-    // Reset intentional disconnect flag
-    _intentionalDisconnect = false;
-    
-    if (_connected && _conversationId == conversationId) {
-      print('Already connected to conversation $conversationId');
-      return; // Already connected to this conversation
-    }
-
-    if (_connected) {
-      print('Disconnecting from previous conversation before connecting to conversation $conversationId');
-      disconnect(); // Disconnect from the previous conversation
-    }
-
-    final wsUrl = 'ws://1192.168.18.50:8000/ws/chat/$conversationId/';
-    print('Connecting to WebSocket URL: $wsUrl');
+    print('🔵 WebSocket: Starting connection to conversation $conversationId');
     
     try {
+      // Get token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Debug all stored keys in SharedPreferences
+      print('🔍 DEBUG: All SharedPreferences keys:');
+      final allKeys = prefs.getKeys();
+      for (var key in allKeys) {
+        final value = prefs.get(key);
+        print('   • $key: ${value != null ? "Has value" : "NULL"}');
+      }
+      
+      final token = prefs.getString('access_token');
+      
+      print('🔑 Token retrieval attempt: ${token != null ? "Token exists" : "TOKEN IS NULL"}');
+      
+      if (token == null || token.isEmpty) {
+        print('❌ ERROR: No authentication token available in SharedPreferences');
+        
+        // Try to look for the token under different keys as fallback
+        final alternativeKeys = ['token', 'auth_token', 'jwt', 'accessToken'];
+        for (var key in alternativeKeys) {
+          final altToken = prefs.getString(key);
+          if (altToken != null && altToken.isNotEmpty) {
+            print('🔄 Found token under alternative key: $key');
+            print('🔄 Migrating token to access_token key');
+            await prefs.setString('access_token', altToken);
+            print('✅ Token migrated successfully!');
+            
+            // Use the migrated token
+            return connectToConversation(conversationId);
+          }
+        }
+        
+        throw Exception('No authentication token available. Please log in again.');
+      }
+      
+      // Reset intentional disconnect flag
+      _intentionalDisconnect = false;
+      
+      if (_connected && _conversationId == conversationId) {
+        print('ℹ️ Already connected to conversation $conversationId');
+        return; // Already connected to this conversation
+      }
+
+      if (_connected) {
+        print('ℹ️ Disconnecting from previous conversation before connecting to conversation $conversationId');
+        disconnect(); // Disconnect from the previous conversation
+      }
+
+      // Append token to WebSocket URL as a query parameter
+      final wsUrl = 'ws://10.10.162.105:8000/ws/chat/$conversationId/?token=$token';
+      print('🔌 Connecting to WebSocket URL: ${wsUrl.substring(0, wsUrl.indexOf('?') + 10)}...[token hidden]');
+      
       // Cancel any existing subscription
       await _cancelSubscription();
       
       // Use the appropriate WebSocket channel based on the platform
       if (kIsWeb) {
-        print('Using HtmlWebSocketChannel (Web platform)');
+        print('🌐 Using HtmlWebSocketChannel (Web platform)');
         
         // For web platform, try a direct HtmlWebSocketChannel connection
         try {
-          // Test with a different URL format to see if that helps
           _channel = HtmlWebSocketChannel.connect(Uri.parse(wsUrl));
-          print('Web platform: HtmlWebSocketChannel created successfully');
+          print('✅ Web platform: HtmlWebSocketChannel created successfully');
         } catch (e) {
-          print('Web platform: Error creating HtmlWebSocketChannel: $e');
-          print('Web platform: Error details: ${e.toString()}');
+          print('❌ Web platform: Error creating HtmlWebSocketChannel: $e');
+          print('❌ Web platform: Error details: ${e.toString()}');
           rethrow;
         }
       } else {
-        print('Using IOWebSocketChannel (Native platform)');
+        print('📱 Using IOWebSocketChannel (Native platform)');
         _channel = IOWebSocketChannel.connect(
           Uri.parse(wsUrl),
           pingInterval: const Duration(seconds: 15), // Keep connection alive with shorter interval
@@ -78,28 +117,28 @@ class WebSocketService {
       _subscription = _channel!.stream.listen(
         (message) {
           try {
-            print('Received WebSocket message: $message');
+            print('📩 Received WebSocket message: $message');
             final data = jsonDecode(message);
             if (onMessageReceived != null) {
               onMessageReceived!(data);
             }
           } catch (e) {
-            print('Error processing WebSocket message: $e');
+            print('❌ Error processing WebSocket message: $e');
             if (onError != null) {
               onError!(e);
             }
           }
         },
         onDone: () {
-          print('WebSocket connection closed (onDone)');
+          print('🏁 WebSocket connection closed (onDone)');
           _handleDisconnection();
         },
         onError: (error) {
-          print('WebSocket error details: ${error.toString()}');
-          print('WebSocket error type: ${error.runtimeType}');
+          print('❌ WebSocket error details: ${error.toString()}');
+          print('❌ WebSocket error type: ${error.runtimeType}');
           
           if (error is Error) {
-            print('WebSocket error stack trace: ${error.stackTrace}');
+            print('❌ WebSocket error stack trace: ${error.stackTrace}');
           }
           
           if (onError != null) {
@@ -113,13 +152,13 @@ class WebSocketService {
       // Set up periodic ping to keep connection alive
       _setupPingTimer();
       
-      print('WebSocket connection established for conversation $conversationId');
+      print('✅ WebSocket connection established for conversation $conversationId');
     } catch (e) {
-      print('Failed to connect to WebSocket: $e');
-      print('Error type: ${e.runtimeType}');
+      print('❌ Failed to connect to WebSocket: $e');
+      print('❌ Error type: ${e.runtimeType}');
       
       if (e is Error) {
-        print('Stack trace: ${e.stackTrace}');
+        print('❌ Stack trace: ${e.stackTrace}');
       }
       
       _connected = false;
@@ -157,9 +196,9 @@ class WebSocketService {
           'message': '__ping__',
           'sender_id': -1,  // Use a special ID for ping messages
         }));
-        print('Ping sent');
+        print('📤 Ping sent');
       } catch (e) {
-        print('Error sending ping: $e');
+        print('❌ Error sending ping: $e');
       }
     }
   }
@@ -171,18 +210,18 @@ class WebSocketService {
     
     if (_reconnectAttempts < MAX_RECONNECT_ATTEMPTS && !_intentionalDisconnect) {
       _reconnectAttempts++;
-      print('Scheduling reconnection attempt $_reconnectAttempts of $MAX_RECONNECT_ATTEMPTS');
+      print('🔄 Scheduling reconnection attempt $_reconnectAttempts of $MAX_RECONNECT_ATTEMPTS');
       
       _reconnectTimer = Timer(RECONNECT_DELAY, () {
         if (_conversationId != null && !_intentionalDisconnect) {
-          print('Attempting to reconnect to conversation $_conversationId');
+          print('🔄 Attempting to reconnect to conversation $_conversationId');
           connectToConversation(_conversationId!).catchError((e) {
-            print('Reconnection attempt failed: $e');
+            print('❌ Reconnection attempt failed: $e');
           });
         }
       });
     } else if (_reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      print('Maximum reconnection attempts reached');
+      print('⚠️ Maximum reconnection attempts reached');
     }
   }
 
@@ -216,21 +255,21 @@ class WebSocketService {
       throw Exception('Not connected to WebSocket');
     }
 
-    print('Sending message through WebSocket');
+    print('📤 Sending message through WebSocket');
     try {
       _channel!.sink.add(jsonEncode({
         'message': message,
         'sender_id': senderId,
       }));
     } catch (e) {
-      print('Error sending message: $e');
+      print('❌ Error sending message: $e');
       throw e;
     }
   }
 
   // Disconnect from the WebSocket
   void disconnect() {
-    print('Disconnecting from WebSocket');
+    print('🔌 Disconnecting from WebSocket');
     _intentionalDisconnect = true; // Mark as intentional disconnect
     
     // Cancel timers and subscription
@@ -243,7 +282,7 @@ class WebSocketService {
       try {
         _channel!.sink.close();
       } catch (e) {
-        print('Error closing WebSocket: $e');
+        print('❌ Error closing WebSocket: $e');
       }
       _channel = null;
     }
@@ -251,7 +290,37 @@ class WebSocketService {
     _connected = false;
     _conversationId = null;
     _reconnectAttempts = 0;
-    print('WebSocket disconnected');
+    print('✅ WebSocket disconnected');
+  }
+
+  // Debug method to check token from anywhere
+  static Future<void> debugToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      
+      print('🔍 DEBUG TOKEN CHECK:');
+      print('   • access_token exists: ${token != null}');
+      if (token != null) {
+        print('   • Token length: ${token.length}');
+        print('   • Token preview: ${token.substring(0, min(10, token.length))}...');
+      }
+      
+      // Check all stored keys
+      print('   • All SharedPreferences keys:');
+      final allKeys = prefs.getKeys();
+      for (var key in allKeys) {
+        final value = prefs.get(key);
+        print('     - $key: ${value != null ? "Has value" : "NULL"}');
+      }
+    } catch (e) {
+      print('❌ Error during token debug: $e');
+    }
+  }
+
+  // Min function to avoid importing dart:math
+  static int min(int a, int b) {
+    return a < b ? a : b;
   }
 
   // Check if the WebSocket is connected

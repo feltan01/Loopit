@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/message.dart';
 import '../models/product.dart';
@@ -27,22 +28,34 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<Message> _messages = [];
   final WebSocketService _webSocketService = WebSocketService();
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = true;
   bool _isWebSocketConnected = false;
   Product? _currentProduct;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
     _setupWebSocket();
+    _setupPeriodicRefresh();
+  }
+
+  void _setupPeriodicRefresh() {
+    // Set up periodic refresh every 15 seconds
+    _refreshTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (mounted) {
+        _loadMessages(silent: true);
+      }
+    });
   }
 
   void _setupWebSocket() async {
     try {
       print('Attempting to connect to WebSocket for conversation: ${widget.conversationId}');
       
-      // Connect to WebSocket with timeout
+      // Connect to WebSocket with timeout (now the method will get token from SharedPreferences internally)
       await _webSocketService.connectToConversation(widget.conversationId)
           .timeout(const Duration(seconds: 10), onTimeout: () {
         throw TimeoutException('WebSocket connection timed out after 10 seconds');
@@ -60,23 +73,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       _webSocketService.onMessageReceived = (data) {
         print('WebSocket message received: $data');
         if (mounted) {
-          setState(() {
-            // Add new message from WebSocket
-            final newMessage = Message(
-              id: data['message_id'],
-              conversationId: widget.conversationId,
-              sender: User(
-                id: data['sender_id'],
-                username: data['sender_id'] == widget.currentUser.id
-                    ? widget.currentUser.username
-                    : widget.otherUser.username,
-                email: '', // Email not available in WebSocket data
+          // If it's a new message (not a connection status message)
+          if (data['type'] != 'connection_established' && data['message'] != '__ping__') {
+            // Load all messages to ensure everything is in sync
+            _loadMessages(silent: true);
+            
+            // Optionally show a notification
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('New message from ${widget.otherUser.username}'),
+                duration: const Duration(seconds: 1),
+                backgroundColor: const Color(0xFF4A6741),
               ),
-              text: data['message'],
-              createdAt: DateTime.parse(data['timestamp']),
             );
-            _messages.add(newMessage);
-          });
+          }
         }
       };
 
@@ -128,51 +138,132 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  Future<void> _loadMessages() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _loadMessages({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
-      // Load conversation to get products and messages without token
+      print("📩 Loading messages for conversation: ${widget.conversationId}");
+      
+      // Get token for debugging
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      print("🔑 Token available for API call: ${token != null ? 'YES' : 'NO'}");
+      
+      // Load conversation to get products and messages
       final conversationData = await ApiService.getConversation(widget.conversationId);
-
+      print("📊 Conversation data received: ${conversationData != null ? 'YES' : 'NO'}");
+      
       // Check if messages exist in the response
       if (conversationData['messages'] != null) {
-        // Parse messages
-        final messagesList = List<Map<String, dynamic>>.from(conversationData['messages']);
-        final loadedMessages = messagesList.map((msgJson) => Message.fromJson(msgJson)).toList();
+        print("📝 Messages found: ${conversationData['messages'].length}");
+        
+        try {
+          // Parse messages with error handling for each message
+          final messagesList = List<Map<String, dynamic>>.from(conversationData['messages']);
+          print("📝 Processing ${messagesList.length} messages");
+          
+          final List<Message> loadedMessages = [];
+          for (int i = 0; i < messagesList.length; i++) {
+            try {
+              print("🔍 Processing message ${i+1}/${messagesList.length}");
+              final message = Message.fromJson(messagesList[i]);
+              print("✅ Message ${i+1} parsed successfully");
+              loadedMessages.add(message);
+            } catch (parseError) {
+              print("❌ Failed to parse message ${i+1}: $parseError");
+              // Continue to next message without adding this one
+            }
+          }
+          
+          print("📝 Successfully parsed ${loadedMessages.length}/${messagesList.length} messages");
 
-        setState(() {
-          _messages.clear();
-          _messages.addAll(loadedMessages);
-          _isLoading = false;
-        });
+          if (loadedMessages.isEmpty && messagesList.isNotEmpty) {
+            print("⚠️ Warning: All messages failed to parse!");
+          }
 
-        // Find product if there's any offer
-        for (var msg in _messages) {
-          if (msg.offer != null) {
-            _currentProduct = msg.offer!.product;
-            break;
+          // If we have new messages or different number of messages
+          bool hasChanges = _messages.length != loadedMessages.length;
+          if (!hasChanges) {
+            // Check for content changes
+            for (int i = 0; i < _messages.length; i++) {
+              if (_messages[i].id != loadedMessages[i].id) {
+                hasChanges = true;
+                break;
+              }
+            }
+          }
+
+          if (mounted) {
+            setState(() {
+              _messages.clear();
+              _messages.addAll(loadedMessages);
+              _isLoading = false;
+            });
+
+            // Scroll to bottom if new messages were added
+            if (hasChanges) {
+              _scrollToBottom();
+            }
+          }
+
+          // Find product if there's any offer
+          for (var msg in _messages) {
+            if (msg.offer != null) {
+              _currentProduct = msg.offer!.product;
+              print("🛒 Found product in offer: ${_currentProduct!.name}");
+              break;
+            }
+          }
+        } catch (parsingError) {
+          print("❌ Error in message list processing: $parsingError");
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            
+            if (!silent) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error processing messages: $parsingError')),
+              );
+            }
           }
         }
       } else {
         // Handle case where there are no messages
+        print("⚠️ No messages found in conversation data");
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          if (!silent) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No messages found.')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      print("❌ Error loading messages: $e");
+      print("❌ Error type: ${e.runtimeType}");
+      if (e is Error) {
+        print("❌ Stack trace: ${e.stackTrace}");
+      }
+      
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No messages found.')),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load messages: $e')),
-        );
+        
+        if (!silent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load messages: $e')),
+          );
+        }
       }
     }
   }
@@ -182,12 +273,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     if (messageText.isEmpty) return;
 
     try {
-      // Send message without needing a token
+      // Clear the input field immediately for better UX
+      _messageController.clear();
+      
+      // Send message (token is now retrieved internally)
       await ApiService.sendMessage(widget.conversationId, messageText);
       
-      // Clear the input field
-      _messageController.clear();
-      // The new message will come through the WebSocket
+      // Immediately refresh messages to show the sent message
+      await _loadMessages(silent: true);
+      
+      // Scroll to bottom to show the new message
+      _scrollToBottom();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -197,8 +293,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
+  void _scrollToBottom() {
+    // Add a small delay to ensure the list has been built
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   Future<void> _respondToOffer(int offerId, String status) async {
     try {
+      // Respond to offer (token is now retrieved internally)
       await ApiService.respondToOffer(offerId, status);
       
       // Create a new list of messages with the updated offer
@@ -236,7 +346,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       });
       
       // Reload messages to ensure we have the latest data
-      await _loadMessages();
+      await _loadMessages(silent: true);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -258,6 +368,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
+    _refreshTimer?.cancel();
     _webSocketService.disconnect();
     super.dispose();
   }
@@ -301,6 +413,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           },
         ),
         actions: [
+          // Manual refresh button
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.grey),
+            onPressed: () => _loadMessages(),
+          ),
           // WebSocket connection indicator
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -318,6 +435,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               children: [
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
@@ -601,6 +719,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                onSubmitted: (_) => _sendMessage(), // Allow sending with Enter key
               ),
             ),
             const SizedBox(width: 10),
@@ -754,10 +873,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           final amount = double.parse(offerController.text.replaceAll(',', '.'));
                           
                           try {
+                            // Make offer (token is now retrieved internally)
                             await ApiService.makeOffer(
                               widget.conversationId,
                               product.id,
-                              amount,
+                              amount
                             );
                             
                             // Dispose controller before popping

@@ -1,22 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.18.50:8000/api';
+  static const String baseUrl = 'http://10.10.162.105:8000/api';
 
-  // Token Management
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+    String? token = prefs.getString('access_token');
+    
+    // Debugging log untuk memeriksa token yang didapat
+    print('Token retrieved: $token');
+    
+    return token;
   }
 
   static Future<void> setToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
+    await prefs.setString('access_token', token);
   }
 
   static Future<void> setRefreshToken(String token) async {
@@ -31,14 +36,12 @@ class ApiService {
 
   static Future<void> clearTokens() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
+    await prefs.remove('access_token');  // Fixed key name
     await prefs.remove('refresh_token');
   }
 
   // Headers with Authentication
-  // Headers with Authentication
-  static Future<Map<String, String>> getHeaders(
-      {bool requireAuth = false}) async {
+  static Future<Map<String, String>> getHeaders({bool requireAuth = true}) async {
     if (requireAuth) {
       final token = await getToken();
       if (token == null) {
@@ -53,51 +56,6 @@ class ApiService {
       return {
         'Content-Type': 'application/json',
       };
-    }
-  }
-
-  // Authentication Methods
-  static Future<Map<String, dynamic>> login(
-      String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/token/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      await setToken(data['access']);
-      if (data.containsKey('refresh')) {
-        await setRefreshToken(data['refresh']);
-      }
-      return data;
-    } else {
-      throw Exception('Failed to login: ${response.body}');
-    }
-  }
-
-  static Future<Map<String, dynamic>> register(
-      String username, String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/chat/auth/register/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      await setToken(data['token']);
-      return data;
-    } else {
-      throw Exception('Failed to register: ${response.body}');
     }
   }
 
@@ -139,34 +97,61 @@ class ApiService {
   // User Information
   static Future<User> getUserInfo() async {
     try {
-      final headers = await getHeaders();
+      // Get and validate token
+      final token = await getToken();
+      if (token == null || token.isEmpty) {
+        print('ERROR: No authentication token available');
+        throw Exception('No authentication token available');
+      }
+      
+      print('Token found (first 10 chars): ${token.substring(0, min(10, token.length))}...');
+      
+      // Use the exact URL from the browser
+      final url = '$baseUrl/chat/auth/user/';
+      print('Making request to: $url');
+      
+      // Explicitly set up headers with Bearer prefix
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      print('Request headers: $headers');
+      
       final response = await http.get(
-        Uri.parse('$baseUrl/chat/auth/user/'),
+        Uri.parse(url),
         headers: headers,
       );
 
-      print('User info response: ${response.statusCode} - ${response.body}');
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return User.fromJson(data);
+      } else if (response.statusCode == 401) {
+        print('Authentication failed. Token might be invalid or expired.');
+        // Try to refresh token
+        try {
+          await refreshAccessToken();
+          // Retry with the new token
+          return await getUserInfo();
+        } catch (refreshError) {
+          print('Token refresh failed: $refreshError');
+          throw Exception('Authentication failed: ${response.body}');
+        }
       } else {
-        return User(
-            id: -1, username: 'DefaultUser', email: 'default@example.com');
+        throw Exception('Failed to get user info: ${response.body}');
       }
     } catch (e) {
-      print('Error fetching user info: $e');
-      return User(
-          id: -1, username: 'DefaultUser', email: 'default@example.com');
+      print('Error in getUserInfo: $e');
+      return User(id: -1, username: 'DefaultUser', email: 'default@example.com');
     }
   }
 
   // Conversations
-  // Conversations
   static Future<List<Conversation>> getConversations() async {
     try {
-      final headers =
-          await getHeaders(requireAuth: false); // Allow fetching without token
+      final headers = await getHeaders(requireAuth: true);
       final response = await http.get(
         Uri.parse('$baseUrl/chat/conversations/'),
         headers: headers,
@@ -188,22 +173,84 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> getConversation(int id) async {
-    final headers = await getHeaders();
+  try {
+    print('📥 Getting conversation with ID: $id');
+    
+    final headers = await getHeaders(requireAuth: true);
+    print('🔑 Headers obtained with token');
+    
     final response = await http.get(
       Uri.parse('$baseUrl/chat/conversations/$id/'),
       headers: headers,
     );
-
+    
+    print('📊 Conversation response status: ${response.statusCode}');
+    
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      try {
+        final data = jsonDecode(response.body);
+        print('📄 Conversation data parsed successfully');
+        
+        // Check the structure of the data
+        if (data is Map<String, dynamic>) {
+          print('🔍 Conversation keys: ${data.keys.toList()}');
+          
+          // Check messages array
+          if (data.containsKey('messages')) {
+            if (data['messages'] == null) {
+              print('⚠️ Messages is null');
+            } else if (data['messages'] is List) {
+              print('📝 Messages count: ${data['messages'].length}');
+              
+              // Check first message if available
+              if (data['messages'].isNotEmpty) {
+                final firstMsg = data['messages'][0];
+                print('🔍 First message keys: ${firstMsg.keys.toList()}');
+                
+                // Check required fields
+                print('ID: ${firstMsg['id'] ?? 'NULL'}');
+                print('conversation: ${firstMsg['conversation'] ?? 'NULL'}');
+                print('text: ${firstMsg['text'] != null ? 'Present' : 'NULL'}');
+                print('created_at: ${firstMsg['created_at'] ?? 'NULL'}');
+                
+                // Check sender
+                if (firstMsg['sender'] != null) {
+                  print('sender keys: ${firstMsg['sender'].keys.toList()}');
+                } else {
+                  print('⚠️ sender is NULL');
+                }
+              }
+            } else {
+              print('⚠️ Messages is not a List: ${data['messages'].runtimeType}');
+            }
+          } else {
+            print('⚠️ No messages key in response');
+          }
+        } else {
+          print('⚠️ Response is not a Map: ${data.runtimeType}');
+        }
+        
+        return data;
+      } catch (jsonError) {
+        print('❌ JSON parsing error: $jsonError');
+        print('❌ Raw response body: ${response.body.substring(0, min(100, response.body.length))}...');
+        rethrow;
+      }
     } else {
+      print('❌ API error: ${response.statusCode}');
+      print('❌ Response body: ${response.body}');
       throw Exception('Failed to load conversation: ${response.body}');
     }
+  } catch (e) {
+    print('❌ Error in getConversation: $e');
+    if (e is Error) {
+      print('❌ Stack trace: ${e.stackTrace}');
+    }
+    rethrow;
   }
-
-  static Future<List<Map<String, dynamic>>> getMessages(
-      int conversationId) async {
-    final headers = await getHeaders(); // Assuming this requires a token
+}
+  static Future<List<Map<String, dynamic>>> getMessages(int conversationId) async {
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.get(
       Uri.parse('$baseUrl/chat/messages/?conversation=$conversationId'),
       headers: headers,
@@ -220,9 +267,10 @@ class ApiService {
     }
   }
 
+  // Updated to make token parameter optional
   static Future<Map<String, dynamic>> sendMessage(
-      int conversationId, String text) async {
-    final headers = await getHeaders();
+      int conversationId, String text, [String? token]) async {
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.post(
       Uri.parse('$baseUrl/chat/messages/'),
       headers: headers,
@@ -239,9 +287,9 @@ class ApiService {
     }
   }
 
-  // Products
-  static Future<List<Map<String, dynamic>>> getProducts() async {
-    final headers = await getHeaders();
+  // Updated to make token parameter optional
+  static Future<List<Map<String, dynamic>>> getProducts([String? token]) async {
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.get(
       Uri.parse('$baseUrl/chat/products/'),
       headers: headers,
@@ -255,14 +303,20 @@ class ApiService {
     }
   }
 
+  // Updated to make token parameter optional
   static Future<Map<String, dynamic>> createProduct(
     String name,
     String brand,
     double price,
     String description,
     File image,
+    [String? token]
   ) async {
-    final token = await getToken();
+    token ??= await getToken();
+    if (token == null) {
+      throw Exception('No authentication token available');
+    }
+    
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/chat/products/'),
@@ -292,13 +346,14 @@ class ApiService {
     }
   }
 
-  // Offers
+  // Updated to make token parameter optional
   static Future<Map<String, dynamic>> makeOffer(
     int conversationId,
     int productId,
     double amount,
+    [String? token]
   ) async {
-    final headers = await getHeaders();
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.post(
       Uri.parse('$baseUrl/offers/'),
       headers: headers,
@@ -316,9 +371,10 @@ class ApiService {
     }
   }
 
+  // Updated to make token parameter optional
   static Future<Map<String, dynamic>> respondToOffer(
-      int offerId, String status) async {
-    final headers = await getHeaders();
+      int offerId, String status, [String? token]) async {
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.post(
       Uri.parse('$baseUrl/offers/$offerId/respond/'),
       headers: headers,
@@ -334,9 +390,9 @@ class ApiService {
     }
   }
 
-  // Orders
-  static Future<List<Map<String, dynamic>>> getOrders() async {
-    final headers = await getHeaders();
+  // Updated to make token parameter optional
+  static Future<List<Map<String, dynamic>>> getOrders([String? token]) async {
+    final headers = await getHeaders(requireAuth: true);
     final response = await http.get(
       Uri.parse('$baseUrl/chat/orders/'),
       headers: headers,
@@ -350,10 +406,25 @@ class ApiService {
     }
   }
 
-  static uploadListingImages(int listingId, List<File> selectedImages) {}
+  // Updated to make token parameter optional
+  static Future<void> uploadListingImages(
+      int listingId, List<File> selectedImages, [String? token]) async {
+    // Implementation needed
+  }
 
-  static createListing(String text, String text2, String text3, String text4,
-      String text5, String text6) {}
+  // Updated to make token parameter optional
+  static Future<Map<String, dynamic>> createListing(
+    String title, 
+    String description, 
+    String category, 
+    String condition, 
+    String price,
+    String location,
+    [String? token]
+  ) async {
+    // Implementation needed
+    return {};
+  }
 
   static getAllListings() {}
 }

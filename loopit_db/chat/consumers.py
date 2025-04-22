@@ -3,14 +3,20 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Conversation, Message
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.conversation_id = self.scope['url_route']['kwargs']['conversation_id']
         self.room_group_name = f'chat_{self.conversation_id}'
+        self.user = self.scope['user']
         
         # Add debug log
         print(f"WebSocket connect attempt to conversation {self.conversation_id}")
+        if self.user and self.user.is_authenticated:
+            print(f"Authenticated user: {self.user.username} (ID: {self.user.id})")
+        else:
+            print("No authenticated user")
         
         # Join room group
         await self.channel_layer.group_add(
@@ -46,10 +52,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             data = json.loads(text_data)
             message = data.get('message', '')
-            sender_id = data.get('sender_id', -1)
             
             # Handle ping messages
-            if message == '__ping__' and sender_id == -1:
+            if message == '__ping__':
                 await self.send(text_data=json.dumps({
                     'message': '__pong__',
                     'sender_id': -1,
@@ -59,8 +64,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }))
                 return
                 
-            # For regular messages, proceed as before
-            print(f"Received message from sender {sender_id} in conversation {self.conversation_id}")
+            # Check if user is authenticated
+            if not self.user or not self.user.is_authenticated:
+                print("Unauthorized message attempt: No authenticated user")
+                await self.send(text_data=json.dumps({
+                    'error': 'Authentication required',
+                    'timestamp': self.get_timestamp()
+                }))
+                return
+            
+            # For regular messages, use the authenticated user
+            sender_id = self.user.id
+            print(f"Received message from authenticated user {sender_id} in conversation {self.conversation_id}")
             
             # Save message to database
             saved_message = await self.save_message(sender_id, message)
@@ -115,6 +130,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             
             # Update conversation timestamp
+            conversation.updated_at = timezone.now()
             conversation.save()
             
             return {

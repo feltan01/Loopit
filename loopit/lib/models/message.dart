@@ -21,16 +21,28 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
+  try {
+    // Check if required fields exist
+    if (json['id'] == null) throw Exception('Message ID is null');
+    if (json['conversation'] == null) throw Exception('Conversation ID is null');
+    if (json['sender'] == null) throw Exception('Sender is null');
+    if (json['created_at'] == null) throw Exception('Created at is null');
+    
     return Message(
       id: json['id'],
       conversationId: json['conversation'],
       sender: User.fromJson(json['sender']),
-      text: json['text'],
+      text: json['text'] ?? '', // Handle null text
       createdAt: DateTime.parse(json['created_at']),
       offer: json['offer'] != null ? Offer.fromJson(json['offer']) : null,
-      isUnread: json['is_unread'] ?? false,  // Parse from JSON
+      isUnread: json['is_unread'] ?? false,
     );
+  } catch (e) {
+    print('Error parsing message: $e');
+    print('Problem JSON: $json');
+    rethrow; // Re-throw to be caught by the caller
   }
+}
 
   Map<String, dynamic> toJson() {
     return {

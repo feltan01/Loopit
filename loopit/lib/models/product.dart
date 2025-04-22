@@ -48,6 +48,6 @@ class Product {
   }
 
   String get fullImageUrl {
-    return 'http://192.168.18.50:8000$image';
+    return 'http://192.168.0.13:8000$image';
   }
 }

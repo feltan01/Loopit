@@ -200,7 +200,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.network(
                                           item['images'].isNotEmpty
-                                              ? 'http://192.168.18.50:8000${item['images'][0]['image']}'
+                                              ? 'http://192.168.0.13:8000${item['images'][0]['image']}'
                                               : 'https://via.placeholder.com/100',
                                           width: 80,
                                           height: 80,

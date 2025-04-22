@@ -65,7 +65,7 @@ void _fetchListings() async {
             description: item['description'],
             productAge: item['product_age'], // ✅ use correct key
             imageUrl: item['images'].isNotEmpty
-                ? 'http://192.168.18.50:8000${item['images'][0]['image']}'
+                ? 'http://192.168.0.13:8000${item['images'][0]['image']}'
                 : 'assets/images/placeholder.png',
           );
         }).toList();

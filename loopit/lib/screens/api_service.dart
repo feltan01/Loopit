@@ -16,25 +16,32 @@ class ApiService {
   }
 
   static Future<List<Map<String, dynamic>>> getAllListings() async {
-    final token = await getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/listings/'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
+    try {
+      final token = await getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/listings/'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+ 
+      print("📥 Status Code: ${response.statusCode}");
+      print("📥 Response Body: ${response.body}");
 
-    if (response.statusCode == 200) {
-      final decoded = jsonDecode(response.body);
-      if (decoded is List) {
-        return decoded.cast<Map<String, dynamic>>();
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded is List) {
+          return decoded.cast<Map<String, dynamic>>();
+        } else {
+          return []; // ✅ Correct for this function
+        }
       } else {
-        return []; // fallback to empty list
+        return []; // ✅ Correct type returned
       }
-    } else {
-      throw Exception('Failed to load listings');
+    } catch (e) {
+      print("🔥 Exception: $e");
+      return []; // ✅ Still correct type
     }
   }
+
 
   static Future<bool> updateListing({
     required int listingId,
@@ -85,7 +92,6 @@ class ApiService {
     }
   }
 
-  // Create a new listing
   static Future<Map<String, dynamic>?> createListing(
     String title,
     String price,
@@ -94,49 +100,37 @@ class ApiService {
     String description,
     String productAge,
   ) async {
-    final url = Uri.parse(
-        'http://192.168.18.50:8000/api/listings/'); // ✅ ganti sesuai IP kamu
-
     final token = await getToken();
-    print("🔐 TOKEN: $token");
-
+    final url = Uri.parse('$baseUrl/api/listings/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-
     final body = jsonEncode({
       'title': title,
-      'price': int.tryParse(price), // must be int
+      'price': int.tryParse(price),
       'category': category,
       'condition': condition,
       'description': description,
       'product_age': productAge,
     });
 
-    print("📤 Sending request...");
-    print("📡 URL: $url");
-    print("🔐 TOKEN: $token");
-    print("📦 BODY: $body");
-
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      print("📥 Status Code: ${response.statusCode}");
-      print("📥 Response Body: ${response.body}");
-
       if (response.statusCode == 201) {
-        return jsonDecode(response.body);
+        return jsonDecode(response.body); // ✅ Correct
       } else {
-        return null;
+        return null; // ✅ Return null on failure
       }
     } catch (e) {
       print("🔥 Exception: $e");
-      return null;
+      return null; // ✅ Correct for this function
     }
   }
 
-  // Upload images to a listing
+
+  // Upload images to a listings
   static Future<void> uploadListingImages(
       int listingId, List<dynamic> images) async {
     final prefs = await SharedPreferences.getInstance();
@@ -202,23 +196,26 @@ class ApiService {
   }
 
   // Delete a listing
-  static Future<bool> deleteListing(int listingId) async {
+ static Future<bool> deleteListing(int listingId) async {
     try {
       final token = await getToken();
-      if (token == null) {
-        throw Exception('🚫 Token is null! Are you logged in?');
-      }
+      final url = '$baseUrl/api/listings/$listingId/';
+      print("🚀 DELETE URL: $url");
 
       final response = await http.delete(
-        Uri.parse('$baseUrl/listings/$listingId/'),
+        Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
+      print("🗑️ DELETE Status: ${response.statusCode}");
+      print("🗑️ DELETE Body: ${response.body}");
+
       return response.statusCode == 204;
     } catch (e) {
-      throw Exception('Error deleting listing: $e');
+      print('🔥 Delete exception: $e');
+      return false;
     }
   }
 }

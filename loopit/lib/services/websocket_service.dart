@@ -41,7 +41,7 @@ class WebSocketService {
       disconnect(); // Disconnect from the previous conversation
     }
 
-    final wsUrl = 'ws://192.168.0.13:8000/ws/chat/$conversationId/';
+    final wsUrl = 'ws://1192.168.18.50:8000/ws/chat/$conversationId/';
     print('Connecting to WebSocket URL: $wsUrl');
     
     try {

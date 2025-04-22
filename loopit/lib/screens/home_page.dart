@@ -13,7 +13,6 @@ import 'saldo.dart';
 import 'seller_verification.dart';
 import 'messages.dart';
 import 'transaction_hub.dart';
-import '../models/user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,19 +27,24 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    print('🔄 initState: Calling fetchListings');
     fetchListings();
   }
 
   Future<void> fetchListings() async {
+    print('🔄 initState: Calling fetchListings');
     try {
       final listings = await ApiService.getAllListings();
+      print('Fetched Listings: $listings'); // Should not be null
+
       setState(() {
-        allListings = listings ?? [];
+        allListings = listings ?? []; // Avoid null
       });
     } catch (e) {
       print('Error fetching listings: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -276,93 +280,155 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCategorySection(BuildContext context) {
     List<Map<String, dynamic>> categories = [
-      {
-        "title": "Fashion",
-        "image": "assets/images/fashion.png",
-        "page": FashionPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('electronics'))
+    {
+      "title": "Fashion",
+      "image": "assets/images/fashion.png",
+      "onTap": () {
+        final filteredListings = allListings
+            .where((l) => l['category'] != null &&
+                l['category'].toString().toLowerCase().contains('fashion'))
+            .toList();
 
-              .toList(),
-        ),
+        print('Filtered Fashion Listings: $filteredListings'); // Debug
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FashionPage(listings: filteredListings),
+          ),
+        );
       },
-      {
+    },
+    {
         "title": "Electronics",
         "image": "assets/images/electronics.png",
-        "page": ElectronicsPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('electronics'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category']
+                      .toString()
+                      .toLowerCase()
+                      .contains('electronics'))
+              .toList();
+
+          print('Filtered Electronics Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ElectronicsPage(listings: filteredListings),
+            ),
+          );
+        },
       },
       {
         "title": "Skincare & Perfumes",
         "image": "assets/images/skincare.png",
-        "page": SkincarePage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('skincare & and perfumes'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category']
+                      .toString()
+                      .toLowerCase()
+                      .contains('skincare & perfumes'))
+              .toList();
+
+          print('Filtered Skincare Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SkincarePage(listings: filteredListings),
+            ),
+          );
+        },
       },
       {
         "title": "Books & Magazine",
         "image": "assets/images/books.png",
-        "page": BooksPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('books & and magazines'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category']
+                      .toString()
+                      .toLowerCase()
+                      .contains('books & magazines'))
+              .toList();
+
+          print('Filtered Books Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BooksPage(listings: filteredListings),
+            ),
+          );
+        },
       },
       {
         "title": "Luxury Items",
         "image": "assets/images/luxury.png",
-        "page": LuxuryPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('luxury'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category'].toString().toLowerCase().contains('luxury'))
+              .toList();
+
+          print('Filtered Luxury Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LuxuryPage(listings: filteredListings),
+            ),
+          );
+        },
       },
       {
         "title": "Toys",
         "image": "assets/images/toys.png",
-        "page": ToysPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('toys'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category'].toString().toLowerCase().contains('toys'))
+              .toList();
+
+          print('Filtered Toys Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ToysPage(listings: filteredListings),
+            ),
+          );
+        },
       },
       {
         "title": "Others",
         "image": "assets/images/others.png",
-        "page": OthersPage(
-          listings: allListings
-              .where((l) => l['category']
-                  .toString()
-                  .toLowerCase()
-                  .contains('others'))
-              .toList(),
-        ),
+        "onTap": () {
+          final filteredListings = allListings
+              .where((l) =>
+                  l['category'] != null &&
+                  l['category'].toString().toLowerCase().contains('others'))
+              .toList();
+
+          print('Filtered Others Listings: $filteredListings');
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OthersPage(listings: filteredListings),
+            ),
+          );
+        },
       },
     ];
-
 
     return GridView.builder(
       shrinkWrap: true,
@@ -375,16 +441,10 @@ class _HomePageState extends State<HomePage> {
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
+        final category = categories[index];
         return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => categories[index]["page"]),
-            );
-          },
-          child: _buildCategoryItem(
-              categories[index]["title"], categories[index]["image"]),
+          onTap: category["onTap"],
+          child: _buildCategoryItem(category["title"], category["image"]),
         );
       },
     );

@@ -50,7 +50,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 // Header
                 Container(
                   width: double.infinity,
-                  color: const Color(0xFFFAF7F2),
+                  color: const Color.fromARGB(255, 246, 246, 246),
                   padding: const EdgeInsets.symmetric(vertical: 40),
                   child: const SizedBox(height: 50),
                 ),

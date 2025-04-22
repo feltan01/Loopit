@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/main.dart';
 import 'package:loopit/screens/items_detail.dart';
 import 'home_page.dart';
 
@@ -11,7 +10,6 @@ class FashionPage extends StatefulWidget {
   @override
   State<FashionPage> createState() => _FashionPageState();
 }
-
 
 class _FashionPageState extends State<FashionPage> {
   final PageController _pageController = PageController();
@@ -90,7 +88,11 @@ class _FashionPageState extends State<FashionPage> {
         children: [
           GestureDetector(
             onTap: () {
-              MaterialPageRoute(builder: (context) => const HomePage());
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+// to go back correctly
             },
             child: Container(
               width: 48,
@@ -263,16 +265,20 @@ class _FashionPageState extends State<FashionPage> {
         itemCount: widget.listings.length,
         itemBuilder: (context, index) {
           final product = widget.listings[index];
+          String image = (product["image_url"] != null &&
+                  product["image_url"].toString().isNotEmpty)
+              ? product["image_url"]
+              : "assets/images/placeholder.png";
+
           return _buildProductItem(
             context,
-            product["title"] ?? product["name"], // adjust key to match API
+            product["title"] ?? product["name"],
             product["price"] ?? "Rp -",
             product["condition"] ?? "",
             product["condition"].toString().contains("Like New")
                 ? const Color(0xFF4CAF50)
                 : const Color(0xFFFFC107),
-            product["image_url"] ??
-                "assets/images/placeholder.png", // Adjust this
+            image, // use the variable here
             index,
           );
         },

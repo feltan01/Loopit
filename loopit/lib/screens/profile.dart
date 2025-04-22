@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loopit/screens/home_page.dart';
@@ -8,6 +7,7 @@ import 'package:loopit/screens/my_profile.dart';
 import 'package:loopit/screens/login_page.dart';
 import 'package:loopit/screens/settings.dart';
 import 'package:loopit/screens/about_app.dart';
+import 'your_listings.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -83,14 +83,27 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             "Your Items",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[800]),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[800]),
           ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildItemCard("Items on Sell", "0", "Your preloved items still available for sale."),
-              _buildItemCard("Items sold", "0", "Preloved items, sold and gone!"),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => YourListingPage()),
+                  );
+                },
+                child: _buildItemCard("Items on Sell", "0",
+                    "Your preloved items still available for sale."),
+              ),
+              _buildItemCard(
+                  "Items sold", "0", "Preloved items, sold and gone!"),
             ],
           ),
         ],
@@ -99,37 +112,51 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildItemCard(String title, String count, String description) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFF5EE),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green[800]),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              count,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              description,
-              style: TextStyle(fontSize: 12, color: Colors.green[700]),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green[700]),
-            ),
-          ],
-        ),
+    return Container(
+      width: MediaQuery.of(context).size.width *
+          0.42, // Make both cards equal width
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF5EE),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800]),
+              ),
+              Text(
+                count,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800]),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Container(height: 1, color: Colors.green[100]), // Divider Line
+          const SizedBox(height: 6),
+          Text(
+            description,
+            style: TextStyle(fontSize: 12, color: Colors.green[700]),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Icon(Icons.arrow_forward,
+                size: 18,
+                color: Colors.green[700]), // Icon similar to screenshot
+          ),
+        ],
       ),
     );
   }
@@ -144,13 +171,16 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
         _buildMenuItem(Icons.account_balance_wallet, "My Balance", () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletBalanceScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const WalletBalanceScreen()));
         }),
         _buildMenuItem(Icons.settings, "Settings", () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const SettingsPage()));
         }),
         _buildMenuItem(Icons.info, "About App", () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutAppPage()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const AboutAppPage()));
         }),
         _buildMenuItem(Icons.logout, "LogOut", () async {
           final prefs = await SharedPreferences.getInstance();
@@ -183,14 +213,19 @@ class _ProfilePageState extends State<ProfilePage> {
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
         if (index == 0) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomePage()));
         } else if (index == 1) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SellerVerificationPage()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const SellerVerificationPage()));
         }
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: ''),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline), label: ''),
         BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ''),
       ],
     );

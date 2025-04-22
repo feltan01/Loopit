@@ -77,14 +77,34 @@ void _fetchListings() async {
     }
   }
 
+void _deleteListing(int index) async {
+    final listingId = _listings[index].id;
 
+    try {
+      final success = await ApiService.deleteListing(listingId);
+      if (success) {
+        setState(() {
+          _listings.removeAt(index);
+        });
 
-  // Method to delete a listing
-  void _deleteListing(int index) {
-    setState(() {
-      _listings.removeAt(index);
-    });
+        // Optionally show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Listing deleted successfully')),
+        );
+      } else {
+        // Show error if delete failed
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete listing')),
+        );
+      }
+    } catch (e) {
+      print('Delete error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting listing: $e')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

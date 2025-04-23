@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/screens/items_detail.dart';
-import 'home_page.dart';
+import 'package:loopit/screens/api_service.dart';
 
 class FashionPage extends StatefulWidget {
-  final List<Map<String, dynamic>> listings;
+  final List<Map<String, dynamic>> listings; // ✅ Accept listings
 
-  const FashionPage({super.key, required this.listings});
+  const FashionPage({super.key, required this.listings}); // ✅ Constructor
 
   @override
   State<FashionPage> createState() => _FashionPageState();
@@ -14,15 +13,18 @@ class FashionPage extends StatefulWidget {
 class _FashionPageState extends State<FashionPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  List<Map<String, dynamic>> fashionListings = []; // Dynamic data
+
   final List<Map<String, dynamic>> _headerData = [
     {
       "title": "Fashion",
-      "subtitle": "Styles that speaks, fashion that lasts.",
+      "subtitle": "Styles that speak, fashion that lasts.",
       "image": "assets/images/fs1.png"
     },
     {
       "title": "Refined Style",
-      "subtitle": "Elevate your Wardrobe with new fashion finds.",
+      "subtitle": "Elevate your wardrobe with new fashion finds.",
       "image": "assets/images/fs2.png"
     },
     {
@@ -35,9 +37,19 @@ class _FashionPageState extends State<FashionPage> {
   @override
   void initState() {
     super.initState();
-    // Auto slide every 1.2 seconds
+    _fetchFashionListings();
     Future.delayed(const Duration(milliseconds: 100), () {
       _autoSlide();
+    });
+  }
+
+  Future<void> _fetchFashionListings() async {
+    final allListings = await ApiService.getAllListings();
+    setState(() {
+      fashionListings = allListings
+          .where((listing) => listing['category'].toLowerCase() == 'fashion')
+          .cast<Map<String, dynamic>>()
+          .toList();
     });
   }
 
@@ -64,7 +76,7 @@ class _FashionPageState extends State<FashionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8F5), // Light cream background
+      backgroundColor: const Color(0xFFFFF8F5),
       body: SafeArea(
         child: Column(
           children: [
@@ -87,13 +99,7 @@ class _FashionPageState extends State<FashionPage> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
-              );
-// to go back correctly
-            },
+            onTap: () => Navigator.pop(context),
             child: Container(
               width: 48,
               height: 48,
@@ -108,22 +114,16 @@ class _FashionPageState extends State<FashionPage> {
             ),
           ),
           const Spacer(),
-          GestureDetector(
-            onTap: () {
-              // Navigate to SavedProducts when heart icon is tapped
-              Navigator.of(context).pushNamed('/saved_products');
-            },
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEAF3DC),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.favorite_border,
-                color: Color(0xFF4A6741),
-              ),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              color: Color(0xFFEAF3DC),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.favorite_border,
+              color: Color(0xFF4A6741),
             ),
           ),
         ],
@@ -254,149 +254,134 @@ class _FashionPageState extends State<FashionPage> {
   Widget _buildProductGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.builder(
-        padding: EdgeInsets.zero,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: widget.listings.length,
-        itemBuilder: (context, index) {
-          final product = widget.listings[index];
-          String image = (product["image_url"] != null &&
-                  product["image_url"].toString().isNotEmpty)
-              ? product["image_url"]
-              : "assets/images/placeholder.png";
+      child: fashionListings.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.zero,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: fashionListings.length,
+              itemBuilder: (context, index) {
+                final item = fashionListings[index];
+                final imageUrl = item["images"].isNotEmpty
+                    ? item["images"][0]["image"]
+                    : "assets/images/fallback.png";
 
-          return _buildProductItem(
-            context,
-            product["title"] ?? product["name"],
-            product["price"] ?? "Rp -",
-            product["condition"] ?? "",
-            product["condition"].toString().contains("Like New")
-                ? const Color(0xFF4CAF50)
-                : const Color(0xFFFFC107),
-            image, // use the variable here
-            index,
-          );
-        },
-      ),
+                return _buildProductItem(
+                  item["title"] ?? "No Title",
+                  "Rp ${item["price"] ?? "0"}",
+                  item["condition"] ?? "Unknown",
+                  item["condition"] == "NEW"
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFFFFC107),
+                  imageUrl,
+                );
+              },
+            ),
     );
   }
 
-  Widget _buildProductItem(BuildContext context, String name, String price,
-      String condition, Color conditionColor, String image, int index) {
-    return InkWell(
-      onTap: () {
-        // Navigate to the ItemsDetails when item is tapped
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ItemsDetails(
-              // Use the parameter names that your ItemsDetails class expects
-              // Common parameter names might be:
-              name: name,
-              price: price,
-              condition: condition,
-              image: image,
-              // If your class requires additional parameters, provide them as needed:
-              // id: index.toString(),
-            ),
+  Widget _buildProductItem(String name, String price, String condition,
+      Color conditionColor, String imageUrl) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product image
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-              child: Image.network(
-                image,
-                errorBuilder: (context, error, stackTrace) => Image.asset(
-                  'assets/images/placeholder.png',
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+            child: imageUrl.startsWith("http")
+                ? Image.network(
+                    imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/fallback.png",
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Image.asset(
+                    imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF4A6741),
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                height: 140,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-
-            // Product details
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF4A6741),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 6),
+                Text(
+                  price,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A6741),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A6741),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: condition.contains("Like New")
-                              ? const Color(0xFFE7F5D9)
-                              : const Color(0xFFFFF8E0),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          condition,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: conditionColor,
-                          ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: condition.contains("Like New")
+                            ? const Color(0xFFE7F5D9)
+                            : const Color(0xFFFFF8E0),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        condition,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: conditionColor,
                         ),
                       ),
-                      const Icon(Icons.more_horiz, color: Colors.black54),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    const Icon(Icons.more_horiz, color: Colors.black54),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

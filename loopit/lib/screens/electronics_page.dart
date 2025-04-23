@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:loopit/screens/api_service.dart'; // Import ApiService
 
 class ElectronicsPage extends StatefulWidget {
-  final List<Map<String, dynamic>> listings;
+  final List<Map<String, dynamic>> listings; // ✅ Add this
 
-  const ElectronicsPage({super.key, required this.listings});
+  const ElectronicsPage({super.key, required this.listings}); // ✅ Add this
 
   @override
   State<ElectronicsPage> createState() => _ElectronicsPageState();
@@ -12,6 +13,9 @@ class ElectronicsPage extends StatefulWidget {
 class _ElectronicsPageState extends State<ElectronicsPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  List<Map<String, dynamic>> electronicsListings = []; // Dynamic data
+
   final List<Map<String, dynamic>> _headerData = [
     {
       "title": "Electronics",
@@ -33,9 +37,20 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
   @override
   void initState() {
     super.initState();
-    // Auto slide every 1.2 seconds
+    _fetchElectronicsListings();
     Future.delayed(const Duration(milliseconds: 100), () {
       _autoSlide();
+    });
+  }
+
+  Future<void> _fetchElectronicsListings() async {
+    final allListings = await ApiService.getAllListings();
+    setState(() {
+      electronicsListings = allListings
+          .where(
+              (listing) => listing['category'].toLowerCase() == 'electronics')
+          .cast<Map<String, dynamic>>()
+          .toList();
     });
   }
 
@@ -62,7 +77,7 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8F5), // Light cream background
+      backgroundColor: const Color(0xFFFFF8F5),
       body: SafeArea(
         child: Column(
           children: [
@@ -226,7 +241,9 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
               children: const [
                 Icon(Icons.filter_list, color: Colors.black54),
                 SizedBox(width: 4),
-                Text("Filter", style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500)),
+                Text("Filter",
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -238,32 +255,39 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
   Widget _buildProductGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.builder(
-        padding: EdgeInsets.zero,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: widget.listings.length,
-        itemBuilder: (context, index) {
-          final product = widget.listings[index];
-          return _buildProductItem(
-            product["title"] ?? product["name"],
-            product["price"] ?? "Rp -",
-            product["condition"] ?? "Unknown",
-            (product["condition"] ?? "").toString().contains("Like New")
-                ? const Color(0xFF4CAF50)
-                : const Color(0xFFFFC107),
-            product["image_url"] ?? "assets/images/placeholder.png", // fallback
-          );
-        },
-      ),
+      child: electronicsListings.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.zero,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: electronicsListings.length,
+              itemBuilder: (context, index) {
+                final item = electronicsListings[index];
+                final imageUrl = item["images"].isNotEmpty
+                    ? item["images"][0]["image"]
+                    : "assets/images/fallback.png";
+
+                return _buildProductItem(
+                  item["title"] ?? "No Title",
+                  "Rp ${item["price"] ?? "0"}",
+                  item["condition"] ?? "Unknown",
+                  item["condition"] == "NEW"
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFFFFC107),
+                  imageUrl,
+                );
+              },
+            ),
     );
   }
 
-  Widget _buildProductItem(String name, String price, String condition, Color conditionColor, String image) {
+  Widget _buildProductItem(String name, String price, String condition,
+      Color conditionColor, String imageUrl) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -279,27 +303,33 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product image
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
             ),
-            child: Image.network(
-              image,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/images/placeholder.png',
-                height: 140,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              height: 140,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: imageUrl.startsWith("http")
+                ? Image.network(
+                    imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/fallback.png",
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Image.asset(
+                    imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
-          
-          // Product details
           Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -329,10 +359,11 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: condition.contains("Like New") 
-                            ? const Color(0xFFE7F5D9) 
+                        color: condition.contains("Like New")
+                            ? const Color(0xFFE7F5D9)
                             : const Color(0xFFFFF8E0),
                         borderRadius: BorderRadius.circular(20),
                       ),

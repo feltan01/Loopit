@@ -35,16 +35,19 @@ class _NewListingPageState extends State<NewListingPage> {
         await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        if (kIsWeb) {
-          pickedFile.readAsBytes().then((bytes) {
-            _selectedImages.add(bytes); // Uint8List for web
-          });
-        } else {
-          _selectedImages.add(File(pickedFile.path)); // File for mobile
-        }
-        _hasUploadedID = true;
-      });
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _selectedImages.add(bytes); // Only update horizontal preview list
+          _hasUploadedID = true;
+        });
+      } else {
+        final imageFile = File(pickedFile.path);
+        setState(() {
+          _selectedImages.add(imageFile); // Only update horizontal preview list
+          _hasUploadedID = true;
+        });
+      }
     }
   }
 

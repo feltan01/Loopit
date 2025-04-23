@@ -365,7 +365,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginUser() async {
-    final url = Uri.parse('http://192.168.0.13:8000/api/login/');
+    final url = Uri.parse('http://192.168.18.96:8000/api/login/');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

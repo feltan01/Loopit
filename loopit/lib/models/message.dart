@@ -28,13 +28,25 @@ class Message {
     if (json['sender'] == null) throw Exception('Sender is null');
     if (json['created_at'] == null) throw Exception('Created at is null');
     
+    Offer? messageOffer;
+    if (json['offer'] != null) {
+      try {
+        messageOffer = Offer.fromJson(json['offer']);
+      } catch (offerError) {
+        print('Error parsing offer: $offerError');
+        print('Offer JSON: ${json['offer']}');
+        // Continue without the offer rather than failing the whole message
+        messageOffer = null;
+      }
+    }
+    
     return Message(
       id: json['id'],
       conversationId: json['conversation'],
       sender: User.fromJson(json['sender']),
       text: json['text'] ?? '', // Handle null text
       createdAt: DateTime.parse(json['created_at']),
-      offer: json['offer'] != null ? Offer.fromJson(json['offer']) : null,
+      offer: messageOffer,
       isUnread: json['is_unread'] ?? false,
     );
   } catch (e) {

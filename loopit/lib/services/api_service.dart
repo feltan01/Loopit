@@ -7,7 +7,7 @@ import '../models/user.dart';
 import '../models/conversation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.13:8000/api';
+  static const String baseUrl = 'http://192.168.18.96:8000/api';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -355,7 +355,7 @@ class ApiService {
   ) async {
     final headers = await getHeaders(requireAuth: true);
     final response = await http.post(
-      Uri.parse('$baseUrl/offers/'),
+      Uri.parse('$baseUrl/chat/offers/'),
       headers: headers,
       body: jsonEncode({
         'conversation': conversationId,
@@ -376,7 +376,7 @@ class ApiService {
       int offerId, String status, [String? token]) async {
     final headers = await getHeaders(requireAuth: true);
     final response = await http.post(
-      Uri.parse('$baseUrl/offers/$offerId/respond/'),
+      Uri.parse('$baseUrl/chat/offers/$offerId/respond/'),
       headers: headers,
       body: jsonEncode({
         'response': status, // 'ACCEPTED' or 'REJECTED'

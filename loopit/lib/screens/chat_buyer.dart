@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +8,32 @@ import '../models/product.dart';
 import '../models/offer.dart';
 import '../services/api_service.dart';
 import '../services/websocket_service.dart';
+import 'package:intl/intl.dart';
+
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    // Remove all existing dots
+    String value = newValue.text.replaceAll('.', '');
+    
+    // Format with dots
+    final formatter = NumberFormat('#,###', 'id');
+    String newText = formatter.format(int.parse(value));
+    
+    // Replace commas with dots for Indonesian format
+    newText = newText.replaceAll(',', '.');
+
+    return newValue.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
 
 class ChatDetailScreen extends StatefulWidget {
   final int conversationId;
@@ -44,7 +71,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   void _setupPeriodicRefresh() {
     // Set up periodic refresh every 15 seconds
-    _refreshTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (mounted) {
         _loadMessages(silent: true);
       }
@@ -518,7 +545,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Rp ${offer.amount.toStringAsFixed(0)}',
+                              'Rp ${NumberFormat('#,###', 'id').format(offer.amount.toInt()).replaceAll(',', '.')}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -672,276 +699,430 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: Colors.grey[300]!,
-            width: 0.5,
-          ),
+Widget _buildInputArea() {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border(
+        top: BorderSide(
+          color: Colors.grey[300]!,
+          width: 0.5,
         ),
       ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            if (_currentProduct != null)
-              OutlinedButton(
-                onPressed: () => _showBargainBottomSheet(_currentProduct!),
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  backgroundColor: const Color(0xFFE6F4E6),
-                  side: BorderSide.none,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                child: const Text(
-                  'Bargain price',
-                  style: TextStyle(
-                    color: Color(0xFF4A6741),
-                  ),
-                ),
+    ),
+    child: SafeArea(
+      child: Row(
+        children: [
+          OutlinedButton(
+            onPressed: () => _showProductSelectionSheet(),
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            if (_currentProduct != null) const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                  hintText: 'Type a message',
-                  filled: true,
-                  fillColor: const Color(0xFFE6F4E6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                onSubmitted: (_) => _sendMessage(), // Allow sending with Enter key
-              ),
+              backgroundColor: const Color(0xFFE6F4E6),
+              side: BorderSide.none,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
-            const SizedBox(width: 10),
-            Container(
-              decoration: const BoxDecoration(
+            child: const Text(
+              'Bargain',
+              style: TextStyle(
                 color: Color(0xFF4A6741),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: _sendMessage,
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 24,
-                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  void _showBargainBottomSheet(Product product) {
-    final TextEditingController offerController = TextEditingController();
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            bool isSubmitting = false;
-            
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 20,
-                left: 20,
-                right: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                hintText: 'Type a message',
+                filled: true,
+                fillColor: const Color(0xFFE6F4E6),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.0,
-                      height: 4.0,
+              onSubmitted: (_) => _sendMessage(), // Allow sending with Enter key
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF4A6741),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              onPressed: _sendMessage,
+              icon: const Icon(
+                Icons.send,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+  
+void _showBargainBottomSheet(Product product) {
+  final TextEditingController offerController = TextEditingController();
+  
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setSheetState) {
+          bool isSubmitting = false;
+          
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 20,
+              left: 20,
+              right: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Make an Offer',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Make an Offer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5EC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Image.network(
-                          product.fullImageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.image_not_supported),
-                                Text(
-                                  'Image error',
-                                  style: TextStyle(fontSize: 10),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              product.brand,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Original Price: Rp ${product.price.toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: offerController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Your offer (in Rp)',
-                      border: OutlineInputBorder(
+                        color: const Color(0xFFFFF5EC),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      prefixText: 'Rp ',
+                      child: Image.network(
+                        product.fullImageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.image_not_supported),
+                              Text(
+                                'Image error',
+                                style: TextStyle(fontSize: 10),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            product.brand,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Original Price: Rp ${product.price.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: offerController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Your offer (in Rp)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixText: 'Rp ',
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : () async {
-                        if (offerController.text.isEmpty) return;
-                        
-                        setSheetState(() {
-                          isSubmitting = true;
-                        });
+                  // Add input formatter for currency formatting
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    CurrencyInputFormatter(),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isSubmitting ? null : () async {
+                      if (offerController.text.isEmpty) return;
+                      
+                      setSheetState(() {
+                        isSubmitting = true;
+                      });
+                      
+                      try {
+                        final amount = double.parse(offerController.text.replaceAll('.', ''));
                         
                         try {
-                          final amount = double.parse(offerController.text.replaceAll(',', '.'));
+                          // Make offer (token is now retrieved internally)
+                          await ApiService.makeOffer(
+                            widget.conversationId,
+                            product.id,
+                            amount
+                          );
                           
-                          try {
-                            // Make offer (token is now retrieved internally)
-                            await ApiService.makeOffer(
-                              widget.conversationId,
-                              product.id,
-                              amount
+                          // Dispose controller before popping
+                          offerController.dispose();
+                          
+                          // Pop the bottom sheet
+                          Navigator.pop(context);
+                          
+                          // Show a temporary loading message
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Sending your offer...'),
+                                duration: Duration(seconds: 1),
+                              ),
                             );
+                          }
+                          
+                          // Reload messages to show the new offer
+                          if (mounted) {
+                            await _loadMessages();
                             
-                            // Dispose controller before popping
-                            offerController.dispose();
-                            
-                            // Pop the bottom sheet
-                            Navigator.pop(context);
-                            
-                            // Reload messages to show the new offer
-                            if (mounted) {
-                              await _loadMessages();
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed to send offer: $e')),
-                              );
-                            }
-                            setSheetState(() {
-                              isSubmitting = false;
-                            });
+                            // Ensure we scroll to the bottom to show the new offer
+                            _scrollToBottom();
                           }
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please enter a valid number'),
-                                backgroundColor: Colors.red,
-                              ),
+                              SnackBar(content: Text('Failed to send offer: $e')),
                             );
                           }
                           setSheetState(() {
                             isSubmitting = false;
                           });
                         }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8BAF7F),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: isSubmitting 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Send Offer',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter a valid number'),
+                              backgroundColor: Colors.red,
                             ),
+                          );
+                        }
+                        setSheetState(() {
+                          isSubmitting = false;
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8BAF7F),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: isSubmitting 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Send Offer',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  ).whenComplete(() {
+    // Ensure the controller is disposed when the sheet is closed
+    offerController.dispose();
+  });
+}
+
+void _showProductSelectionSheet() async {
+  try {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+    
+    // Fetch products 
+    List<Map<String, dynamic>> products = [];
+    try {
+      products = await ApiService.getProducts();
+    } catch (e) {
+      print('Error fetching products: $e');
+      // Continue execution to show sample product
+    }
+    
+    // Hide loading dialog
+    if (context.mounted) Navigator.pop(context);
+    
+    // If no products from API, add a sample product for testing
+    if (products.isEmpty) {
+      // Create a sample product for testing
+      products = [
+        {
+          'id': 1,
+          'name': 'Sample Guitar',
+          'brand': 'Brand X',
+          'price': 2500000.0,
+          'description': 'A sample product for testing the bargain feature',
+          'image': 'https://via.placeholder.com/150',
+          'condition': '95% Like New',
+          'seller': {
+            'id': 2, // Different from current user ID to simulate another seller
+            'username': 'TestSeller',
+            'email': 'seller@example.com'
+          }
+        },
+        {
+          'id': 2,
+          'name': 'Luxury Watch',
+          'brand': 'Rolex',
+          'price': 15000000.0,
+          'description': 'Premium luxury watch',
+          'image': 'https://via.placeholder.com/150',
+          'condition': '98% Like New',
+          'seller': {
+            'id': 2,
+            'username': 'TestSeller',
+            'email': 'seller@example.com'
+          }
+        }
+      ];
+    }
+    
+    // Show product selection bottom sheet
+    if (context.mounted) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    ).whenComplete(() {
-      // Ensure the controller is disposed when the sheet is closed
-      offerController.dispose();
-    });
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Select a product to bargain',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 300, // Fixed height for the list
+                  child: ListView.builder(
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = Product.fromJson(products[index]);
+                      return ListTile(
+                        leading: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Image.network(
+                            product.fullImageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.image_not_supported);
+                            },
+                          ),
+                        ),
+                        title: Text(product.name),
+                        subtitle: Text('Rp ${product.price.toStringAsFixed(0)}'),
+                        onTap: () {
+                          Navigator.pop(context); // Close the selection sheet
+                          _showBargainBottomSheet(product); // Show bargain sheet for the selected product
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  } catch (e) {
+    // Hide loading dialog if there's an error
+    if (context.mounted) Navigator.pop(context);
+    
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load products: $e')),
+      );
+    }
   }
+}
 }

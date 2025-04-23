@@ -23,6 +23,17 @@ class Offer {
   });
 
   factory Offer.fromJson(Map<String, dynamic> json) {
+  try {
+    // Check if required fields exist
+    if (json['id'] == null) throw Exception('Offer ID is null');
+    if (json['conversation'] == null) throw Exception('Conversation ID is null');
+    if (json['message'] == null) throw Exception('Message ID is null');
+    if (json['product'] == null) throw Exception('Product is null');
+    if (json['buyer'] == null) throw Exception('Buyer is null');
+    if (json['amount'] == null) throw Exception('Amount is null');
+    if (json['status'] == null) throw Exception('Status is null');
+    if (json['created_at'] == null) throw Exception('Created at is null');
+    
     return Offer(
       id: json['id'],
       conversationId: json['conversation'],
@@ -33,7 +44,12 @@ class Offer {
       status: json['status'],
       createdAt: DateTime.parse(json['created_at']),
     );
+  } catch (e) {
+    print('Error parsing offer: $e');
+    print('Problem Offer JSON: $json');
+    rethrow;
   }
+}
 
   Map<String, dynamic> toJson() {
     return {

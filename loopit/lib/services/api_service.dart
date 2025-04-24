@@ -348,28 +348,47 @@ class ApiService {
 
   // Updated to make token parameter optional
   static Future<Map<String, dynamic>> makeOffer(
-    int conversationId,
-    int productId,
-    double amount,
-    [String? token]
-  ) async {
-    final headers = await getHeaders(requireAuth: true);
-    final response = await http.post(
-      Uri.parse('$baseUrl/chat/offers/'),
-      headers: headers,
-      body: jsonEncode({
-        'conversation': conversationId,
-        'product': productId,
-        'amount': amount,
-      }),
-    );
+  int conversationId,
+  int productId,
+  double amount,
+  [String? token]
+) async {
+  final headers = await getHeaders(requireAuth: true);
+  print("📤 Making offer - conversation: $conversationId, product: $productId, amount: $amount");
+  
+  final response = await http.post(
+    Uri.parse('$baseUrl/chat/offers/'),
+    headers: headers,
+    body: jsonEncode({
+      'conversation': conversationId,
+      'product': productId,
+      'amount': amount,
+    }),
+  );
 
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to create offer: ${response.body}');
+  print("📊 Offer response status: ${response.statusCode}");
+  
+  if (response.statusCode == 201) {
+    final data = jsonDecode(response.body);
+    print("✅ Offer created successfully");
+    
+    // Inspect the response data structure
+    if (data['product'] != null) {
+      print("📦 Product in response: ${data['product']}");
+      // Check if image exists in the product data
+      if (data['product']['image'] != null) {
+        print("🖼️ Image in product response: ${data['product']['image']}");
+      } else {
+        print("⚠️ No image in product response!");
+      }
     }
+    
+    return data;
+  } else {
+    print("❌ Failed to create offer: ${response.body}");
+    throw Exception('Failed to create offer: ${response.body}');
   }
+}
 
   // Updated to make token parameter optional
   static Future<Map<String, dynamic>> respondToOffer(

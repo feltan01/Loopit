@@ -22,23 +22,26 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    try {
-      return Product(
-        id: json['id'],
-        name: json['name'] ?? '',  // Provide default values
-        brand: json['brand'] ?? '',
-        price: double.parse((json['price'] ?? 0).toString()),
-        description: json['description'],
-        seller: User.fromJson(json['seller']),
-        image: json['image'],  // Can be null now
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      );
-    } catch (e) {
-      print('Error parsing product: $e');
-      print('Problem Product JSON: $json');
-      rethrow;
-    }
+  try {
+    print("🔍 Parsing product from JSON: ${json['id']}");
+    print("🔍 Image in JSON: ${json['image']}");
+    
+    return Product(
+      id: json['id'],
+      name: json['name'] ?? '',
+      brand: json['brand'] ?? '',
+      price: double.parse((json['price'] ?? 0).toString()),
+      description: json['description'],
+      seller: User.fromJson(json['seller']),
+      image: json['image'], 
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+    );
+  } catch (e) {
+    print('❌ Error parsing product: $e');
+    print('❌ Problem Product JSON: $json');
+    rethrow;
   }
+}
 
   Map<String, dynamic> toJson() {
     return {
@@ -54,28 +57,38 @@ class Product {
   }
 
   String get fullImageUrl {
+  // Add detailed debugging
+  print("🔍 Product: $name (ID: $id)");
+  print("🔍 Image value: $image");
+  
   // Handle null image
   if (image == null) {
+    print("⚠️ Image is null, using placeholder");
     return 'https://via.placeholder.com/150';
   }
   
   // Safe to use the non-null image from here
   final String imageStr = image!;
   
-  // For debugging
-  print("Original image path: $imageStr");
-  
   // Check if the image already contains the full URL
   if (imageStr.startsWith('http')) {
+    print("✅ Image is already a full URL: $imageStr");
     return imageStr;
   }
   
+  // For local development server
+  const String baseUrl = 'http://192.168.18.96:8000';
+  
   // Check if the image path already includes /media/
   if (imageStr.startsWith('/media/')) {
-    return 'http://192.168.18.96:8000$imageStr';
+    final url = '$baseUrl$imageStr';
+    print("✅ Adding base URL to media path: $url");
+    return url;
   }
   
-  // Try a more general approach - use the image string as is with the server base URL
-  return 'http://192.168.18.96:8000/media/product_images/$imageStr';
+  // Default approach - use the image string as is with the server base URL
+  final url = '$baseUrl/media/product_images/$imageStr';
+  print("✅ Using default image path construction: $url");
+  return url;
 }
 }

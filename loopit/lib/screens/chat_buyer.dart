@@ -480,125 +480,145 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final bool isMe = message.isFromCurrentUser(widget.currentUser.id);
     
     // Check if message has an offer
-    if (message.offer != null) {
-      final offer = message.offer!;
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-          children: [
-            Container(
-              width: screenWidth * 0.8, // Responsive width
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0F5E6),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5EC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Image.network(
-                          offer.product.fullImageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.image_not_supported),
-                                Text(
-                                  'Image error',
-                                  style: TextStyle(fontSize: 10),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              offer.product.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              offer.product.brand,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Rp ${NumberFormat('#,###', 'id').format(offer.amount.toInt()).replaceAll(',', '.')}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Show different UI based on offer status and user role
-                  _buildOfferStatusUI(offer),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+   if (message.offer != null) {
+    final offer = message.offer!;
+    print("📱 Rendering offer #${offer.id} with product #${offer.product.id}");
+    print("🔍 Image URL being used: ${offer.product.fullImageUrl}");
     
-    // Regular text message
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment: isMe 
-            ? MainAxisAlignment.end 
-            : MainAxisAlignment.start,
+        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
-            constraints: BoxConstraints(
-              maxWidth: screenWidth * 0.75,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            width: screenWidth * 0.8, // Responsive width
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isMe 
-                  ? const Color(0xFFE6F4E6) 
-                  : Colors.white,
+              color: const Color(0xFFF0F5E6),
               borderRadius: BorderRadius.circular(16),
-              border: isMe 
-                  ? null 
-                  : Border.all(color: Colors.grey.shade300),
             ),
-            child: Text(
-              message.text,
-              style: const TextStyle(
-                color: Colors.black,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF5EC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.network(
+                        offer.product.fullImageUrl,
+                        fit: BoxFit.cover,
+                        // Add loading indicator
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            print("✅ Image loaded successfully for offer #${offer.id}");
+                            return child;
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          print("❌ IMAGE ERROR for offer #${offer.id}");
+                          print("❌ Image URL: ${offer.product.fullImageUrl}");
+                          print("❌ Error details: $error");
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.image_not_supported),
+                              Text(
+                                'Image error',
+                                style: TextStyle(fontSize: 10),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            offer.product.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            offer.product.brand,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Rp ${NumberFormat('#,###', 'id').format(offer.amount.toInt()).replaceAll(',', '.')}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Show different UI based on offer status and user role
+                _buildOfferStatusUI(offer),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  // Regular text message
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      mainAxisAlignment: isMe 
+          ? MainAxisAlignment.end 
+          : MainAxisAlignment.start,
+      children: [
+        Container(
+          constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.75,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isMe 
+                ? const Color(0xFFE6F4E6) 
+                : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: isMe 
+                ? null 
+                : Border.all(color: Colors.grey.shade300),
+          ),
+          child: Text(
+            message.text,
+            style: const TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
   }
 
   Widget _buildOfferStatusUI(Offer offer) {

@@ -37,8 +37,17 @@ class YourListingPage extends StatefulWidget {
 
 class _YourListingPageState extends State<YourListingPage> {
   final TextEditingController _searchController = TextEditingController();
+  final String baseUrl = 'http://192.168.18.50:8000';
+  final String defaultImage = 'https://via.placeholder.com/100';
 
-  // Sample data - in a real app, this would come from a database or API
+  String getImageUrl(String? imagePath) {
+    if (imagePath != null && imagePath.isNotEmpty) {
+      return '$baseUrl$imagePath';
+    } else {
+      return defaultImage;
+    }
+  }
+
   List<ListingModel> _listings = [];
 bool _isLoading = true;
 
@@ -49,24 +58,39 @@ void initState() {
 }
 
 void _fetchListings() async {
+    const String baseUrl = 'http://192.168.18.50:8000';
+
     try {
       final data = await ApiService.getMyListings();
-      print('Fetched data: $data');
+
+      // Debugging - print image URLs
+      for (var item in data) {
+        if (item['images'].isNotEmpty) {
+          print("🔗 Image URL: $baseUrl${item['images'][0]['image']}");
+        } else {
+          print("❌ No image for item: ${item['title']}");
+        }
+      }
 
       setState(() {
         _listings = data.map<ListingModel>((item) {
+          String imageUrl;
+          if (item['images'].isNotEmpty && item['images'][0]['image'] != null) {
+            imageUrl = item['images'][0]['image']; 
+          } else {
+            imageUrl = 'https://via.placeholder.com/100';
+          }
+
           return ListingModel(
             id: item['id'],
             title: item['title'],
             subtitle: item['description'],
-            price: item['price'].toString(), // ✅ RAW VALUE
+            price: item['price'].toString(),
             condition: item['condition'],
             category: item['category'],
             description: item['description'],
-            productAge: item['product_age'], // ✅ use correct key
-            imageUrl: item['images'].isNotEmpty
-                ? 'http://192.168.18.50:8000${item['images'][0]['image']}'
-                : 'assets/images/placeholder.png',
+            productAge: item['product_age'],
+            imageUrl: imageUrl, // Make sure you're using this correctly
           );
         }).toList();
         _isLoading = false;
@@ -188,7 +212,8 @@ void _deleteListing(int index) async {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
-                              listing.imageUrl,
+                              listing
+                                  .imageUrl, // or directly: 'http://192.168.18.50:8000${item['images'][0]['image']}'
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
@@ -202,6 +227,7 @@ void _deleteListing(int index) async {
                               },
                             ),
                           ),
+
                           const SizedBox(width: 16),
 
                           // Product details

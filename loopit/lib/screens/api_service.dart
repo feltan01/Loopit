@@ -133,35 +133,42 @@ class ApiService {
   // Upload images to a listings
   static Future<void> uploadListingImages(
       int listingId, List<dynamic> images) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
+    final token = await getToken();
 
-    for (var image in images) {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('$baseUrl/listings/$listingId/upload_images/'),
-      );
+    final url = Uri.parse('$baseUrl/api/listings/$listingId/upload_images/');
+    var request = http.MultipartRequest('POST', url);
 
-      request.headers['Authorization'] = 'Bearer $token';
+    // Add token to header
+    request.headers['Authorization'] = 'Bearer $token';
 
-      if (kIsWeb && image is Uint8List) {
-        request.files.add(
-          http.MultipartFile.fromBytes('image', image,
-              filename: 'web_image.jpg'),
-        );
-      } else if (image is File) {
-        request.files.add(
-          await http.MultipartFile.fromPath('image', image.path),
-        );
+    // Add each image to the 'images' field
+    for (var i = 0; i < images.length; i++) {
+      if (kIsWeb && images[i] is Uint8List) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'images', // Note: plural to match Django's 'getlist'
+          images[i],
+          filename: 'web_image_$i.jpg',
+        ));
+      } else if (images[i] is File) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'images', // Note: plural
+          images[i].path,
+        ));
       }
+    }
 
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      print("UPLOAD IMAGE STATUS: ${response.statusCode}");
+    // Send the request
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode != 201) {
-        print("Image upload failed: ${response.body}");
-      }
+    print("UPLOAD IMAGE STATUS: ${response.statusCode}");
+    print("UPLOAD IMAGE RESPONSE: ${response.body}");
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      print("❌ Image upload failed: ${response.body}");
+      throw Exception('Image upload failed: ${response.statusCode}');
+    } else {
+      print("✅ Images uploaded successfully.");
     }
   }
 

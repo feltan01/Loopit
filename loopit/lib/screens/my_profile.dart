@@ -13,6 +13,18 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   String? username;
   List<dynamic> myListings = [];
 
+  final String baseUrl = 'http://192.168.18.50:8000';
+  final String defaultImage = 'https://via.placeholder.com/100';
+
+  String getImageUrl(List<dynamic> images) {
+    if (images.isNotEmpty && images[0]['image'] != null) {
+      return '$baseUrl${images[0]['image']}';
+    } else {
+      return defaultImage;
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -210,7 +222,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             return Container(
                                               width: 80,
                                               height: 80,
-                                              color: const Color.fromARGB(255, 247, 245, 245),
+                                              color: const Color.fromARGB(22, 247, 245, 245),
                                               child: const Icon(
                                                   Icons.image_not_supported),
                                             );

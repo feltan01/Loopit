@@ -18,12 +18,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   String getImageUrl(List<dynamic> images) {
     if (images.isNotEmpty && images[0]['image'] != null) {
-      return '$baseUrl${images[0]['image']}';
+      return images[0]['image']; // Directly use the full URL
     } else {
       return defaultImage;
     }
   }
-
 
   @override
   void initState() {
@@ -211,9 +210,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.network(
-                                          item['images'].isNotEmpty
-                                              ? 'http://192.168.0.13:8000${item['images'][0]['image']}'
-                                              : 'https://via.placeholder.com/100',
+                                          getImageUrl(item['images']),
                                           width: 80,
                                           height: 80,
                                           fit: BoxFit.cover,
@@ -222,7 +219,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             return Container(
                                               width: 80,
                                               height: 80,
-                                              color: const Color.fromARGB(22, 247, 245, 245),
+                                              color: const Color.fromARGB(
+                                                  22, 247, 245, 245),
                                               child: const Icon(
                                                   Icons.image_not_supported),
                                             );

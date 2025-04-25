@@ -140,9 +140,13 @@ class ListingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         print("🔍 Logged-in user:", user)
-        
+
         if user and user.is_authenticated:
             serializer.save(owner=user)
+        elif self.request.auth is None and self.request.user.is_anonymous:
+            # Pakai default owner saat anonymous
+            default_owner = LoopitUser.objects.get(email='owen@gmail.com')  # Ganti sesuai user kamu
+            serializer.save(owner=default_owner)
         else:
             raise PermissionDenied("You must be authenticated.")
 

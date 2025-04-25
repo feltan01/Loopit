@@ -58,7 +58,7 @@ void initState() {
 }
 
 void _fetchListings() async {
-    const String baseUrl = 'http://192.168.18.50:8000';
+    const String baseUrl = 'http://10.10.169.164:8000';
 
     try {
       final data = await ApiService.getMyListings();

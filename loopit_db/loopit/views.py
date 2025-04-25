@@ -10,6 +10,9 @@ from .models import LoopitUser, Profile, Listing, ListingImage
 from .serializers import UserSignUpSerializer, UserLoginSerializer, ProfileSerializer, ListingSerializer, ListingImageSerializer, PasswordResetSerializer, SetNewPasswordSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.core.exceptions import PermissionDenied
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = LoopitUser.objects.all()
@@ -168,7 +171,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(listing)
         return Response(serializer.data)
 
-@action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+@action(detail=False, methods=['get'], permission_classes=[AllowAny])
 def my_listings(self, request):
     listings = Listing.objects.filter(owner=request.user)
     serializer = self.get_serializer(listings, many=True)

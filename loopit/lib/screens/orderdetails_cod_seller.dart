@@ -16,7 +16,7 @@ class OrderdetailsCodSeller extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blue, 
         scaffoldBackgroundColor: Colors.white,
       ),
       home: const OrderDetailsPage(),

@@ -3,6 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
+# Move this OUTSIDE the class definitions
+def user_directory_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return f'user_{instance.listing.owner.id}/{filename}'
+
 class LoopitUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -21,7 +26,6 @@ class LoopitUser(AbstractUser):
             ("can_view_user", "Can view user"),
         ]
 
-    # Override default related names to avoid conflicts
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
@@ -74,8 +78,8 @@ class Listing(models.Model):
 
 
 class ListingImage(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='listing_images/')
+    image = models.ImageField(upload_to=user_directory_path)  # ✅ Now it uses the correct function
+    listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

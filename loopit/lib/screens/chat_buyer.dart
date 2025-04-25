@@ -476,15 +476,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  Widget _buildMessageItem(Message message, double screenWidth) {
-    final bool isMe = message.isFromCurrentUser(widget.currentUser.id);
-    
-    // Check if message has an offer
-   if (message.offer != null) {
+ Widget _buildMessageItem(Message message, double screenWidth) {
+  final bool isMe = message.isFromCurrentUser (widget.currentUser .id);
+  
+  // Check if message has an offer
+  if (message.offer != null) {
     final offer = message.offer!;
     print("📱 Rendering offer #${offer.id} with product #${offer.product.id}");
-    print("🔍 Image URL being used: ${offer.product.fullImageUrl}");
-    
+    print("🔍 Image URL being used: ${offer.product.fullImageUrl}"); // Debugging line
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -512,7 +512,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       child: Image.network(
                         offer.product.fullImageUrl,
                         fit: BoxFit.cover,
-                        // Add loading indicator
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) {
                             print("✅ Image loaded successfully for offer #${offer.id}");
@@ -619,7 +618,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       ],
     ),
   );
-  }
+}
 
   Widget _buildOfferStatusUI(Offer offer) {
     // Buyer waiting for response

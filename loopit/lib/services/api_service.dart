@@ -7,7 +7,7 @@ import '../models/user.dart';
 import '../models/conversation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.18.96:8000/api';
+  static const String baseUrl = 'http://192.168.0.149:8000/api';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

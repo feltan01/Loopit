@@ -77,7 +77,7 @@ class Product {
   }
   
   // For local development server
-  const String baseUrl = 'http://192.168.18.96:8000';
+  const String baseUrl = 'http://192.168.0.149:8000';
   
   // Check if the image path already includes /media/
   if (imageStr.startsWith('/media/')) {

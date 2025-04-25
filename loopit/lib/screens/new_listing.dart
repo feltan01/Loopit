@@ -13,11 +13,30 @@ class NewListingPage extends StatefulWidget {
   _NewListingPageState createState() => _NewListingPageState();
 }
 
+final List<String> categories = [
+  'Fashion',
+  'Electronics',
+  'Skincare & Perfumes',
+  'Books & Magazine',
+  'Luxury Items',
+  'Toys',
+  'Others',
+];
+
+final List<String> conditions = [
+  'NEW',
+  'LIKE_NEW',
+  'GOOD',
+  'FAIR',
+  'POOR',
+];
+
+String? selectedCategory;
+String? selectedCondition;
+
 class _NewListingPageState extends State<NewListingPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _conditionController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _productAgeController = TextEditingController();
 
@@ -64,12 +83,12 @@ class _NewListingPageState extends State<NewListingPage> {
       _showErrorSnackBar('Price must be a number');
       return false;
     }
-    if (_categoryController.text.isEmpty) {
+    if (selectedCategory == null || selectedCategory!.isEmpty) {
       _showErrorSnackBar('Please select a category');
       return false;
     }
-    if (_conditionController.text.isEmpty) {
-      _showErrorSnackBar('Please specify the condition');
+    if (selectedCondition == null || selectedCondition!.isEmpty) {
+      _showErrorSnackBar('Please select the condition');
       return false;
     }
     if (_descriptionController.text.isEmpty) {
@@ -101,13 +120,13 @@ class _NewListingPageState extends State<NewListingPage> {
       try {
         print("📤 Sending request...");
         final listing = await ApiService.createListing(
-          _titleController.text,
-          _priceController.text,
-          _categoryController.text,
-          _conditionController.text,
-          _descriptionController.text,
-          _productAgeController.text,
-        );
+  _titleController.text,
+  _priceController.text,
+  selectedCategory!,
+  selectedCondition!,
+  _descriptionController.text,
+  _productAgeController.text,
+);
 
         if (listing == null) {
           print("❌ Response is null. Listing not created.");
@@ -316,8 +335,70 @@ class _NewListingPageState extends State<NewListingPage> {
               const SizedBox(height: 16),
               _buildTextField(_titleController, "Title"),
               _buildTextField(_priceController, "Price"),
-              _buildTextField(_categoryController, "Category"),
-              _buildTextField(_conditionController, "Condition"),
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFEAF3DC), width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    border: InputBorder.none,
+                    hintText: 'Category',
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  value: selectedCategory,
+                  items: categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category,
+                          style: const TextStyle(
+                              fontSize: 16, color: Color(0xFF4E6645))),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCategory = newValue;
+                    });
+                  },
+                  dropdownColor: const Color(0xFFEAF3DC), // Match background
+                ),
+              ),
+
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFEAF3DC), width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    border: InputBorder.none,
+                    hintText: 'Condition',
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  value: selectedCondition,
+                  items: conditions.map((String condition) {
+                    return DropdownMenuItem<String>(
+                      value: condition,
+                      child: Text(condition,
+                          style: const TextStyle(
+                              fontSize: 16, color: Color(0xFF4E6645))),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCondition = newValue;
+                    });
+                  },
+                  dropdownColor: const Color(0xFFEAF3DC),
+                ),
+              ),
+
               _buildTextField(_descriptionController, "Description",
                   maxLines: 5),
               _buildTextField(_productAgeController, "Product age"),

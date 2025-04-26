@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/api_service.dart';
-import 'edit_listing.dart'; 
+import 'edit_listing.dart';
 import 'new_listing.dart';
 import 'profile.dart';
 
@@ -21,7 +21,7 @@ class ListingModel {
     required this.price,
     required this.condition,
     required this.imageUrl,
-    required this.id, 
+    required this.id,
     required this.category,
     required this.description,
     required this.productAge,
@@ -49,20 +49,21 @@ class _YourListingPageState extends State<YourListingPage> {
   }
 
   List<ListingModel> _listings = [];
-bool _isLoading = true;
+  bool _isLoading = true;
 
-@override
-void initState() {
-  super.initState();
-  _fetchListings();
-}
+  @override
+  void initState() {
+    super.initState();
+    _fetchListings();
+  }
 
-void _fetchListings() async {
-    const String baseUrl = 'http://10.10.169.164:8000';
+  void _fetchListings() async {
+    const String baseUrl = 'http://192.168.100.29:8000';
 
     try {
       final data = await ApiService.getMyListings();
 
+      print(data);
       // Debugging - print image URLs
       for (var item in data) {
         if (item['images'].isNotEmpty) {
@@ -76,7 +77,7 @@ void _fetchListings() async {
         _listings = data.map<ListingModel>((item) {
           String imageUrl;
           if (item['images'].isNotEmpty && item['images'][0]['image'] != null) {
-            imageUrl = item['images'][0]['image']; 
+            imageUrl = item['images'][0]['image'];
           } else {
             imageUrl = 'https://via.placeholder.com/100';
           }
@@ -101,7 +102,7 @@ void _fetchListings() async {
     }
   }
 
-void _deleteListing(int index) async {
+  void _deleteListing(int index) async {
     final listingId = _listings[index].id;
 
     try {
@@ -128,7 +129,6 @@ void _deleteListing(int index) async {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -298,20 +298,18 @@ void _deleteListing(int index) async {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                              EditListingPage(
-                                                    listingId: listing.id,
-                                                    initialTitle: listing.title,
-                                                    initialPrice: listing.price,
-                                                    initialCondition:
-                                                        listing.condition,
-                                                    initialCategory:
-                                                        listing.category,
-                                                    initialDescription:
-                                                        listing.description,
-                                                    initialProductAge:
-                                                        listing.productAge,
-                                                  ),
-
+                                                EditListingPage(
+                                              listingId: listing.id,
+                                              initialTitle: listing.title,
+                                              initialPrice: listing.price,
+                                              initialCondition:
+                                                  listing.condition,
+                                              initialCategory: listing.category,
+                                              initialDescription:
+                                                  listing.description,
+                                              initialProductAge:
+                                                  listing.productAge,
+                                            ),
                                           ),
                                         );
 
@@ -321,7 +319,6 @@ void _deleteListing(int index) async {
                                         }
                                       },
                                     ),
-
                                     ListTile(
                                       leading: const Icon(Icons.delete,
                                           color: Colors.red),

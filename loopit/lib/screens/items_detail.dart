@@ -3,6 +3,7 @@ import 'package:loopit/screens/chat_buyer.dart';
 import 'package:loopit/screens/fashion_page.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/saved_products.dart';
+import 'package:loopit/screens/api_service.dart'; // Import API service
 
 // Import the proper User model
 import 'package:loopit/models/user.dart';
@@ -22,14 +23,33 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
-      home: const ItemsDetails(
-        name: 'Jacket Cream color Brand ABC',
-        price: 'Rp 250.000',
-        condition: '77% Good',
-        image: 'assets/images/fs1.png',
-      ),
     );
   }
+}
+
+// Import ListingModel from your_listing.dart to use the same model
+class ListingModel {
+  final String title;
+  final String subtitle;
+  final String price;
+  final String condition;
+  final String imageUrl;
+  final int id;
+  final String category;
+  final String description;
+  final String productAge;
+
+  ListingModel({
+    required this.title,
+    required this.subtitle,
+    required this.price,
+    required this.condition,
+    required this.imageUrl,
+    required this.id,
+    required this.category,
+    required this.description,
+    required this.productAge,
+  });
 }
 
 class ItemsDetails extends StatefulWidget {
@@ -39,6 +59,7 @@ class ItemsDetails extends StatefulWidget {
   final String image;
   // Add productId parameter for future backend integration
   final String? productId;
+  final String description;
 
   const ItemsDetails({
     Key? key,
@@ -47,6 +68,7 @@ class ItemsDetails extends StatefulWidget {
     required this.condition,
     required this.image,
     this.productId,
+    required this.description
   }) : super(key: key);
 
   @override
@@ -57,6 +79,9 @@ class _ItemsDetailsState extends State<ItemsDetails> {
   bool isFavorite = false;
   // Add a controller for the message text field
   final TextEditingController _messageController = TextEditingController();
+  // List to store fetched listings
+  List<ListingModel> _otherProducts = [];
+  bool _isLoading = true;
 
   // Create sample users for chat functionality - FIXED to use the correct User model
   final User _currentUser = User(
@@ -64,15 +89,56 @@ class _ItemsDetailsState extends State<ItemsDetails> {
     username: 'Current User',
     email: 'current@example.com',
   );
-  
+
   final User _sellerUser = User(
     id: 456,
     username: 'User 1',
     email: 'seller@example.com',
   );
-  
+
   // Sample conversation ID
   final int _conversationId = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOtherProducts();
+  }
+
+  // Method to fetch other products from the API service
+  void _fetchOtherProducts() async {
+    try {
+      final data = await ApiService.getMyListings(); // Using the same API method from YourListingPage
+      
+      setState(() {
+        _otherProducts = data.map<ListingModel>((item) {
+          String imageUrl;
+          if (item['images'].isNotEmpty && item['images'][0]['image'] != null) {
+            final baseUrl = 'http://192.168.100.29:8000'; // Same base URL from your_listing.dart
+            imageUrl = '$baseUrl${item['images'][0]['image']}';
+          } else {
+            imageUrl = 'https://via.placeholder.com/100';
+          }
+
+          return ListingModel(
+            id: item['id'],
+            title: item['title'],
+            subtitle: item['description'],
+            price: item['price'].toString(),
+            condition: item['condition'],
+            category: item['category'],
+            description: item['description'],
+            productAge: item['product_age'],
+            imageUrl: imageUrl,
+          );
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching other products: $e');
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -94,7 +160,8 @@ class _ItemsDetailsState extends State<ItemsDetails> {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 57, 110, 58), size: 20),
+            icon: const Icon(Icons.arrow_back,
+                color: Color.fromARGB(255, 57, 110, 58), size: 20),
             padding: EdgeInsets.zero,
             onPressed: () {
               Navigator.push(
@@ -115,10 +182,11 @@ class _ItemsDetailsState extends State<ItemsDetails> {
           child: TextField(
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              prefixIcon:
-                  const Icon(Icons.search, size: 20, color: Color.fromARGB(255, 57, 110, 58)),
+              prefixIcon: const Icon(Icons.search,
+                  size: 20, color: Color.fromARGB(255, 57, 110, 58)),
               hintText: 'Search it, Loop it',
-              hintStyle: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 57, 110, 58)),
+              hintStyle: const TextStyle(
+                  fontSize: 14, color: Color.fromARGB(255, 57, 110, 58)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide.none,
@@ -164,15 +232,15 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                   child: Center(
-                    child: widget.image.startsWith('http') 
-                      ? Image.network(
-                          widget.image,
-                          fit: BoxFit.contain,
-                        )
-                      : Image.asset(
-                          widget.image,
-                          fit: BoxFit.contain,
-                        ),
+                    child: widget.image.startsWith('http')
+                        ? Image.network(
+                            widget.image,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            widget.image,
+                            fit: BoxFit.contain,
+                          ),
                   ),
                 ),
                 Positioned(
@@ -287,7 +355,8 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                                 borderRadius: BorderRadius.circular(16),
                                 child: Ink(
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 38, 88, 38),
+                                    color:
+                                        const Color.fromARGB(255, 38, 88, 38),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   padding: const EdgeInsets.symmetric(
@@ -431,8 +500,11 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                                   ),
                                   child: Center(
                                     child: Icon(
-                                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                                      color: const Color.fromARGB(255, 42, 87, 44),
+                                      isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color:
+                                          const Color.fromARGB(255, 42, 87, 44),
                                       size: 20,
                                     ),
                                   ),
@@ -460,44 +532,20 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               'Description',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
-                              'Size M (38)',
-                              style: TextStyle(fontSize: 12),
+                              widget.description ?? 'No description available',
+                              style: const TextStyle(fontSize: 12),
                             ),
-                            Text(
-                              'The Material: soft material',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              'The brand maybe today',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              'Cream Color',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              '2 front pockets',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              'Screen Printing Logo',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Listed on 23rd January 2025',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
+                            // Removed "Listed on 23rd January 2025" text
                           ],
                         ),
                       ),
@@ -562,8 +610,8 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                             backgroundColor: Colors.purple.shade100,
                             radius: 20,
                             child: Text(
-                              _sellerUser.username.isNotEmpty 
-                                  ? _sellerUser.username[0].toUpperCase() 
+                              _sellerUser.username.isNotEmpty
+                                  ? _sellerUser.username[0].toUpperCase()
                                   : '?',
                               style: const TextStyle(fontSize: 18),
                             ),
@@ -574,15 +622,21 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                             children: [
                               Text(
                                 _sellerUser.username,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               Row(
                                 children: const [
-                                  Icon(Icons.star, color: Colors.amber, size: 16),
-                                  Icon(Icons.star, color: Colors.amber, size: 16),
-                                  Icon(Icons.star, color: Colors.amber, size: 16),
-                                  Icon(Icons.star, color: Colors.amber, size: 16),
-                                  Icon(Icons.star_half, color: Colors.amber, size: 16),
+                                  Icon(Icons.star,
+                                      color: Colors.amber, size: 16),
+                                  Icon(Icons.star,
+                                      color: Colors.amber, size: 16),
+                                  Icon(Icons.star,
+                                      color: Colors.amber, size: 16),
+                                  Icon(Icons.star,
+                                      color: Colors.amber, size: 16),
+                                  Icon(Icons.star_half,
+                                      color: Colors.amber, size: 16),
                                 ],
                               ),
                             ],
@@ -594,7 +648,7 @@ class _ItemsDetailsState extends State<ItemsDetails> {
 
                   const SizedBox(height: 16),
 
-                  // OTHER PRODUCTS SECTION - UPDATED FOR BACKEND INTEGRATION
+                  // OTHER PRODUCTS SECTION - UPDATED WITH REAL DATA FROM API
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -606,79 +660,60 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // GridView to display products
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemCount: 4, // Number of products to display
-                        itemBuilder: (context, index) {
-                          // This is where you'd integrate with your backend in the future
-                          // For now, using sample data
-                          final List<Map<String, dynamic>> products = [
-                            {
-                              'id': '001',
-                              'title': 'Jam Saku 1800',
-                              'price': 'Rp 400.000',
-                              'condition': '75% Fair',
-                              'image': 'assets/images/fs1.png',
-                            },
-                            {
-                              'id': '002',
-                              'title': 'Mainan piano anak',
-                              'price': 'Rp 150.000',
-                              'condition': '95% Like New',
-                              'image': 'assets/images/fs2.png',
-                            },
-                            {
-                              'id': '003',
-                              'title': 'Hot Toys Ant-Man Figure',
-                              'price': 'Rp 2.500.000',
-                              'condition': '98% Like New',
-                              'image': 'assets/images/fs3.png',
-                            },
-                            {
-                              'id': '004',
-                              'title': 'Jam Kate Spade Leather',
-                              'price': 'Rp 900.000',
-                              'condition': '93% Like New',
-                              'image': 'assets/images/fs1.png',
-                            },
-                          ];
+                      // Show loading indicator while data is being fetched
+                      _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : _otherProducts.isEmpty
+                              ? const Center(
+                                  child: Text('No other products available'))
+                              : GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    childAspectRatio: 0.75,
+                                  ),
+                                  itemCount: _otherProducts.length > 4
+                                      ? 4
+                                      : _otherProducts.length, // Limit to 4 items
+                                  itemBuilder: (context, index) {
+                                    // Get the product from the fetched data
+                                    final product = _otherProducts[index];
 
-                          final product = products[index];
-                          
-                          // Get badge color based on condition
-                          Color badgeColor;
-                          Color badgeTextColor;
-                          final conditionText = product['condition'] as String;
-                          if (conditionText.contains('Like New')) {
-                            badgeColor = Colors.green.shade100;
-                            badgeTextColor = Colors.green.shade800;
-                          } else if (conditionText.contains('Good')) {
-                            badgeColor = Colors.blue.shade100;
-                            badgeTextColor = Colors.blue.shade800;
-                          } else {
-                            badgeColor = Colors.amber.shade100;
-                            badgeTextColor = Colors.amber.shade800;
-                          }
+                                    // Get badge color based on condition
+                                    Color badgeColor;
+                                    Color badgeTextColor;
+                                    final conditionText = product.condition;
+                                    if (conditionText.contains('Like New') ||
+                                        conditionText.contains('99') ||
+                                        conditionText.contains('95')) {
+                                      badgeColor = Colors.green.shade100;
+                                      badgeTextColor = Colors.green.shade800;
+                                    } else if (conditionText.contains('Good') ||
+                                        conditionText.contains('85') ||
+                                        conditionText.contains('80')) {
+                                      badgeColor = Colors.blue.shade100;
+                                      badgeTextColor = Colors.blue.shade800;
+                                    } else {
+                                      badgeColor = Colors.amber.shade100;
+                                      badgeTextColor = Colors.amber.shade800;
+                                    }
 
-                          return _buildProductItem(
-                            product['id'] as String,
-                            product['title'] as String,
-                            product['price'] as String,
-                            product['condition'] as String,
-                            badgeColor,
-                            badgeTextColor,
-                            product['image'] as String,
-                          );
-                        },
-                      ),
+                                    return _buildProductItem(
+                                      product.id.toString(),
+                                      product.title,
+                                      product.price,
+                                      product.condition,
+                                      badgeColor,
+                                      badgeTextColor,
+                                      product.imageUrl,
+                                      product.description,
+                                    );
+                                  },
+                                ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -691,159 +726,200 @@ class _ItemsDetailsState extends State<ItemsDetails> {
     );
   }
 
-  // Updated product item builder for easier backend integration
-  Widget _buildProductItem(
-    String id,
-    String title,
-    String price,
-    String condition,
-    Color badgeColor,
-    Color badgeTextColor,
-    String image,
-  ) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          // Navigation to the item details using the same ItemsDetails widget
-          // This is where you'd integrate with your backend
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ItemsDetails(
-                name: title,
-                price: price,
-                condition: condition,
-                image: image,
-                productId: id, // Pass the ID for future backend integration
-              ),
+  // Updated product item builder to use real data
+Widget _buildProductItem(
+  String id,
+  String title,
+  String price,
+  String condition,
+  Color badgeColor,
+  Color badgeTextColor,
+  String imageUrl,
+  String description,
+) {
+  // Fix for duplicate base URL issue
+  // Check if imageUrl already contains the base URL and fix it if needed
+  const String baseUrl = 'http://192.168.100.29:8000';
+  String processedImageUrl = imageUrl;
+  
+  // Prevent duplicate base URLs
+  if (imageUrl.contains(baseUrl + baseUrl)) {
+    processedImageUrl = imageUrl.replaceFirst(baseUrl + baseUrl, baseUrl);
+  } else if (!imageUrl.startsWith('http') && !imageUrl.startsWith('assets/')) {
+    // If it's a relative path without the base URL, add the base URL
+    processedImageUrl = baseUrl + imageUrl;
+  }
+  
+  // Debug output
+  print('Original imageUrl: $imageUrl');
+  print('Processed imageUrl: $processedImageUrl');
+
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: () {
+        // Navigation to the item details using the same ItemsDetails widget
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemsDetails(
+              name: title,
+              price: price,
+              condition: condition,
+              image: processedImageUrl, // Pass the processed image URL
+              productId: id,
+              description: description,
             ),
-          );
-        },
-        // Visual feedback effects
-        borderRadius: BorderRadius.circular(8),
-        splashColor: Colors.green.withOpacity(0.3),
-        highlightColor: Colors.green.withOpacity(0.1),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Product image
-              AspectRatio(
-                aspectRatio: 1.0, // Square image
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFCECEE), // Match the main product background
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                    ),
-                  ),
-                  child: Center(
-                    child: image.startsWith('http')
-                        ? Image.network(image, fit: BoxFit.contain)
-                        : Image.asset(image, fit: BoxFit.contain),
+        );
+      },
+      // Visual feedback effects
+      borderRadius: BorderRadius.circular(8),
+      splashColor: Colors.green.withOpacity(0.3),
+      highlightColor: Colors.green.withOpacity(0.1),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product image
+            AspectRatio(
+              aspectRatio: 1.0, // Square image
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFCECEE), // Match the main product background
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
                   ),
                 ),
-              ),
-              // Product details
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      price,
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Condition badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: badgeColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            condition,
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: badgeTextColor,
-                            ),
-                          ),
-                        ),
-                        // Options menu button
-                        GestureDetector(
-                          onTap: () {
-                            // Show product options bottom sheet
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return SafeArea(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      ListTile(
-                                        leading: const Icon(Icons.favorite_border),
-                                        title: const Text('Add to favorites'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          // Future backend integration: Save to favorites
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.share),
-                                        title: const Text('Share product'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          // Future backend integration: Share product
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.report_outlined),
-                                        title: const Text('Report item'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          // Future backend integration: Report product
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
+                child: Center(
+                  // Handle image based on URL format (network or asset)
+                  child: processedImageUrl.startsWith('http')
+                      ? Image.network(
+                          processedImageUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            print('Error loading image: $error');
+                            return Image.asset(
+                              'assets/images/fallback.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.image_not_supported, size: 40);
                               },
                             );
                           },
-                          child: const Icon(Icons.more_horiz, size: 14),
+                        )
+                      : Image.asset(
+                          processedImageUrl.isNotEmpty ? processedImageUrl : 'assets/images/fallback.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.image_not_supported, size: 40);
+                          },
                         ),
-                      ],
-                    ),
-                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // Product details
+            Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    price,
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Condition badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          condition,
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: badgeTextColor,
+                          ),
+                        ),
+                      ),
+                      // Options menu button
+                      GestureDetector(
+                        onTap: () {
+                          // Show product options bottom sheet
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SafeArea(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading:
+                                          const Icon(Icons.favorite_border),
+                                      title: const Text('Add to favorites'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        // Future backend integration: Save to favorites
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(Icons.share),
+                                      title: const Text('Share product'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        // Future backend integration: Share product
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading:
+                                          const Icon(Icons.report_outlined),
+                                      title: const Text('Report item'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        // Future backend integration: Report product
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: const Icon(Icons.more_horiz, size: 14),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   // Helper methods for condition display
   String _getConditionPercentage() {
@@ -864,8 +940,9 @@ class _ItemsDetailsState extends State<ItemsDetails> {
   }
 
   Color _getConditionColor() {
-    final percentage = int.tryParse(_getConditionPercentage().replaceAll('%', '')) ?? 0;
-    
+    final percentage =
+        int.tryParse(_getConditionPercentage().replaceAll('%', '')) ?? 0;
+
     if (percentage >= 90) {
       return Colors.green;
     } else if (percentage >= 75) {

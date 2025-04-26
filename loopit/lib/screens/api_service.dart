@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL for your Django API
-  static const String baseUrl = 'http://10.10.169.164:8000';
+  static const String baseUrl = 'http://192.168.100.29:8000';
 
-  static get yourAccessToken => null; 
+  static get yourAccessToken => null;
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token'); // must match your login save
@@ -22,7 +22,7 @@ class ApiService {
         Uri.parse('$baseUrl/api/listings/'),
         headers: {'Authorization': 'Bearer $token'},
       );
- 
+      print(response);
       print("📥 Status Code: ${response.statusCode}");
       print("📥 Response Body: ${response.body}");
 
@@ -41,7 +41,6 @@ class ApiService {
       return []; // ✅ Still correct type
     }
   }
-
 
   static Future<bool> updateListing({
     required int listingId,
@@ -129,7 +128,6 @@ class ApiService {
     }
   }
 
-
   // Upload images to a listings
   static Future<void> uploadListingImages(
       int listingId, List<dynamic> images) async {
@@ -203,7 +201,7 @@ class ApiService {
   }
 
   // Delete a listing
- static Future<bool> deleteListing(int listingId) async {
+  static Future<bool> deleteListing(int listingId) async {
     try {
       final token = await getToken();
       final url = '$baseUrl/api/listings/$listingId/';
@@ -226,4 +224,3 @@ class ApiService {
     }
   }
 }
-

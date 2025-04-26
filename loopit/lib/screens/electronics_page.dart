@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopit/screens/api_service.dart'; // Import ApiService
+import 'package:loopit/screens/items_detail.dart'; // Import ItemsDetails
 
 class ElectronicsPage extends StatefulWidget {
   final List<Map<String, dynamic>> listings; // ✅ Add this
@@ -272,117 +273,154 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
                     ? item["images"][0]["image"]
                     : "assets/images/fallback.png";
 
+                // Determine the condition color
+                Color conditionColor;
+                if (item["condition"] == "NEW" || item["condition"].toString().contains("New")) {
+                  conditionColor = const Color(0xFF4CAF50);
+                } else if (item["condition"].toString().contains("Good")) {
+                  conditionColor = const Color(0xFFFFC107);
+                } else {
+                  conditionColor = const Color(0xFFFF9800);
+                }
+
                 return _buildProductItem(
+                  context,
                   item["title"] ?? "No Title",
                   "Rp ${item["price"] ?? "0"}",
                   item["condition"] ?? "Unknown",
-                  item["condition"] == "NEW"
-                      ? const Color(0xFF4CAF50)
-                      : const Color(0xFFFFC107),
+                  conditionColor,
                   imageUrl,
+                  productId: item["id"]?.toString(),
+                  description: item["description"] ?? ""
                 );
               },
             ),
     );
   }
 
-  Widget _buildProductItem(String name, String price, String condition,
-      Color conditionColor, String imageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+  Widget _buildProductItem(
+    BuildContext context,
+    String name,
+    String price,
+    String condition,
+    Color conditionColor,
+    String imageUrl, {
+    String? productId,
+    String? description
+  }) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to ItemsDetails page when product is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemsDetails(
+              name: name,
+              price: price,
+              condition: condition,
+              image: imageUrl,
+              productId: productId,
+              description: description ?? "",
             ),
-            child: imageUrl.startsWith("http")
-                ? Image.network(
-                    imageUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        "assets/images/fallback.png",
-                        height: 140,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  )
-                : Image.asset(
-                    imageUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF4A6741),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: imageUrl.startsWith("http")
+                  ? Image.network(
+                      imageUrl,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/images/fallback.png",
+                          height: 140,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      imageUrl,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF4A6741),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A6741),
+                  const SizedBox(height: 6),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A6741),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: condition.contains("Like New")
-                            ? const Color(0xFFE7F5D9)
-                            : const Color(0xFFFFF8E0),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        condition,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: conditionColor,
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: condition.contains("Like New") || condition == "NEW"
+                              ? const Color(0xFFE7F5D9)
+                              : const Color(0xFFFFF8E0),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          condition,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: conditionColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const Icon(Icons.more_horiz, color: Colors.black54),
-                  ],
-                ),
-              ],
+                      const Icon(Icons.more_horiz, color: Colors.black54),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

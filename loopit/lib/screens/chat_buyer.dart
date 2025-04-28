@@ -9,6 +9,7 @@ import '../models/offer.dart';
 import '../services/api_services.dart';
 import '../services/websocket_service.dart';
 import 'package:intl/intl.dart';
+import 'checkout_page.dart';
 
 class CurrencyInputFormatter extends TextInputFormatter {
   @override
@@ -438,13 +439,12 @@ for (var msg in _messages) {
   // This method will handle the checkout process
   void _proceedToCheckout(Offer offer) {
     // Show a success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Proceeding to checkout...'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckoutPage(offer: offer),
+        ),
+      );
     
     // Here you would typically navigate to a checkout screen
     // For now, we'll just show a dialog to simulate the checkout flow

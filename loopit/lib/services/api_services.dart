@@ -6,20 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
 
-<<<<<<< HEAD:loopit/lib/services/api_service.dart
-class ApiService {
-  static const String baseUrl = 'http://192.168.0.30:8000/api';
-=======
 class ApiServices {
-  static const String baseUrl = 'http://192.168.100.29:8000/api';
->>>>>>> 5ae69df52e86d7e7177224ef57ff6558123f6234:loopit/lib/services/api_services.dart
+  static const String baseUrl = 'http://192.168.18.68:8000/api';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('access_token');
     
     // Debugging log untuk memeriksa token yang didapat
-    print('Token retrieved: $token');
+    print('Token retrieved: $token'); 
     
     return token;
   }

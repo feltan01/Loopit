@@ -39,15 +39,14 @@ class ChatDetailScreen extends StatefulWidget {
   final int conversationId;
   final User otherUser;
   final User currentUser;
-  final String? productImageUrl; // <<<<< tambahan
-
+  final String? productImageUrl;
 
   const ChatDetailScreen({
     Key? key,
     required this.conversationId,
     required this.otherUser,
     required this.currentUser,
-    this.productImageUrl, // <<<<< ini tambahan
+    this.productImageUrl,
   }) : super(key: key);
 
   @override
@@ -63,6 +62,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   bool _isWebSocketConnected = false;
   Product? _currentProduct;
   Timer? _refreshTimer;
+  int? _lastOfferId;
 
   @override
   void initState() {
@@ -104,7 +104,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         print('WebSocket message received: $data');
         if (mounted) {
           // If it's a new message (not a connection status message)
-          if (data['type'] != 'connection_established' && data['message'] != '__ping__') {
+          if (data['type'] != 'connection_established' && data['message'] != '_ping_') {
             // Load all messages to ensure everything is in sync
             _loadMessages(silent: true);
             
@@ -212,7 +212,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           print("📝 Successfully parsed ${loadedMessages.length}/${messagesList.length} messages");
 
           if (loadedMessages.isEmpty && messagesList.isNotEmpty) {
-            print("⚠️ Warning: All messages failed to parse!");
+            print("⚠ Warning: All messages failed to parse!");
           }
 
           // If we have new messages or different number of messages
@@ -234,6 +234,36 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               _isLoading = false;
             });
 
+            // Check for pending offers and auto-accept them
+         // Add this at the top of your _loadMessages method
+print("🔍 LOAD MESSAGES - Current user ID: ${widget.currentUser.id}, Other user ID: ${widget.otherUser.id}");
+
+// Then modify the offer detection code
+for (var msg in _messages) {
+  if (msg.offer != null) {
+    print("📋 FOUND OFFER #${msg.offer!.id}");
+    print("   - Status: ${msg.offer!.status}");
+    print("   - Buyer ID: ${msg.offer!.buyer.id}");
+    print("   - Seller ID: ${msg.offer!.product.seller.id}");
+    print("   - Is pending: ${msg.offer!.isPending}");
+    print("   - Last offer ID: $_lastOfferId");
+    
+    // Check condition
+  bool shouldAutoAccept = msg.offer!.isPending &&
+                        msg.offer!.id != _lastOfferId;
+
+    
+    print("   - Should auto-accept: $shouldAutoAccept");
+    
+    if (shouldAutoAccept) {
+      print("🎯 TRIGGERING AUTO-ACCEPT for offer #${msg.offer!.id}");
+      _lastOfferId = msg.offer!.id;
+      // Remove the delay to see if it's causing issues
+      _autoAcceptOffer(msg.offer!);
+      break;
+    }
+  }
+}
             // Scroll to bottom if new messages were added
             if (hasChanges) {
               _scrollToBottom();
@@ -264,7 +294,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         }
       } else {
         // Handle case where there are no messages
-        print("⚠️ No messages found in conversation data");
+        print("⚠ No messages found in conversation data");
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -297,6 +327,39 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       }
     }
   }
+
+  // Auto-accept offer from buyer
+ Future<void> _autoAcceptOffer(Offer offer) async {
+  print("🚀 AUTO ACCEPT OFFER STARTED for offer #${offer.id}");
+  try {
+    // First, update the offer status on the server
+    print("   - Sending API request to accept offer");
+    await _respondToOffer(offer.id, 'ACCEPTED');
+    
+    print("   - API request successful, sending confirmation message");
+    // Then send an acceptance message from the seller
+    await ApiServices.sendMessage(
+      widget.conversationId, 
+      "Thank you for your offer! I accept your price of Rp ${NumberFormat('#,###', 'id').format(offer.amount.toInt()).replaceAll(',', '.')}. You can proceed to checkout now."
+    );
+    
+    print("   - Reloading messages");
+    // Reload messages to show the updated offer and seller's message
+    await _loadMessages(silent: true);
+    
+    // Scroll to show the latest message
+    _scrollToBottom();
+    print("✅ AUTO ACCEPT OFFER COMPLETED");
+    
+  } catch (e) {
+    print("❌ ERROR IN AUTO-ACCEPT: $e");
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error accepting offer: $e')),
+      );
+    }
+  }
+}
 
   Future<void> _sendMessage() async {
     final messageText = _messageController.text.trim();
@@ -336,63 +399,88 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     });
   }
 
-  Future<void> _respondToOffer(int offerId, String status) async {
-    try {
-      // Respond to offer (token is now retrieved internally)
-      await ApiServices.respondToOffer(offerId, status);
-      
-      // Create a new list of messages with the updated offer
-      setState(() {
-        final List<Message> updatedMessages = _messages.map((message) {
-          if (message.offer?.id == offerId) {
-            // Create a new offer with updated status
-            final updatedOffer = Offer(
-              id: message.offer!.id,
-              conversationId: message.offer!.conversationId,
-              messageId: message.offer!.messageId,
-              product: message.offer!.product,
-              buyer: message.offer!.buyer,
-              amount: message.offer!.amount,
-              status: status,
-              createdAt: message.offer!.createdAt,
-            );
-            
-            // Create and return a new message with the updated offer
-            return Message(
-              id: message.id,
-              conversationId: message.conversationId,
-              sender: message.sender,
-              text: message.text,
-              createdAt: message.createdAt,
-              offer: updatedOffer,
-            );
-          }
-          return message;
-        }).toList();
-        
-        // Replace the messages list with the updated one
-        _messages.clear();
-        _messages.addAll(updatedMessages);
-      });
-      
-      // Reload messages to ensure we have the latest data
-      await _loadMessages(silent: true);
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Offer ${status.toLowerCase()}'),
-            backgroundColor: status == 'ACCEPTED' ? Colors.green : Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to respond to offer: $e')),
-        );
-      }
+ Future<void> _respondToOffer(int offerId, String status) async {
+  print("📤 RESPONDING TO OFFER #$offerId with status: $status");
+  try {
+    // Respond to offer (token is now retrieved internally)
+    await ApiServices.respondToOffer(offerId, status);
+    print("✅ API RESPONSE SUCCESS for offer #$offerId");
+    
+    // Create a new list of messages with the updated offer
+    setState(() {
+      print("🔄 Updating local messages with new offer status");
+      // Rest of your code...
+    });
+    
+    // Make sure we log each step
+    print("🔄 Reloading messages after response");
+    await _loadMessages(silent: true);
+    
+    if (mounted) {
+      print("📱 Showing success message for $status");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Offer ${status.toLowerCase()}'),
+          backgroundColor: status == 'ACCEPTED' ? Colors.green : Colors.red,
+        ),
+      );
     }
+  } catch (e) {
+    print("❌ RESPOND TO OFFER ERROR: $e");
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to respond to offer: $e')),
+      );
+    }
+  }
+}
+
+  // This method will handle the checkout process
+  void _proceedToCheckout(Offer offer) {
+    // Show a success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Proceeding to checkout...'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+    
+    // Here you would typically navigate to a checkout screen
+    // For now, we'll just show a dialog to simulate the checkout flow
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Checkout'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Product: ${offer.product.name}'),
+            const SizedBox(height: 8),
+            Text('Price: Rp ${NumberFormat('#,###', 'id').format(offer.amount.toInt()).replaceAll(',', '.')}'),
+            const SizedBox(height: 16),
+            const Text('Thank you for your purchase!'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              
+              // Send a confirmation message
+              ApiServices.sendMessage(
+                widget.conversationId,
+                "Thank you for your purchase! I'll prepare the item for shipping."
+              );
+              
+              _loadMessages(silent: true);
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -460,54 +548,57 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ],
       ),
       body: _isLoading
-    ? const Center(child: CircularProgressIndicator())
-    : Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              itemCount: _messages.length + (widget.productImageUrl != null ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (widget.productImageUrl != null && index == 0) {
-                  return Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF0F5E6),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          widget.productImageUrl!,
-                          height: 150,
-                          width: 150,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.broken_image, size: 50);
-                          },
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  itemCount: _messages.length + (widget.productImageUrl != null ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (widget.productImageUrl != null && index == 0) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0F5E6),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              widget.productImageUrl!,
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.broken_image, size: 50);
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                } else {
-                  final realIndex = widget.productImageUrl != null ? index - 1 : index;
-                  return _buildMessageItem(_messages[realIndex], screenWidth);
-                }
-              },
-            ),
+                      );
+                    } else {
+                      final realIndex = widget.productImageUrl != null ? index - 1 : index;
+                      return _buildMessageItem(_messages[realIndex], screenWidth);
+                    }
+                  },
+                ),
+              ),
+              _buildInputArea(),
+            ],
           ),
-          _buildInputArea(), // <<< ini jangan ilang bro!
-        ],
-      ),
     );
   }
 
  Widget _buildMessageItem(Message message, double screenWidth) {
-  final bool isMe = message.isFromCurrentUser (widget.currentUser .id);
+  final bool isAutoMessage = message.text.startsWith("Thank you for your offer!") || 
+                           message.text.startsWith("Thank you for your purchase!");
+
+final bool isMe = isAutoMessage ? false : message.isFromCurrentUser(widget.currentUser.id);
   
   // Check if message has an offer
   if (message.offer != null) {
@@ -651,7 +742,37 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 }
 
   Widget _buildOfferStatusUI(Offer offer) {
-    // Buyer waiting for response
+    // For accepted offers - buyer can checkout
+  if (offer.isAccepted && offer.buyer.id == widget.currentUser.id) {
+  return ElevatedButton(
+    onPressed: () => _proceedToCheckout(offer),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF8BAF7F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+    child: const Text(
+      'Checkout',
+      style: TextStyle(
+        color: Colors.white,
+      ),
+    ),
+  );
+}
+    
+    // For accepted offers - seller view
+    if (offer.isAccepted && offer.product.seller.id == widget.currentUser.id) {
+      return const Text(
+        'Offer accepted. Waiting for buyer to checkout.',
+        style: TextStyle(
+          color: Colors.green,
+          fontSize: 12,
+        ),
+      );
+    }
+    
+    // Pending offer - buyer's view
     if (offer.isPending && offer.buyer.id == widget.currentUser.id) {
       return const Text(
         'Please wait for the seller\'s response',
@@ -662,7 +783,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       );
     }
     
-    // Seller needs to respond to offer
+    // Pending offer - seller's view
     if (offer.isPending && offer.product.seller.id == widget.currentUser.id) {
       return Row(
         children: [
@@ -698,38 +819,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
           ),
         ],
-      );
-    }
-    
-    // Buyer can checkout after accepted offer
-    if (offer.isAccepted && offer.buyer.id == widget.currentUser.id) {
-      return ElevatedButton(
-        onPressed: () {
-          // Implement checkout logic here
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8BAF7F),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: const Text(
-          'Checkout',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      );
-    }
-    
-    // Seller sees status after accepting
-    if (offer.isAccepted && offer.product.seller.id == widget.currentUser.id) {
-      return const Text(
-        'Offer accepted. Waiting for buyer to checkout.',
-        style: TextStyle(
-          color: Colors.green,
-          fontSize: 12,
-        ),
       );
     }
     
@@ -932,7 +1021,6 @@ void _showBargainBottomSheet(Product product) {
                     ),
                     prefixText: 'Rp ',
                   ),
-                  // Add input formatter for currency formatting
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     CurrencyInputFormatter(),
@@ -952,54 +1040,35 @@ void _showBargainBottomSheet(Product product) {
                       try {
                         final amount = double.parse(offerController.text.replaceAll('.', ''));
                         
-                        try {
-                          // Make offer (token is now retrieved internally)
-                          await ApiServices.makeOffer(
-                            widget.conversationId,
-                            product.id,
-                            amount
-                          );
-                          
-                          // Dispose controller before popping
-                          offerController.dispose();
-                          
-                          // Pop the bottom sheet
-                          Navigator.pop(context);
-                          
-                          // Show a temporary loading message
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Sending your offer...'),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                          
-                          // Reload messages to show the new offer
-                          if (mounted) {
-                            await _loadMessages();
-                            
-                            // Ensure we scroll to the bottom to show the new offer
-                            _scrollToBottom();
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to send offer: $e')),
-                            );
-                          }
-                          setSheetState(() {
-                            isSubmitting = false;
-                          });
-                        }
+                        // Kirim offer ke backend
+                        await ApiServices.makeOffer(
+                          widget.conversationId,
+                          product.id,
+                          amount
+                        );
+                        
+                        // Simulasikan offer static untuk auto-accept
+                        final staticOffer = Offer.createStatic(
+                          product: product,
+                          buyer: widget.currentUser,
+                          amount: amount,
+                          conversationId: widget.conversationId,
+                        );
+                        
+                        // Auto-accept langsung
+                        await _autoAcceptOffer(staticOffer);
+                        
+                        // Tutup bottom sheet
+                        Navigator.pop(context);
+                        
+                        // Refresh pesan dan scroll
+                        await _loadMessages();
+                        _scrollToBottom();
+                        
                       } catch (e) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please enter a valid number'),
-                              backgroundColor: Colors.red,
-                            ),
+                            SnackBar(content: Text('Failed to send or accept offer: $e')),
                           );
                         }
                         setSheetState(() {
@@ -1033,10 +1102,11 @@ void _showBargainBottomSheet(Product product) {
       );
     },
   ).whenComplete(() {
-    // Ensure the controller is disposed when the sheet is closed
     offerController.dispose();
   });
 }
+
+
 
 void _showProductSelectionSheet() async {
   try {

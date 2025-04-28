@@ -20,7 +20,7 @@ class _SignupPageState extends State<SignupPage> {
   bool _termsAccepted = false;
   bool _isFormValid = false;
 
-  final String baseUrl = "http://192.168.0.30:8000/api"; // Gunakan ini untuk Android Emulator
+  final String baseUrl = "http://192.168.18.68:8000/api"; // Gunakan ini untuk Android Emulator
   // final String baseUrl = "http://192.168.0.106:8000/api"; // Gunakan ini untuk Perangkat Fisik (isi dengan IP lokal kamu)
 
   @override

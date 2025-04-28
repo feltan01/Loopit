@@ -95,7 +95,7 @@ class _ItemsDetailsState extends State<ItemsDetails> {
   );
 
   final User _sellerUser = User(
-    id: 456,
+    id: 1,
     username: 'User 1',
     email: 'seller@example.com',
   );
@@ -146,7 +146,7 @@ Future<int> _createConversation(int sellerId) async {
         _otherProducts = data.map<ListingModel>((item) {
           String imageUrl;
           if (item['images'].isNotEmpty && item['images'][0]['image'] != null) {
-            final baseUrl = 'http://192.168.0.30:8000'; // Same base URL from your_listing.dart
+            final baseUrl = 'http://192.168.18.68:8000'; // Same base URL from your_listing.dart
             imageUrl = '$baseUrl${item['images'][0]['image']}';
           } else {
             imageUrl = 'https://via.placeholder.com/100';
@@ -798,7 +798,7 @@ Widget _buildProductItem(
 ) {
   // Fix for duplicate base URL issue
   // Check if imageUrl already contains the base URL and fix it if needed
-  const String baseUrl = 'http://192.168.0.30:8000';
+  const String baseUrl = 'http:/192.168.18.68:8000';
   String processedImageUrl = imageUrl;
   
   // Prevent duplicate base URLs

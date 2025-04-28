@@ -3,7 +3,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:loopit/screens/home_page.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
-import '../services/api_service.dart';
+import '../services/api_services.dart';
 import 'chat_buyer.dart';
 import 'package:shared_preferences/shared_preferences.dart';  // Import shared_preferences
 
@@ -51,7 +51,7 @@ class _MessagesPageState extends State<MessagesPage> {
         throw Exception('No token found. Please log in again.');
       }
 
-      final conversations = await ApiService.getConversations();
+      final conversations = await ApiServices.getConversations();
       print('Conversations: $conversations');  // Log percakapan yang diambil dari API
 
       setState(() {

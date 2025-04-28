@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loopit/services/api_service.dart';
+import 'package:loopit/services/api_services.dart';
 import 'fashion_page.dart';
 import 'electronics_page.dart';
 import 'skincare_page.dart';
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchListings() async {
     print('🔄 initState: Calling fetchListings');
     try {
-      final listings = await ApiService.getAllListings();
+      final listings = await ApiServices.getAllListings();
       print('Fetched Listings: $listings'); // Should not be null
 
       setState(() {
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       );
       
       // Get current user info from API
-      final currentUser = await ApiService.getUserInfo();
+      final currentUser = await ApiServices.getUserInfo();
       
       // Close loading dialog
       if (context.mounted) Navigator.pop(context);

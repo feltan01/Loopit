@@ -37,7 +37,11 @@ class YourListingPage extends StatefulWidget {
 
 class _YourListingPageState extends State<YourListingPage> {
   final TextEditingController _searchController = TextEditingController();
+<<<<<<< HEAD
   final String baseUrl = 'http://192.168.0.30:8000';
+=======
+  final String baseUrl = 'http://192.168.100.29:8000';
+>>>>>>> 5ae69df52e86d7e7177224ef57ff6558123f6234
   final String defaultImage = 'https://via.placeholder.com/100';
 
   String getImageUrl(String? imagePath) {

@@ -4,6 +4,10 @@ import 'package:loopit/screens/fashion_page.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'package:loopit/screens/saved_products.dart';
 import 'package:loopit/screens/api_service.dart'; // Import API service
+import 'package:loopit/services/api_services.dart';
+import 'dart:convert';
+
+
 
 // Import the proper User model
 import 'package:loopit/models/user.dart';
@@ -106,6 +110,34 @@ class _ItemsDetailsState extends State<ItemsDetails> {
   }
 
   // Method to fetch other products from the API service
+Future<int> _createConversation(int sellerId) async {
+  final response = await ApiServices.post(
+    '/chat/conversations/start/',
+    body: {
+      "user_id": sellerId,
+    },
+  );
+
+  print('Status Code: ${response.statusCode}');
+  print('Body: ${response.body}');
+
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    final data = jsonDecode(response.body);
+    return data['id'];
+  } else {
+    // Ini supaya kalau error, lebih jelas kenapa
+    try {
+      final error = jsonDecode(response.body);
+      throw Exception('Failed: ${error['error'] ?? response.body}');
+    } catch (e) {
+      // Kalau JSON parsing gagal
+      throw Exception('Failed with status ${response.statusCode}: ${response.body}');
+    }
+  }
+}
+
+
+
   void _fetchOtherProducts() async {
     try {
       final data = await ApiService.getMyListings(); // Using the same API method from YourListingPage
@@ -336,19 +368,46 @@ class _ItemsDetailsState extends State<ItemsDetails> {
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                onTap: () {
-                                  // When "Send" button is pressed, navigate to ChatDetailScreen with required parameters
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatDetailScreen(
-                                        conversationId: _conversationId,
-                                        otherUser: _sellerUser,
-                                        currentUser: _currentUser,
+                                onTap: () async {
+                                  if (widget.productId == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Product ID not available')),
+                                    );
+                                    return;
+                                  }
+
+                                  try {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                                    );
+
+                                    final conversationId = await _createConversation(
+                                      _sellerUser.id,
+                                    );
+
+                                    if (mounted) Navigator.pop(context);
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatDetailScreen(
+                                          conversationId: conversationId,
+                                          otherUser: _sellerUser,
+                                          currentUser: _currentUser,
+                                          productImageUrl: widget.image,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  } catch (e) {
+                                    if (mounted) Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Failed: $e')),
+                                    );
+                                  }
                                 },
+
                                 // Add visual feedback effects
                                 splashColor: Colors.white.withOpacity(0.3),
                                 highlightColor: Colors.green.shade700,

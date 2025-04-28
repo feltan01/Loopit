@@ -6,7 +6,7 @@ import '../models/user.dart';
 import '../models/message.dart';
 import '../models/product.dart';
 import '../models/offer.dart';
-import '../services/api_service.dart';
+import '../services/api_services.dart';
 import '../services/websocket_service.dart';
 import 'package:intl/intl.dart';
 
@@ -39,12 +39,15 @@ class ChatDetailScreen extends StatefulWidget {
   final int conversationId;
   final User otherUser;
   final User currentUser;
+  final String? productImageUrl; // <<<<< tambahan
+
 
   const ChatDetailScreen({
     Key? key,
     required this.conversationId,
     required this.otherUser,
     required this.currentUser,
+    this.productImageUrl, // <<<<< ini tambahan
   }) : super(key: key);
 
   @override
@@ -181,7 +184,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       print("🔑 Token available for API call: ${token != null ? 'YES' : 'NO'}");
       
       // Load conversation to get products and messages
-      final conversationData = await ApiService.getConversation(widget.conversationId);
+      final conversationData = await ApiServices.getConversation(widget.conversationId);
       print("📊 Conversation data received: ${conversationData != null ? 'YES' : 'NO'}");
       
       // Check if messages exist in the response
@@ -304,7 +307,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       _messageController.clear();
       
       // Send message (token is now retrieved internally)
-      await ApiService.sendMessage(widget.conversationId, messageText);
+      await ApiServices.sendMessage(widget.conversationId, messageText);
       
       // Immediately refresh messages to show the sent message
       await _loadMessages(silent: true);
@@ -336,7 +339,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Future<void> _respondToOffer(int offerId, String status) async {
     try {
       // Respond to offer (token is now retrieved internally)
-      await ApiService.respondToOffer(offerId, status);
+      await ApiServices.respondToOffer(offerId, status);
       
       // Create a new list of messages with the updated offer
       setState(() {
@@ -457,22 +460,49 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildMessageItem(_messages[index], screenWidth);
-                    },
-                  ),
-                ),
-                _buildInputArea(),
-              ],
+    ? const Center(child: CircularProgressIndicator())
+    : Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              itemCount: _messages.length + (widget.productImageUrl != null ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (widget.productImageUrl != null && index == 0) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0F5E6),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          widget.productImageUrl!,
+                          height: 150,
+                          width: 150,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.broken_image, size: 50);
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  final realIndex = widget.productImageUrl != null ? index - 1 : index;
+                  return _buildMessageItem(_messages[realIndex], screenWidth);
+                }
+              },
             ),
+          ),
+          _buildInputArea(), // <<< ini jangan ilang bro!
+        ],
+      ),
     );
   }
 
@@ -924,7 +954,7 @@ void _showBargainBottomSheet(Product product) {
                         
                         try {
                           // Make offer (token is now retrieved internally)
-                          await ApiService.makeOffer(
+                          await ApiServices.makeOffer(
                             widget.conversationId,
                             product.id,
                             amount
@@ -1020,7 +1050,7 @@ void _showProductSelectionSheet() async {
     // Fetch products 
     List<Map<String, dynamic>> products = [];
     try {
-      products = await ApiService.getProducts();
+      products = await ApiServices.getProducts();
     } catch (e) {
       print('Error fetching products: $e');
       // Continue execution to show sample product

@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/conversation.dart';
 
-class ApiService {
+class ApiServices {
   static const String baseUrl = 'http://192.168.100.29:8000/api';
 
   static Future<String?> getToken() async {
@@ -267,6 +267,23 @@ class ApiService {
     }
   }
 
+// ==============================
+// ✅ Generic POST Method
+// ==============================
+static Future<http.Response> post(String endpoint, {Map<String, dynamic>? body}) async {
+  final headers = await getHeaders(requireAuth: true);
+  final url = Uri.parse('$baseUrl$endpoint');
+  
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(body),
+  );
+  
+  return response;
+}
+
+
   // Updated to make token parameter optional
   static Future<Map<String, dynamic>> sendMessage(
       int conversationId, String text, [String? token]) async {
@@ -390,6 +407,35 @@ class ApiService {
   }
 }
 
+// ==============================
+// ✅ Create New Conversation
+// ==============================
+static Future<int> createConversation({
+  required int sellerId,
+  required int productId,
+}) async {
+  final headers = await getHeaders(requireAuth: true);
+  final response = await http.post(
+    Uri.parse('$baseUrl/chat/conversations/'), // <<< Pastikan endpoint ini ada di backend kamu
+    headers: headers,
+    body: jsonEncode({
+      'seller_id': sellerId,
+      'product_id': productId,
+    }),
+  );
+
+  print('📩 Create conversation status: ${response.statusCode}');
+  print('📄 Create conversation response: ${response.body}');
+
+  if (response.statusCode == 201) {
+    final data = jsonDecode(response.body);
+    return data['id']; // Ambil conversation ID dari response
+  } else {
+    throw Exception('Failed to create conversation: ${response.body}');
+  }
+}
+
+
   // Updated to make token parameter optional
   static Future<Map<String, dynamic>> respondToOffer(
       int offerId, String status, [String? token]) async {
@@ -446,4 +492,6 @@ class ApiService {
   }
 
   static getAllListings() {}
+
+
 }

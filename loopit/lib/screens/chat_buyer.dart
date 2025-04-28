@@ -41,6 +41,8 @@ class ChatDetailScreen extends StatefulWidget {
   final User otherUser;
   final User currentUser;
   final String? productImageUrl;
+  final String? productName;   // << tambah ini
+  final String? productPrice;  // << tambah ini
 
   const ChatDetailScreen({
     Key? key,
@@ -48,8 +50,9 @@ class ChatDetailScreen extends StatefulWidget {
     required this.otherUser,
     required this.currentUser,
     this.productImageUrl,
+    this.productName, // << tambah ini
+    this.productPrice, // << tambah ini
   }) : super(key: key);
-
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
@@ -601,7 +604,7 @@ for (var msg in _messages) {
 final bool isMe = isAutoMessage ? false : message.isFromCurrentUser(widget.currentUser.id);
   
   // Check if message has an offer
-  if (message.offer != null) {
+if (message.offer != null) {
     final offer = message.offer!;
     print("📱 Rendering offer #${offer.id} with product #${offer.product.id}");
     print("🔍 Image URL being used: ${offer.product.fullImageUrl}"); // Debugging line
@@ -630,38 +633,43 @@ final bool isMe = isAutoMessage ? false : message.isFromCurrentUser(widget.curre
                         color: const Color(0xFFFFF5EC),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Image.network(
-                        offer.product.fullImageUrl,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            print("✅ Image loaded successfully for offer #${offer.id}");
-                            return child;
-                          }
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          print("❌ IMAGE ERROR for offer #${offer.id}");
-                          print("❌ Image URL: ${offer.product.fullImageUrl}");
-                          print("❌ Error details: $error");
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.image_not_supported),
-                              Text(
-                                'Image error',
-                                style: TextStyle(fontSize: 10),
-                                textAlign: TextAlign.center,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          offer.product.fullImageUrl.isNotEmpty
+                              ? offer.product.fullImageUrl
+                              : (widget.productImageUrl ?? ''),
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              print("✅ Image loaded successfully for offer #${offer.id}");
+                              return child;
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
                               ),
-                            ],
-                          );
-                        },
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            if (widget.productImageUrl != null &&
+                                widget.productImageUrl!.isNotEmpty) {
+                              // Fallback kedua kalau ada productImageUrl
+                              return Image.network(
+                                widget.productImageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.broken_image, size: 30);
+                                },
+                              );
+                            } else {
+                              return const Icon(Icons.broken_image, size: 30);
+                            }
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -852,23 +860,36 @@ Widget _buildInputArea() {
     child: SafeArea(
       child: Row(
         children: [
-          OutlinedButton(
-            onPressed: () => _showProductSelectionSheet(),
-            style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              backgroundColor: const Color(0xFFE6F4E6),
-              side: BorderSide.none,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            child: const Text(
-              'Bargain',
-              style: TextStyle(
-                color: Color(0xFF4A6741),
-              ),
-            ),
-          ),
+OutlinedButton(
+  onPressed: () {
+    final product = Product(
+      id: 1,
+      name: widget.productName ?? 'Unknown Product',
+      brand: 'Unknown',
+      price: double.tryParse(widget.productPrice?.replaceAll('Rp', '').replaceAll('.', '').trim() ?? '0') ?? 0,
+      description: '',
+      image: widget.productImageUrl ?? '',
+      seller: widget.otherUser,
+    );
+
+
+    _showBargainBottomSheet(product);
+  },
+  style: OutlinedButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    backgroundColor: const Color(0xFFE6F4E6),
+    side: BorderSide.none,
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  ),
+  child: const Text(
+    'Bargain',
+    style: TextStyle(
+      color: Color(0xFF4A6741),
+    ),
+  ),
+),
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
@@ -957,59 +978,45 @@ void _showBargainBottomSheet(Product product) {
                     Container(
                       width: 60,
                       height: 60,
+                      margin: const EdgeInsets.only(right: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF5EC),
                         borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey[200],
                       ),
-                      child: Image.network(
-                        product.fullImageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.image_not_supported),
-                              Text(
-                                'Image error',
-                                style: TextStyle(fontSize: 10),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          );
-                        },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          widget.productImageUrl ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.broken_image);
+                          },
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.productName ?? 'Unknown Product',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            product.brand,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Original Price: ${widget.productPrice ?? 'Rp 0'}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Original Price: Rp ${product.price.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
                 TextField(
                   controller: offerController,
@@ -1047,12 +1054,13 @@ void _showBargainBottomSheet(Product product) {
                           amount
                         );
                         
+                        // product.name = widget.productName ?? 'Unknown Product';  // << tambahin ini
                         // Simulasikan offer static untuk auto-accept
                         final staticOffer = Offer.createStatic(
-                          product: product,
-                          buyer: widget.currentUser,
-                          amount: amount,
-                          conversationId: widget.conversationId,
+                         product: product, // langsung pakai product parameter yang dikirim
+                         buyer: widget.currentUser,
+                         amount: amount,
+                        conversationId: widget.conversationId,
                         );
                         
                         // Auto-accept langsung
@@ -1060,6 +1068,7 @@ void _showBargainBottomSheet(Product product) {
                         
                         // Tutup bottom sheet
                         Navigator.pop(context);
+                        
                         
                         // Refresh pesan dan scroll
                         await _loadMessages();

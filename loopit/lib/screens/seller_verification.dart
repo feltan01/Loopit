@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:loopit/screens/home_page.dart';
 import 'new_listing.dart';
 import 'terms_condition.dart';
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +40,31 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
   final TextEditingController _nikController = TextEditingController();
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  bool _hasUploadedID = false; // Track if ID has been uploaded
+ // Track if ID has been uploaded
+
+  Uint8List? _webImage;
+  File? _pickedImage;
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImage = bytes;
+          _pickedImage = null;
+        });
+      } else {
+        setState(() {
+          _pickedImage = File(pickedFile.path);
+          _webImage = null;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +126,7 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
             const SizedBox(height: 12),
             Center(
               child: GestureDetector(
-                onTap: () {
-                  // Function to handle image upload
-                  // In a real app, you would implement photo picking/camera functionality
-                  setState(() {
-                    _hasUploadedID =
-                        true; // For demo purposes, set to true on tap
-                  });
-                },
+                onTap: _pickImage,
                 child: Container(
                   width: 100,
                   height: 100,
@@ -114,22 +134,36 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
                     border:
                         Border.all(color: const Color(0xFF4E6645), width: 2),
                     borderRadius: BorderRadius.circular(8),
-                    color: _hasUploadedID
+                    color: (_pickedImage != null || _webImage != null)
                         ? const Color(0xFFEAF3DC)
                         : Colors.transparent,
                   ),
-                  child: _hasUploadedID
-                      ? Image.asset(
-                          'assets/images/image.png',
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
+                  child: _pickedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.file(
+                            _pickedImage!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
                         )
-                      : const Icon(Icons.add,
-                          color: Color(0xFF4E6645), size: 40),
+                      : _webImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.memory(
+                                _webImage!,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Icon(Icons.add,
+                              color: Color(0xFF4E6645), size: 40),
                 ),
               ),
             ),
+
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -280,7 +314,7 @@ class _SellerVerificationPageState extends State<SellerVerificationPage> {
         _nikController.text.isEmpty ||
         _accountController.text.isEmpty ||
         _addressController.text.isEmpty ||
-        !_hasUploadedID ||
+        (_pickedImage == null && _webImage == null) ||
         !_isChecked) {
       // Show the required fields notification
       Navigator.push(

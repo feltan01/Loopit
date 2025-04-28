@@ -13,7 +13,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   String? username;
   List<dynamic> myListings = [];
 
-  final String baseUrl = 'http://10.10.169.164:8000';
+  final String baseUrl = 'http://192.168.18.207:8000';
   final String defaultImage = 'https://via.placeholder.com/100';
 
   String getImageUrl(List<dynamic> images) {

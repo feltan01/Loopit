@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
-import 'orders.dart'; // Import for the HomePage
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Order Completion Animation',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
-      ),
-      home: const OrderComplete(),
-    );
-  }
-}
+import '../models/offer.dart'; // IMPORT OFFER MODEL
+import 'orderlar.dart'; // IMPORT YOUR ORDER DETAIL SCREEN
 
 class OrderComplete extends StatefulWidget {
-  const OrderComplete({Key? key}) : super(key: key);
+  final Offer offer;
+  final String totalCost; // <-- ADD totalCost here
+
+  const OrderComplete({
+    Key? key,
+    required this.offer,
+    required this.totalCost, // <-- Constructor accept totalCost
+  }) : super(key: key);
 
   @override
   State<OrderComplete> createState() => _OrderCompletionScreenState();
@@ -50,17 +37,20 @@ class _OrderCompletionScreenState extends State<OrderComplete>
       ),
     );
 
-    // Start animation after a short delay to show completion screen
     Future.delayed(const Duration(milliseconds: 400), () {
       _controller.forward().then((_) {
         setState(() {
           _showRedirectScreen = true;
         });
-        
-        // Wait a bit to show the redirect message, then navigate to HomePage
+
         Future.delayed(const Duration(milliseconds: 4000), () {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Orders()),
+            MaterialPageRoute(
+              builder: (context) => OrderDetailScreen(
+                offer: widget.offer,
+                totalCost: widget.totalCost, // <-- PASSED CORRECTLY
+              ),
+            ),
           );
         });
       });

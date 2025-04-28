@@ -146,7 +146,7 @@ Future<int> _createConversation(int sellerId) async {
         _otherProducts = data.map<ListingModel>((item) {
           String imageUrl;
           if (item['images'].isNotEmpty && item['images'][0]['image'] != null) {
-            final baseUrl = 'http://192.168.100.29:8000'; // Same base URL from your_listing.dart
+            final baseUrl = 'http://192.168.18.65:8000'; // Same base URL from your_listing.dart
             imageUrl = '$baseUrl${item['images'][0]['image']}';
           } else {
             imageUrl = 'https://via.placeholder.com/100';

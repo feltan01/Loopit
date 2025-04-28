@@ -58,7 +58,7 @@ class _YourListingPageState extends State<YourListingPage> {
   }
 
   void _fetchListings() async {
-    const String baseUrl = 'http://192.168.100.29:8000';
+    const String baseUrl = 'http://192.168.18.65:8000';
 
     try {
       final data = await ApiService.getMyListings();

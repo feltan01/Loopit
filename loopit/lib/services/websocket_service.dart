@@ -82,7 +82,7 @@ class WebSocketService {
       }
 
       // Append token to WebSocket URL as a query parameter
-      final wsUrl = 'ws://192.168.0.149:8000/ws/chat/$conversationId/?token=$token';
+      final wsUrl = 'ws://192.168.0.30:8000/ws/chat/$conversationId/?token=$token';
       print('🔌 Connecting to WebSocket URL: ${wsUrl.substring(0, wsUrl.indexOf('?') + 10)}...[token hidden]');
       
       // Cancel any existing subscription

@@ -912,7 +912,7 @@ void _showBargainBottomSheet(Product product) {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: isSubmitting ? null : () async {
+                    onPressed: isSubmitting ? null : () async { 
                       if (offerController.text.isEmpty) return;
                       
                       setSheetState(() {

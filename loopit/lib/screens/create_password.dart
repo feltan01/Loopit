@@ -49,7 +49,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     });
 
     final response = await http.post(
-      Uri.parse('http://192.168.18.50:8000/api/password/reset/'),
+      Uri.parse('http://192.168.0.30:8000/api/password/reset/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'password': _newPasswordController.text,

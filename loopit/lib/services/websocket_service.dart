@@ -44,7 +44,7 @@ class WebSocketService {
         disconnect();
       }
 
-      final wsUrl = 'ws://192.168.18.65:8000/ws/chat/$conversationId/?token=$token';
+      final wsUrl = 'ws://10.10.155.20:8000/ws/chat/$conversationId/?token=$token';
 
       await _cancelSubscription();
 

@@ -365,46 +365,58 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginUser() async {
-    final url = Uri.parse('http://10.10.155.20:8000/api/login/');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': _emailController.text.trim(),
-        'password': _passwordController.text.trim(),
-      }),
+  final url = Uri.parse('http://10.10.155.20:8000/api/login/');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('access_token', data['access']);
+    await prefs.setString('refresh_token', data['refresh']);
+    await prefs.setString('username', data['username'] ?? '');
+
+    print("✅ Token saved: ${data['access']}");
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // ✅ Use the correct key name expected by ApiService
-      await prefs.setString(
-          'access_token', data['access']); // ✅ Match this exactly!
-      await prefs.setString('refresh_token', data['refresh']);
-      await prefs.setString('username', data['username'] ?? '');
-
-      print("✅ Token saved: ${data['access']}");
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
+  } else {
+    // Show error dialog
+    showDialog(
+      context: context,
+      barrierDismissible: true, // allow tap outside to close
+      builder: (BuildContext context) {
+        return AlertDialog(
           title: const Text("Login Failed"),
           content: const Text("Invalid email or password."),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
               child: const Text("OK"),
             )
           ],
-        ),
-      );
-    }
+        );
+      },
+    ).then((_) {
+      // Clear fields after dialog dismissed
+      _emailController.clear();
+      _passwordController.clear();
+      setState(() {
+        _isFormValid = false;
+      });
+    });
   }
+}
+
 }

@@ -203,7 +203,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ChatDetailScreen(
+                                    builder: (context) => ChatBuyerScreen(
                                       conversationId: conversation.id,
                                       otherUser: otherUser,
                                       currentUser: widget.currentUser,

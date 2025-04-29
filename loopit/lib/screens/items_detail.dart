@@ -392,13 +392,14 @@ Future<int> _createConversation(int sellerId) async {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ChatDetailScreen(
+                                        builder: (context) => ChatBuyerScreen(
                                           conversationId: conversationId,
                                           otherUser: _sellerUser,
                                           currentUser: _currentUser,
                                           productImageUrl: widget.image,
                                           productName: widget.name,
                                           productPrice: widget.price,
+                                          initialMessage: _messageController.text.trim(),
                                         ),
                                       ),
                                     );
@@ -457,7 +458,7 @@ Future<int> _createConversation(int sellerId) async {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ChatDetailScreen(
+                                      builder: (context) => ChatBuyerScreen(
                                         conversationId: _conversationId,
                                         otherUser: _sellerUser,
                                         currentUser: _currentUser,
